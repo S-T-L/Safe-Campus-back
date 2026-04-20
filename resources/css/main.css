@@ -1,0 +1,209 @@
+/**
+ * main.css — Styles globaux Vue
+ *
+ * Philosophie CSS du projet :
+ *   - PAS de <style> dans les fichiers .vue
+ *   - Tout le CSS global ici, organisé par composant/page
+ *   - Variables CSS pour les valeurs partagées
+ *   - Convention de nommage BEM : .bloc__element--modificateur
+ *
+ * Organisation :
+ *   1. Variables CSS
+ *   2. Reset / base
+ *   3. Typographie
+ *   4. Transitions Inertia
+ *   5. Pages & composants
+ */
+
+/* ── 1. Variables CSS ─────────────────────────────── */
+:root {
+    /* Couleurs */
+    --color-primary:    #4f46e5;
+    --color-secondary:  #7c3aed;
+    --color-accent:     #06b6d4;
+    --color-success:    #10b981;
+    --color-warning:    #f59e0b;
+    --color-danger:     #ef4444;
+
+    /* Neutres */
+    --color-bg:         #ffffff;
+    --color-surface:    #f9fafb;
+    --color-border:     #e5e7eb;
+    --color-text:       #111827;
+    --color-muted:      #6b7280;
+
+    /* Espacements */
+    --spacing-xs:   0.25rem;
+    --spacing-sm:   0.5rem;
+    --spacing-md:   1rem;
+    --spacing-lg:   1.5rem;
+    --spacing-xl:   2rem;
+    --spacing-2xl:  3rem;
+
+    /* Typographie */
+    --font-size-sm:   0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg:   1.125rem;
+    --font-size-xl:   1.25rem;
+    --font-size-2xl:  1.5rem;
+    --font-size-3xl:  1.875rem;
+
+    /* Bordures */
+    --radius-sm:  0.25rem;
+    --radius-md:  0.5rem;
+    --radius-lg:  0.75rem;
+    --radius-xl:  1rem;
+
+    /* Ombres */
+    --shadow-sm:  0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md:  0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* ── 2. Reset / base ──────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── 3. Typographie ───────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+code {
+    font-family: ui-monospace, monospace;
+    font-size: var(--font-size-sm);
+}
+
+/* ── 4. Transitions Inertia ───────────────────────── */
+.page-enter-active,
+.page-leave-active {
+    transition: opacity 0.15s ease;
+}
+
+.page-enter-from,
+.page-leave-to {
+    opacity: 0;
+}
+
+/* ── 5. Pages & composants ────────────────────────── */
+
+/* Page Home ---------------------------------------- */
+.home {
+    min-height: 100vh;
+    background-color: var(--color-surface);
+    padding: var(--spacing-xl);
+}
+
+.home__header {
+    max-width: 56rem;
+    margin: 0 auto var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.home__title {
+    font-size: var(--font-size-3xl);
+    color: var(--color-primary);
+}
+
+.home__subtitle {
+    margin-top: var(--spacing-xs);
+    color: var(--color-muted);
+    font-size: var(--font-size-sm);
+}
+
+.home__content {
+    max-width: 56rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+/* Convention card ---------------------------------- */
+.convention-card {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.convention-card__title {
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+    margin-bottom: var(--spacing-md);
+}
+
+.convention-card__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.convention-card__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-muted);
+}
+
+.convention-card__arrow {
+    color: var(--color-primary);
+    opacity: 0.6;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* Stack card --------------------------------------- */
+.stack-card {
+    background-color: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+}
+
+.stack-card__title {
+    font-size: var(--font-size-lg);
+    color: #3730a3;
+    margin-bottom: var(--spacing-sm);
+}
+
+.stack-card__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.stack-badge {
+    background-color: #c7d2fe;
+    color: #3730a3;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: 9999px;
+}

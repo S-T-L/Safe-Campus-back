@@ -1,0 +1,112 @@
+{
+  "name": "SC_Back",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "sc_back",
+  "workspaceFolder": "/var/www/html",
+  "remoteUser": "sail",
+  "forwardPorts": [8000, 5173, 5432],
+  "portsAttributes": {
+    "8000": { "label": "Laravel", "onAutoForward": "notify" },
+    "5173": { "label": "Vite HMR", "onAutoForward": "openBrowser" },
+    "5432": { "label": "PostgreSQL", "onAutoForward": "silent" }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // PHP core
+        "bmewburn.vscode-intelephense-client",
+        "zobo.php-intellisense",
+        "xdebug.php-debug",
+        "devsense.composer-php-vscode",
+        "lkrms.pretty-php",
+        "rifi2k.format-html-in-php",
+        // Laravel
+        "onecentlin.laravel-blade",
+        "onecentlin.laravel5-snippets",
+        "shufo.vscode-blade-formatter",
+        "ihunte.laravel-blade-wrapper",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "ryannaddy.laravel-artisan",
+        "codingyu.laravel-goto-view",
+        "naoray.laravel-goto-components",
+        "pgl.laravel-jump-controller",
+        "glitchbl.laravel-create-view",
+        "alperenersoy.filament-snippets",
+        // Vue & TypeScript
+        "Vue.volar",
+        "yoavbls.pretty-ts-errors",
+        // Linting & formatage
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        // HTML
+        "formulahendry.auto-rename-tag",
+        "ecmel.vscode-html-css",
+        // Images
+        "kisstkondoros.vscode-gutter-preview",
+        // Indentation
+        "oderwat.indent-rainbow",
+        // API
+        "humao.rest-client",
+        // Base de données
+        "cweijan.vscode-postgresql-client2",
+        // Config & environnement
+        "mikestead.dotenv",
+        "redhat.vscode-yaml",
+        // Qualité de code
+        "sonarsource.sonarlint-vscode",
+        "streetsidesoftware.code-spell-checker",
+        // Markdown
+        "bierner.markdown-mermaid",
+        "yzhang.markdown-all-in-one",
+        // IA
+        "anthropic.claude-code",
+        "github.copilot",
+        "github.copilot-chat",
+        // Git
+        "waderyan.gitblame",
+        "mhutchie.git-graph",
+        "vector-of-bool.gitflow"
+      ],
+      "settings": {
+        "php.executablePath": "/usr/bin/php",
+        "intelephense.environment.phpVersion": "8.4",
+        "editor.formatOnSave": true,
+        "[php]": {
+          "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+        },
+        "[blade]": {
+          "editor.defaultFormatter": "shufo.vscode-blade-formatter"
+        },
+        "[vue]": {
+          "editor.defaultFormatter": "Vue.volar"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "vue.server.hybridMode": true,
+        "eslint.validate": ["javascript", "typescript", "vue"],
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "launch": {
+          "version": "0.2.0",
+          "configurations": [
+            {
+              "name": "Listen for Xdebug",
+              "type": "php",
+              "request": "launch",
+              "port": 9003,
+              "pathMappings": {
+                "/var/www/html": "${workspaceFolder}"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
