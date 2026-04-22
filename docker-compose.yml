@@ -2,9 +2,9 @@ services:
     sc_back:
         build:
             context: .
-            dockerfile: vendor/laravel/sail/runtimes/8.4/Dockerfile
+            dockerfile: docker/8.4/Dockerfile
             args:
-                WWWGROUP: '${WWWGROUP}'
+                WWWGROUP: '${WWWGROUP:-1000}'
         container_name: SC_Back
         ports:
             - '${APP_PORT:-8000}:80'
@@ -12,7 +12,7 @@ services:
         volumes:
             - '.:/var/www/html'
         environment:
-            WWWUSER: '${WWWUSER}'
+            WWWUSER: '${WWWUSER:-1000}'
             LARAVEL_SAIL: 1
             APP_ENV: '${APP_ENV:-local}'
             APP_DEBUG: '${APP_DEBUG:-true}'
@@ -37,7 +37,7 @@ services:
             POSTGRES_PASSWORD: '${DB_PASSWORD}'
         volumes:
             - 'sail-pgsql:/var/lib/postgresql/data'
-            - './vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
+            - './docker/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
         networks:
             - sail
         healthcheck:
@@ -49,8 +49,10 @@ services:
                 - '${DB_DATABASE}'
                 - '-U'
                 - '${DB_USERNAME}'
-            retries: 3
+            interval: 5s
             timeout: 5s
+            retries: 3
+            start_period: 10s
 
     adminer:
         image: 'adminer:latest'

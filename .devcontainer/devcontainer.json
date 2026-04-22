@@ -4,11 +4,12 @@
   "service": "sc_back",
   "workspaceFolder": "/var/www/html",
   "remoteUser": "sail",
-  "forwardPorts": [8000, 5173, 5432],
+  "forwardPorts": [8000, 5173, 5432, 8080],
   "portsAttributes": {
     "8000": { "label": "Laravel", "onAutoForward": "notify" },
     "5173": { "label": "Vite HMR", "onAutoForward": "openBrowser" },
-    "5432": { "label": "PostgreSQL", "onAutoForward": "silent" }
+    "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
+    "8080": { "label": "Adminer", "onAutoForward": "notify" }
   },
   "postCreateCommand": "bash .devcontainer/setup.sh",
   "customizations": {
@@ -16,45 +17,34 @@
       "extensions": [
         // PHP core
         "bmewburn.vscode-intelephense-client",
-        "zobo.php-intellisense",
         "xdebug.php-debug",
         "devsense.composer-php-vscode",
         "lkrms.pretty-php",
-        "rifi2k.format-html-in-php",
         // Laravel
-        "onecentlin.laravel-blade",
         "onecentlin.laravel5-snippets",
-        "shufo.vscode-blade-formatter",
-        "ihunte.laravel-blade-wrapper",
         "amiralizadeh9480.laravel-extra-intellisense",
         "ryannaddy.laravel-artisan",
-        "codingyu.laravel-goto-view",
         "naoray.laravel-goto-components",
         "pgl.laravel-jump-controller",
-        "glitchbl.laravel-create-view",
         "alperenersoy.filament-snippets",
-        // Vue & TypeScript
+        "shufo.vscode-blade-formatter",
+        // Vue
         "Vue.volar",
-        "yoavbls.pretty-ts-errors",
         // Linting & formatage
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         // HTML
         "formulahendry.auto-rename-tag",
-        "ecmel.vscode-html-css",
         // Images
         "kisstkondoros.vscode-gutter-preview",
         // Indentation
         "oderwat.indent-rainbow",
-        // API
-        "humao.rest-client",
         // Base de données
         "cweijan.vscode-postgresql-client2",
         // Config & environnement
         "mikestead.dotenv",
         "redhat.vscode-yaml",
         // Qualité de code
-        "sonarsource.sonarlint-vscode",
         "streetsidesoftware.code-spell-checker",
         // Markdown
         "bierner.markdown-mermaid",
