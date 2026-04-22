@@ -89,6 +89,34 @@ ssh -T git@github.com
 
 > La réponse attendue est `Hi <username>! You've successfully authenticated`.
 
+### Activer le SSH agent au démarrage de WSL
+
+Le devcontainer forward le socket SSH de l'hôte pour permettre `git push` depuis l'intérieur du container. L'agent doit être actif **avant** d'ouvrir le devcontainer.
+
+Ajouter à la fin de `~/.bashrc` (ou `~/.zshrc`) sur WSL :
+
+```bash
+# SSH agent — démarrage automatique
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval $(ssh-agent -s) > /dev/null
+    ssh-add ~/.ssh/id_ed25519 2>/dev/null
+fi
+```
+
+Recharger le shell :
+
+```bash
+source ~/.bashrc
+```
+
+Vérifier que la clé est bien chargée :
+
+```bash
+ssh-add -l
+```
+
+> Si `SSH_AUTH_SOCK` n'est pas défini au moment d'ouvrir le devcontainer, `git push` depuis le container échouera. Pusher depuis WSL reste toujours possible en secours.
+
 ### Cloner le projet
 
 ```bash
