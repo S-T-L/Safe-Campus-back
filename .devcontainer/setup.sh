@@ -20,6 +20,8 @@ fi
 if [ ! -f config/sanctum.php ]; then
     php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 fi
+
+php artisan vendor:publish --tag=filament-assets --force
 php artisan migrate --force
 
 echo ""
