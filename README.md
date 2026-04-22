@@ -158,14 +158,11 @@ Renseigner les variables dans le `.env` :
 
 Dans VS Code : `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**
 
-Le devcontainer installe automatiquement les dépendances Composer et npm, puis exécute :
+Le devcontainer installe automatiquement les dépendances Composer et npm, génère la clé d'application, exécute les migrations et démarre `artisan serve`.
 
-```bash
-php artisan key:generate
-php artisan migrate
-```
+> Laravel ne répond pas immédiatement à l'ouverture du container — le serveur attend la fin de `composer install` avant de démarrer. Le port 8000 devient disponible automatiquement, aucune action manuelle requise.
 
-Le setup ne lance pas `npm run build` — lancer Vite manuellement une fois dans le container (voir section suivante).
+Vite n'est pas démarré automatiquement — le lancer manuellement une fois dans le container (voir section suivante).
 
 ### Démarrer Vite (HMR)
 
@@ -212,6 +209,32 @@ sudo service docker restart
 
 Les symlinks dans `node_modules/.bin/` perdent leurs permissions d'exécution sur volumes WSL. Le `setup.sh` corrige automatiquement ce problème via `chmod +x node_modules/.bin/*`.
 
+### Rebuild du devcontainer
+
+Certains fichiers sont copiés dans l'image Docker au moment du build et ne sont **pas** mis à jour par le volume monté. Tout changement sur ces fichiers nécessite un rebuild :
+
+| Fichier modifié | Action requise |
+|---|---|
+| `docker/8.4/Dockerfile` | Rebuild sans cache |
+| `supervisord.conf` | Rebuild (avec ou sans cache) |
+| `docker-compose.yml` | Rebuild |
+| `.devcontainer/devcontainer.json` | Rebuild |
+| `start-container`, `php.ini` | Rebuild |
+
+**Rebuild avec cache** (rapide — réutilise les couches Docker non modifiées) :
+
+`Ctrl+Shift+P` → **Dev Containers: Rebuild Container**
+
+**Rebuild sans cache** (complet — re-télécharge tout, à utiliser si le cache pose problème) :
+
+`Ctrl+Shift+P` → **Dev Containers: Rebuild Without Cache and Reopen in Container**
+
+Ou depuis le terminal WSL avant d'ouvrir VS Code :
+
+```bash
+docker compose build --no-cache
+```
+
 ---
 
 ## 6. Structure du projet
@@ -223,6 +246,7 @@ graph TD
     root --> scback["SC_Back/\nApplication principale\nLaravel + Vue + Inertia"]
     root --> docs["docs/\nDocumentation"]
 
+    scback --> readme["README.md\nGuide d'installation"]
     scback --> dc["docker-compose.yml\nOrchestration : sc_back, pgsql, adminer"]
     scback --> devc[".devcontainer/\nConfig VS Code devcontainer"]
     scback --> app["app/\nCode PHP Laravel"]
@@ -232,7 +256,7 @@ graph TD
     res --> js["js/\nVue 3 / Inertia\nPages, Components…"]
     res --> css["css/\nStyles globaux"]
 
-    docs --> install["install.md\nCe fichier"]
     docs --> back["back.md\nConventions backend"]
     docs --> front["front.md\nConventions frontend"]
+    docs --> infra["infra.md\nInfrastructure"]
 ```

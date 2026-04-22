@@ -50,7 +50,7 @@ const conventions = [
     },
 ]
 
-const stack = ['Laravel 12', 'Inertia v3', 'Vue 3', 'Vite 7', 'PostgreSQL 17']
+const stack = ['Laravel 12', 'PHP 8.4', 'Inertia v3', 'Vue 3', 'Vite 7', 'PostgreSQL 17']
 </script>
 
 <template>

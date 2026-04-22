@@ -56,7 +56,8 @@
         // Git
         "waderyan.gitblame",
         "mhutchie.git-graph",
-        "vector-of-bool.gitflow"
+        "vector-of-bool.gitflow",
+        "rturock.gitstash"
       ],
       "settings": {
         "php.executablePath": "/usr/bin/php",

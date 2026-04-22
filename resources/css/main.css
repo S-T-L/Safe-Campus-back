@@ -18,12 +18,15 @@
 /* ── 1. Variables CSS ─────────────────────────────── */
 :root {
     /* Couleurs */
-    --color-primary:    #4f46e5;
-    --color-secondary:  #7c3aed;
-    --color-accent:     #06b6d4;
-    --color-success:    #10b981;
-    --color-warning:    #f59e0b;
-    --color-danger:     #ef4444;
+    --color-primary:        #4f46e5;
+    --color-primary-light:  #eef2ff;
+    --color-primary-muted:  #c7d2fe;
+    --color-primary-dark:   #3730a3;
+    --color-secondary:      #7c3aed;
+    --color-accent:         #06b6d4;
+    --color-success:        #10b981;
+    --color-warning:        #f59e0b;
+    --color-danger:         #ef4444;
 
     /* Neutres */
     --color-bg:         #ffffff;
@@ -181,15 +184,15 @@ code {
 
 /* Stack card --------------------------------------- */
 .stack-card {
-    background-color: #eef2ff;
-    border: 1px solid #c7d2fe;
+    background-color: var(--color-primary-light);
+    border: 1px solid var(--color-primary-muted);
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
 }
 
 .stack-card__title {
     font-size: var(--font-size-lg);
-    color: #3730a3;
+    color: var(--color-primary-dark);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -200,8 +203,8 @@ code {
 }
 
 .stack-badge {
-    background-color: #c7d2fe;
-    color: #3730a3;
+    background-color: var(--color-primary-muted);
+    color: var(--color-primary-dark);
     font-size: 0.75rem;
     font-weight: 500;
     padding: var(--spacing-xs) var(--spacing-md);
