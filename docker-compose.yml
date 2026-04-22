@@ -11,6 +11,7 @@ services:
             - '${VITE_PORT:-5173}:5173'
         volumes:
             - '.:/var/www/html'
+            - '${SSH_AUTH_SOCK:-/dev/null}:/ssh-agent'
         environment:
             WWWUSER: '${WWWUSER:-1000}'
             LARAVEL_SAIL: 1
@@ -20,6 +21,7 @@ services:
             DB_DATABASE: '${DB_DATABASE}'
             DB_USERNAME: '${DB_USERNAME}'
             DB_PASSWORD: '${DB_PASSWORD}'
+            SSH_AUTH_SOCK: /ssh-agent
         depends_on:
             pgsql:
                 condition: service_healthy
