@@ -8,7 +8,6 @@ services:
         container_name: SC_Back
         ports:
             - '${APP_PORT:-8000}:80'
-            - '${VITE_PORT:-5173}:5173'
         volumes:
             - '.:/var/www/html'
             - '${SSH_AUTH_SOCK:-/dev/null}:/ssh-agent'
@@ -56,6 +55,23 @@ services:
             retries: 3
             start_period: 10s
 
+    sc_front:
+        build:
+            context: ../Safe-Campus-front
+            dockerfile: Dockerfile
+        container_name: SC_Front
+        ports:
+            - '${FRONT_PORT:-3000}:3000'
+            - '24678:24678'
+        volumes:
+            - '../Safe-Campus-front:/app'
+            - 'sc_front_node_modules:/app/node_modules'
+        environment:
+            NODE_ENV: development
+            NUXT_PUBLIC_API_BASE: 'http://sc_back:80'
+        networks:
+            - sail
+
     adminer:
         image: 'adminer:latest'
         container_name: SC_Adminer
@@ -73,4 +89,6 @@ networks:
 
 volumes:
     sail-pgsql:
+        driver: local
+    sc_front_node_modules:
         driver: local
