@@ -1,10 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Home', [
+    return response()->json([
+        'status' => 'ok',
+        'message' => 'Backend API is running',
         'appName' => config('app.name'),
     ]);
 });

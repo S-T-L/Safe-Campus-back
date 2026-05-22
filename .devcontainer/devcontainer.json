@@ -7,7 +7,6 @@
   "forwardPorts": [8000, 5173, 5432, 8080],
   "portsAttributes": {
     "8000": { "label": "Laravel", "onAutoForward": "notify" },
-    "5173": { "label": "Vite HMR", "onAutoForward": "openBrowser" },
     "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
     "8080": { "label": "Adminer", "onAutoForward": "notify" }
   },
@@ -28,13 +27,6 @@
         "pgl.laravel-jump-controller",
         "alperenersoy.filament-snippets",
         "shufo.vscode-blade-formatter",
-        // Vue
-        "Vue.volar",
-        // Linting & formatage
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        // HTML
-        "formulahendry.auto-rename-tag",
         // Images
         "kisstkondoros.vscode-gutter-preview",
         // Indentation
@@ -50,7 +42,6 @@
         "bierner.markdown-mermaid",
         "yzhang.markdown-all-in-one",
         // IA
-        "anthropic.claude-code",
         "github.copilot",
         "github.copilot-chat",
         // Git
@@ -68,20 +59,6 @@
         },
         "[blade]": {
           "editor.defaultFormatter": "shufo.vscode-blade-formatter"
-        },
-        "[vue]": {
-          "editor.defaultFormatter": "Vue.volar"
-        },
-        "[javascript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[typescript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "vue.server.hybridMode": true,
-        "eslint.validate": ["javascript", "typescript", "vue"],
-        "editor.codeActionsOnSave": {
-          "source.fixAll.eslint": "explicit"
         },
         "launch": {
           "version": "0.2.0",
