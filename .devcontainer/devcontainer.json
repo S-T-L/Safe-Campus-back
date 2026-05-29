@@ -4,11 +4,13 @@
   "service": "sc_back",
   "workspaceFolder": "/var/www/html",
   "remoteUser": "sail",
-  "forwardPorts": [8000, 5173, 5432, 8080],
+  "forwardPorts": [8000, 5173, 5432, 8080, 3000, 24678],
   "portsAttributes": {
     "8000": { "label": "Laravel", "onAutoForward": "notify" },
     "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
-    "8080": { "label": "Adminer", "onAutoForward": "notify" }
+    "8080": { "label": "Adminer", "onAutoForward": "notify" },
+    "3000": { "label": "Nuxt", "onAutoForward": "openBrowser" },
+    "24678": { "label": "Vite HMR", "onAutoForward": "silent" }
   },
   "postCreateCommand": "bash .devcontainer/setup.sh",
   "customizations": {

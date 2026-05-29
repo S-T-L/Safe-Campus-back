@@ -5,8 +5,6 @@ set -e
 sudo chown -R "$(id -u):$(id -g)" . 2>/dev/null || true
 
 COMPOSER_MEMORY_LIMIT=-1 composer install --no-interaction
-npm install
-chmod +x node_modules/.bin/*
 
 if [ -z "$(grep '^APP_KEY=.\+' .env 2>/dev/null)" ]; then
     php artisan key:generate
@@ -22,6 +20,12 @@ if [ ! -f config/sanctum.php ]; then
 fi
 
 php artisan vendor:publish --tag=filament-assets --force
+
+echo "En attente de PostgreSQL..."
+until pg_isready -h pgsql -p 5432 -U "${DB_USERNAME:-sail}" 2>/dev/null; do
+    sleep 2
+done
+
 php artisan migrate --force
 
 echo ""

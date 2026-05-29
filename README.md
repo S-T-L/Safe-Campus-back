@@ -117,12 +117,14 @@ ssh-add -l
 
 > Si `SSH_AUTH_SOCK` n'est pas défini au moment d'ouvrir le devcontainer, `git push` depuis le container échouera. Pusher depuis WSL reste toujours possible en secours.
 
-### Cloner le projet
+### Cloner les deux dépôts
+
+Les deux repos doivent être **dans le même dossier parent** — le `docker-compose.yml` du back référence le front via un chemin relatif `../Safe-Campus-front`.
 
 ```bash
-cd ~
-git clone git@github.com:<org>/SC_Back.git
-cd SC_Back
+mkdir -p ~/workspace/safe-campus && cd ~/workspace/safe-campus
+git clone git@github.com:<org>/Safe-Campus-back.git
+git clone git@github.com:<org>/Safe-Campus-front.git
 ```
 
 ---
@@ -172,7 +174,7 @@ code --install-extension ms-azuretools.vscode-docker
 ### Première utilisation
 
 ```bash
-cd SC_Back
+cd Safe-Campus-back
 cp .env.example .env
 ```
 
@@ -182,30 +184,32 @@ Renseigner les variables dans le `.env` :
 
 > Le `.env` doit être présent avant d'ouvrir le devcontainer — VS Code démarre les containers Docker automatiquement via `docker-compose.yml` au "Reopen in Container".
 
-> Valeurs requises pour la construction de l'image avec l'utilisateur `sail` correspondant à l'utilisateur hôte. Sans ces valeurs, le build échoue.
+Dans VS Code, ouvrir le dossier `Safe-Campus-back` puis : `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**
 
-Dans VS Code : `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**
+### Ce qui démarre automatiquement
 
-Le devcontainer installe automatiquement les dépendances Composer et npm, génère la clé d'application, exécute les migrations et démarre `artisan serve`.
+Ouvrir le devcontainer du **back** lance l'ensemble du stack :
 
-> Laravel ne répond pas immédiatement à l'ouverture du container — le serveur attend la fin de `composer install` avant de démarrer. Le port 8000 devient disponible automatiquement, aucune action manuelle requise.
+| Conteneur | Rôle | Démarrage |
+|---|---|---|
+| `SC_Back` | Laravel (PHP 8.4) | Automatique via `artisan serve` |
+| `SC_Front` | Nuxt 3 + Vite HMR | Automatique via `npm run dev` |
+| `SC_Postgres` | PostgreSQL 17 | Automatique |
+| `SC_Adminer` | Interface DB | Automatique |
 
-Vite n'est pas démarré automatiquement — le lancer manuellement une fois dans le container (voir section suivante).
+Le `setup.sh` s'exécute une fois à la création du container et installe les dépendances Composer, génère la clé d'application et exécute les migrations.
 
-### Démarrer Vite (HMR)
+### Ouvrir le front indépendamment
 
-Une fois dans le devcontainer :
-
-```bash
-npm run dev
-```
+Il est possible d'ouvrir `Safe-Campus-front` dans un devcontainer séparé. Il utilise le même `docker-compose.yml` que le back — si `SC_Front` tourne déjà, VS Code se réattache au conteneur existant sans en créer un nouveau.
 
 ### Ports exposés
 
 | Port | Service | URL |
 |---|---|---|
 | `8000` | Laravel | http://localhost:8000 |
-| `5173` | Vite HMR | http://localhost:5173 |
+| `3000` | Nuxt | http://localhost:3000 |
+| `24678` | Vite HMR (front) | — |
 | `5432` | PostgreSQL | — |
 | `8080` | Adminer | http://localhost:8080 |
 
@@ -233,9 +237,18 @@ echo '{"dns": ["8.8.8.8", "8.8.4.4"]}' | sudo tee /etc/docker/daemon.json
 sudo service docker restart
 ```
 
-### `vite: Permission denied` lors du build
+### `could not translate host name "pgsql"` lors du setup
 
-Les symlinks dans `node_modules/.bin/` perdent leurs permissions d'exécution sur volumes WSL. Le `setup.sh` corrige automatiquement ce problème via `chmod +x node_modules/.bin/*`.
+Symptôme : le container back ne trouve pas PostgreSQL. Cause probable : un container `SC_Postgres` stale d'une session précédente a perdu son attachement réseau.
+
+Solution : toujours repartir d'un état propre avant un rebuild :
+
+```bash
+cd Safe-Campus-back
+docker compose down
+```
+
+Puis relancer le devcontainer depuis VS Code.
 
 ### Rebuild du devcontainer
 
@@ -269,14 +282,14 @@ docker compose build --no-cache
 
 ```mermaid
 graph TD
-    root["SAE501/"]
+    root["safe-campus/"]
 
-    root --> scback["SC_Back/\nApplication principale\nLaravel + Vue + Inertia"]
-    root --> docs["docs/\nDocumentation"]
+    root --> scback["Safe-Campus-back/\nAPI + rendu serveur\nLaravel + Inertia + Vue"]
+    root --> scfront["Safe-Campus-front/\nInterface utilisateur\nNuxt 3 + Vue 3"]
 
     scback --> readme["README.md\nGuide d'installation"]
-    scback --> dc["docker-compose.yml\nOrchestration : sc_back, pgsql, adminer"]
-    scback --> devc[".devcontainer/\nConfig VS Code devcontainer"]
+    scback --> dc["docker-compose.yml\nOrchestration : back, front, pgsql, adminer"]
+    scback --> devcback[".devcontainer/\nConfig VS Code devcontainer"]
     scback --> app["app/\nCode PHP Laravel"]
     scback --> res["resources/"]
     scback --> docker["docker/8.4/\nDockerfile PHP 8.4"]
@@ -284,7 +297,8 @@ graph TD
     res --> js["js/\nVue 3 / Inertia\nPages, Components…"]
     res --> css["css/\nStyles globaux"]
 
-    docs --> back["back.md\nConventions backend"]
-    docs --> front["front.md\nConventions frontend"]
-    docs --> infra["infra.md\nInfrastructure"]
+    scfront --> devcfront[".devcontainer/\nConfig VS Code devcontainer"]
+    scfront --> pages["pages/\nPages Nuxt"]
+    scfront --> components["components/\nComposants Vue"]
+    scfront --> frontdocker["Dockerfile\nNode 22 Alpine"]
 ```
