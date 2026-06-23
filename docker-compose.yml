@@ -7,15 +7,12 @@ services:
                 WWWGROUP: '${WWWGROUP:-1000}'
         container_name: SC_Back
         ports:
-            - '${APP_PORT:-8000}:80'
+            - '${APP_PORT:-8000}:8000'
         volumes:
             - '.:/var/www/html'
             - '${SSH_AUTH_SOCK:-/dev/null}:/ssh-agent'
         environment:
             WWWUSER: '${WWWUSER:-1000}'
-            LARAVEL_SAIL: 1
-            APP_ENV: '${APP_ENV:-local}'
-            APP_DEBUG: '${APP_DEBUG:-true}'
             DB_HOST: pgsql
             DB_DATABASE: '${DB_DATABASE}'
             DB_USERNAME: '${DB_USERNAME}'
@@ -62,7 +59,6 @@ services:
         container_name: SC_Front
         ports:
             - '${FRONT_PORT:-3000}:3000'
-            - '24678:24678'
         volumes:
             - '../Safe-Campus-front:/app'
             - 'sc_front_node_modules:/app/node_modules'

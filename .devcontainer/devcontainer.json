@@ -4,7 +4,7 @@
   "service": "sc_back",
   "workspaceFolder": "/var/www/html",
   "remoteUser": "sail",
-  "forwardPorts": [8000, 5173, 5432, 8080, 3000, 24678],
+  "forwardPorts": [8000, 5432, 8080, 3000, 24678],
   "portsAttributes": {
     "8000": { "label": "Laravel", "onAutoForward": "notify" },
     "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
@@ -12,6 +12,7 @@
     "3000": { "label": "Nuxt", "onAutoForward": "openBrowser" },
     "24678": { "label": "Vite HMR", "onAutoForward": "silent" }
   },
+  "initializeCommand": "test -f .env || (cp .env.example .env && sed -i \"s/^WWWUSER=.*/WWWUSER=$(id -u)/\" .env && sed -i \"s/^WWWGROUP=.*/WWWGROUP=$(id -g)/\" .env)",
   "postCreateCommand": "bash .devcontainer/setup.sh",
   "customizations": {
     "vscode": {
@@ -53,7 +54,7 @@
         "rturock.gitstash"
       ],
       "settings": {
-        "php.executablePath": "/usr/bin/php",
+        "php.executablePath": "/usr/local/bin/php",
         "intelephense.environment.phpVersion": "8.4",
         "editor.formatOnSave": true,
         "[php]": {
