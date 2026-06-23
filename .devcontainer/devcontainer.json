@@ -44,9 +44,6 @@
         // Markdown
         "bierner.markdown-mermaid",
         "yzhang.markdown-all-in-one",
-        // IA
-        "github.copilot",
-        "github.copilot-chat",
         // Git
         "waderyan.gitblame",
         "mhutchie.git-graph",

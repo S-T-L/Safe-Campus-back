@@ -23,6 +23,13 @@ services:
                 condition: service_healthy
         networks:
             - sail
+        deploy:
+            resources:
+                limits:
+                    cpus: '2'
+                    memory: 2.5G
+                reservations:
+                    memory: 1.5G
 
     pgsql:
         image: 'postgres:17'
@@ -51,6 +58,13 @@ services:
             timeout: 5s
             retries: 3
             start_period: 10s
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 2G
+                reservations:
+                    memory: 1G
 
     sc_front:
         build:
@@ -67,6 +81,13 @@ services:
             NUXT_PUBLIC_API_BASE: 'http://sc_back:80'
         networks:
             - sail
+        deploy:
+            resources:
+                limits:
+                    cpus: '2'
+                    memory: 2G
+                reservations:
+                    memory: 1G
 
     adminer:
         image: 'adminer:latest'
@@ -78,6 +99,13 @@ services:
                 condition: service_healthy
         networks:
             - sail
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 256M
+                reservations:
+                    memory: 128M
 
 networks:
     sail:
