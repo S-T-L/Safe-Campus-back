@@ -201,7 +201,11 @@ Le `setup.sh` s'exécute une fois à la création du container et installe les d
 
 ### Ouvrir le front indépendamment
 
-Il est possible d'ouvrir `Safe-Campus-front` dans un devcontainer séparé. Il utilise le même `docker-compose.yml` que le back — si `SC_Front` tourne déjà, VS Code se réattache au conteneur existant sans en créer un nouveau.
+Ouvrir `Safe-Campus-front` dans une nouvelle fenêtre VS Code → `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**.
+
+Il utilise le même `docker-compose.yml` que le back — si `SC_Front` tourne déjà, VS Code se connecte au container existant sans en créer un nouveau.
+
+> Utiliser exclusivement **Reopen in Container**. "Attach to Running Container" ne fonctionne pas pour le container front.
 
 ### Ports exposés
 

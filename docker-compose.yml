@@ -71,6 +71,8 @@ services:
             context: ../Safe-Campus-front
             dockerfile: Dockerfile
         container_name: SC_Front
+        labels:
+            - "devcontainer.metadata=[{\"remoteUser\":\"nuxt\",\"workspaceFolder\":\"/app\"}]"
         ports:
             - '${FRONT_PORT:-3000}:3000'
         volumes:
