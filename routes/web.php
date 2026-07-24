@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Home', [
-        'appName' => config('app.name'),
+    return response()->json([
+        'app' => config('app.name'),
+        'status' => 'ok',
     ]);
 });

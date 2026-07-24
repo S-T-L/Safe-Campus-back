@@ -4,17 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Stack
 
-Laravel 12 · PHP 8.4 · Inertia v3 · Vue 3 · Vite 7 · PostgreSQL 17
+Laravel 12 · PHP 8.4 · Filament 3 · PostgreSQL 17
+
+> API/admin backend uniquement. L'UI applicative est [Safe-Campus-front](../Safe-Campus-front) (Nuxt 3 standalone, repo séparé). `routes/api.php` n'existe pas encore — à créer avant toute intégration réelle avec le front.
 
 ## Commands
 
 ```bash
-# Development (runs Laravel + Vite + queue + logs concurrently)
+# Development (runs Laravel + queue + logs concurrently)
 composer dev
 
 # Or individually
 php artisan serve
-npm run dev
 
 # Testing
 composer test          # clears config cache then runs PHPUnit
@@ -35,45 +36,36 @@ docker compose up -d
 
 ## Architecture
 
-This is a server-rendered SPA using **Inertia.js**: controllers return Vue pages via `Inertia::render()`, not JSON. No separate API needed for page data.
+API/admin backend : les contrôleurs renvoient du JSON, pas de vues. L'admin est géré par Filament (autonome, ne dépend d'aucun asset de ce repo).
 
 ```
 app/
 ├── Http/
 │   ├── Controllers/    One controller per resource (PascalCase), max 7 CRUD methods
-│   ├── Middleware/     HandleInertiaRequests shares props to all Vue pages
 │   └── Requests/       Form Requests for all validation (never inline in controllers)
 ├── Models/             Eloquent — always define $fillable; use $casts for enums/arrays
 ├── Services/           Business logic extracted from controllers
-└── Policies/           Authorization per resource
+├── Policies/           Authorization per resource
+└── Providers/Filament/ AdminPanelProvider — config du panel Filament
 
 routes/
-└── web.php             Inertia routes only (return Vue pages, not JSON)
-
-resources/js/
-├── Pages/              One .vue file per route (matched by Inertia::render name)
-├── Components/         Reusable components; generic ones prefixed App
-├── Layouts/
-└── Composables/        useXxx.js pattern
-
-resources/css/
-├── app.css             Entry point
-└── main.css            All styles — CSS variables + BEM components
+├── web.php             Actuellement minimal (health check `/`)
+└── api.php             N'existe pas encore — à créer pour servir le front Nuxt
 ```
 
 ## Backend Conventions
 
-**Controllers** return Inertia responses or redirects:
+**Controllers** return JSON:
 ```php
-return Inertia::render('Histoire/Index', ['histoires' => HistoireResource::collection($histoires)]);
-return redirect()->route('histoires.index');  // after POST/PATCH/DELETE
+return HistoireResource::collection($histoires);
+return response()->json(['message' => 'created'], 201);
 ```
 
 **Routes** use resource routing with auth middleware:
 ```php
-Route::middleware(['auth'])->group(function () {
-    Route::resource('histoires', HistoireController::class);
-    Route::resource('histoires.scenes', SceneController::class);  // nested
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::apiResource('histoires', HistoireController::class);
+    Route::apiResource('histoires.scenes', SceneController::class);  // nested
 });
 ```
 
@@ -81,22 +73,22 @@ Route::middleware(['auth'])->group(function () {
 - Use `DB::select()` with raw CTEs for recursive scene→choice→scene graph traversal
 - Cast JSONB columns as `'array'`; query with `whereJsonContains()`
 
-## Frontend Conventions
+## Git
 
-**No `<style>` blocks in `.vue` files** — all CSS goes in `resources/css/main.css`.
+- Workflow git flow : `feature/*` pour le dev, merge sur `dev` en `--no-ff`. `hotfix/*` créé depuis `main`.
+- Jamais de `Co-Authored-By` dans les messages de commit.
+- Format de message de commit obligatoire :
 
-**BEM naming** everywhere: `.bloc__element--modificateur`
+```
+type(scope): phrase résumé.
+- ajout 1
+- ajout 2
+```
 
-**CSS variables** for all shared values — see `resources/css/main.css` for the full list (colors, spacing, radius, shadows prefixed `--color-`, `--spacing-`, `--radius-`, `--shadow-`).
+Exemple :
 
-**Component structure order:** imports → props & emits → local state (`ref`/`reactive`) → computed → functions.
-
-**Data flow:** controllers pass data as Inertia props — no `fetch()`/`axios` for page data. Use axios only for POST/PATCH/DELETE actions.
-
-**Inertia navigation:**
-```vue
-import { Link, router } from '@inertiajs/vue3'
-// Declarative: <Link href="/histoires">
-// Programmatic: router.visit('/histoires')
-// Prop refresh: router.reload()
+```
+infra(docker): mise a jour de dépendances sur le conteneur.
+- ajout de git
+- installation des dépendances php laravel
 ```

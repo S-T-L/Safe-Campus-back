@@ -3,11 +3,10 @@
   "dockerComposeFile": "../docker-compose.yml",
   "service": "sc_back",
   "workspaceFolder": "/var/www/html",
-  "remoteUser": "sail",
-  "forwardPorts": [8000, 5173, 5432, 8080],
+  "remoteUser": "scback",
+  "forwardPorts": [8000, 5432, 8080],
   "portsAttributes": {
     "8000": { "label": "Laravel", "onAutoForward": "notify" },
-    "5173": { "label": "Vite HMR", "onAutoForward": "openBrowser" },
     "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
     "8080": { "label": "Adminer", "onAutoForward": "notify" }
   },
@@ -28,11 +27,6 @@
         "pgl.laravel-jump-controller",
         "alperenersoy.filament-snippets",
         "shufo.vscode-blade-formatter",
-        // Vue
-        "Vue.volar",
-        // Linting & formatage
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
         // HTML
         "formulahendry.auto-rename-tag",
         // Images
@@ -56,7 +50,7 @@
         // Git
         "waderyan.gitblame",
         "mhutchie.git-graph",
-        "vector-of-bool.gitflow",
+        "gitex-flow.gitex-flow-vscode",
         "rturock.gitstash"
       ],
       "settings": {
@@ -68,20 +62,6 @@
         },
         "[blade]": {
           "editor.defaultFormatter": "shufo.vscode-blade-formatter"
-        },
-        "[vue]": {
-          "editor.defaultFormatter": "Vue.volar"
-        },
-        "[javascript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[typescript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "vue.server.hybridMode": true,
-        "eslint.validate": ["javascript", "typescript", "vue"],
-        "editor.codeActionsOnSave": {
-          "source.fixAll.eslint": "explicit"
         },
         "launch": {
           "version": "0.2.0",

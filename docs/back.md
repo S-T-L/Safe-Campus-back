@@ -1,6 +1,9 @@
 # Guide développement back-end
 
-Stack : **Laravel 12** · **PHP 8.4** · **Inertia v3** · **PostgreSQL 17**
+Stack : **Laravel 12** · **PHP 8.4** · **Filament 3** · **PostgreSQL 17**
+
+> **État actuel (2026-07) :** Inertia a été retiré du projet (Filament est autonome, ne dépend d'aucun asset de ce repo). L'UI principale est [Safe-Campus-front](../../Safe-Campus-front) (Nuxt standalone, repo séparé).
+> **Aucune route API n'existe encore** (`routes/api.php` absent) — le front Nuxt n'a rien à consommer pour l'instant. La route `/` renvoie un simple JSON de statut. À créer avant toute intégration front↔back réelle.
 
 ---
 
@@ -10,11 +13,11 @@ Stack : **Laravel 12** · **PHP 8.4** · **Inertia v3** · **PostgreSQL 17**
 app/
 ├── Http/
 │   ├── Controllers/        Un contrôleur par ressource (PascalCase)
-│   ├── Middleware/         HandleInertiaRequests (Inertia), custom…
 │   └── Requests/           Form Requests pour la validation
 ├── Models/                 Un modèle par table (Eloquent)
 ├── Services/               Logique métier extraite des contrôleurs
-└── Policies/               Autorisation par ressource
+├── Policies/                Autorisation par ressource
+└── Providers/Filament/     AdminPanelProvider — config du panel Filament
 
 database/
 ├── migrations/             Une migration par changement de schéma
@@ -22,7 +25,8 @@ database/
 └── factories/              Factories pour les tests
 
 routes/
-├── web.php                 Routes Inertia (retournent des pages Vue)
+├── web.php                 Minimal — health check `/`
+├── api.php                 N'existe pas encore — à créer pour le front Nuxt
 └── console.php             Commandes Artisan custom
 ```
 
@@ -48,18 +52,14 @@ class HistoireController extends Controller
 }
 ```
 
-### Retour Inertia
+### Retour JSON
 
 ```php
-use Inertia\Inertia;
+// Collection via API Resource
+return HistoireResource::collection($histoires);
 
-// Retourner une page Vue avec des props
-return Inertia::render('Histoire/Index', [
-    'histoires' => HistoireResource::collection($histoires),
-]);
-
-// Redirect après action (POST/PATCH/DELETE)
-return redirect()->route('histoires.index');
+// Réponse simple avec code HTTP
+return response()->json(['message' => 'created'], 201);
 ```
 
 ### Modèles Eloquent
@@ -157,10 +157,10 @@ Scene::whereJsonContains('meta->tags', 'intro')->get();
 ## Routes
 
 ```php
-// web.php — routes Inertia uniquement
-Route::middleware(['auth'])->group(function () {
-    Route::resource('histoires', HistoireController::class);
-    Route::resource('histoires.scenes', SceneController::class);
+// api.php (à créer) — routes JSON pour le front Nuxt
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::apiResource('histoires', HistoireController::class);
+    Route::apiResource('histoires.scenes', SceneController::class);
 });
 
 // Nommage automatique par resource :
@@ -182,6 +182,5 @@ php artisan make:request StoreSceneRequest
 
 # Sail (depuis l'hôte)
 ./vendor/bin/sail up -d
-./vendor/bin/sail npm run dev
 ./vendor/bin/sail artisan migrate
 ```

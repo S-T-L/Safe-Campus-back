@@ -1,12 +1,10 @@
 #!/bin/bash
 set -e
 
-# Ensure sail owns the workspace (UID mismatch between host and container)
+# Ensure the container user owns the workspace (UID mismatch between host and container)
 sudo chown -R "$(id -u):$(id -g)" . 2>/dev/null || true
 
 COMPOSER_MEMORY_LIMIT=-1 composer install --no-interaction
-npm install
-chmod +x node_modules/.bin/*
 
 if [ -z "$(grep '^APP_KEY=.\+' .env 2>/dev/null)" ]; then
     php artisan key:generate
