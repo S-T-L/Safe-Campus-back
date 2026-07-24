@@ -16,7 +16,7 @@ Variables `.env` **obligatoirement** à modifier avant toute mise en ligne :
 | `APP_DEBUG` | `true` | `false` — expose stacktraces et données sensibles si laissé à `true` |
 | `APP_URL` | `http://localhost:8000` | URL publique avec HTTPS |
 | `DB_DATABASE` | `sc_back` | Nom de base spécifique |
-| `DB_USERNAME` | `sail` | Utilisateur dédié sans droits superuser |
+| `DB_USERNAME` | `scback` | Utilisateur dédié sans droits superuser |
 | `DB_PASSWORD` | `password` | Mot de passe fort (min. 20 caractères, aléatoire) |
 | `LOG_LEVEL` | `debug` | `error` |
 
@@ -182,32 +182,25 @@ Renseigner les variables dans le `.env` :
 
 > Le `.env` doit être présent avant d'ouvrir le devcontainer — VS Code démarre les containers Docker automatiquement via `docker-compose.yml` au "Reopen in Container".
 
-> Valeurs requises pour la construction de l'image avec l'utilisateur `sail` correspondant à l'utilisateur hôte. Sans ces valeurs, le build échoue.
+> Valeurs requises pour la construction de l'image avec l'utilisateur `scback` correspondant à l'utilisateur hôte. Sans ces valeurs, le build échoue.
 
 Dans VS Code : `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**
 
-Le devcontainer installe automatiquement les dépendances Composer et npm, génère la clé d'application, exécute les migrations et démarre `artisan serve`.
+Le devcontainer installe automatiquement les dépendances Composer, génère la clé d'application, exécute les migrations et démarre `artisan serve`.
 
 > Laravel ne répond pas immédiatement à l'ouverture du container — le serveur attend la fin de `composer install` avant de démarrer. Le port 8000 devient disponible automatiquement, aucune action manuelle requise.
-
-Vite n'est pas démarré automatiquement — le lancer manuellement une fois dans le container (voir section suivante).
-
-### Démarrer Vite (HMR)
-
-Une fois dans le devcontainer :
-
-```bash
-npm run dev
-```
 
 ### Ports exposés
 
 | Port | Service | URL |
 |---|---|---|
 | `8000` | Laravel | http://localhost:8000 |
-| `5173` | Vite HMR | http://localhost:5173 |
 | `5432` | PostgreSQL | — |
 | `8080` | Adminer | http://localhost:8080 |
+| `3000` | Nuxt front (`sc_front`, même stack) | http://localhost:3000 |
+| `24678` | Vite HMR du front Nuxt | — |
+
+> `sc_front` fait partie du même `docker-compose.yml` — ouvrir le devcontainer `SC_Back` démarre les deux stacks d'un coup. Pour travailler dedans : nouvelle fenêtre VS Code sur [Safe-Campus-front](../Safe-Campus-front) → **Reopen in Container** (se connecte au container déjà lancé).
 
 ### Connexion Adminer
 
@@ -232,10 +225,6 @@ sudo mkdir -p /etc/docker
 echo '{"dns": ["8.8.8.8", "8.8.4.4"]}' | sudo tee /etc/docker/daemon.json
 sudo service docker restart
 ```
-
-### `vite: Permission denied` lors du build
-
-Les symlinks dans `node_modules/.bin/` perdent leurs permissions d'exécution sur volumes WSL. Le `setup.sh` corrige automatiquement ce problème via `chmod +x node_modules/.bin/*`.
 
 ### Rebuild du devcontainer
 
@@ -269,22 +258,22 @@ docker compose build --no-cache
 
 ```mermaid
 graph TD
-    root["SAE501/"]
+    root["safe-campus/"]
 
-    root --> scback["SC_Back/\nApplication principale\nLaravel + Vue + Inertia"]
-    root --> docs["docs/\nDocumentation"]
+    root --> scback["Safe-Campus-back/\nAPI/admin Laravel\n+ Filament (autonome)"]
+    root --> scfront["Safe-Campus-front/\nUI principale\nNuxt 3 standalone"]
 
     scback --> readme["README.md\nGuide d'installation"]
-    scback --> dc["docker-compose.yml\nOrchestration : sc_back, pgsql, adminer"]
+    scback --> dc["docker-compose.yml\nOrchestration : sc_back, sc_front, pgsql, adminer"]
     scback --> devc[".devcontainer/\nConfig VS Code devcontainer"]
-    scback --> app["app/\nCode PHP Laravel"]
-    scback --> res["resources/"]
+    scback --> app["app/\nCode PHP Laravel + Filament"]
     scback --> docker["docker/8.4/\nDockerfile PHP 8.4"]
-
-    res --> js["js/\nVue 3 / Inertia\nPages, Components…"]
-    res --> css["css/\nStyles globaux"]
+    scback --> docs["docs/\nDocumentation"]
 
     docs --> back["back.md\nConventions backend"]
-    docs --> front["front.md\nConventions frontend"]
+    docs --> front["front.md\nPointeur vers Safe-Campus-front"]
     docs --> infra["infra.md\nInfrastructure"]
+
+    scfront --> fdockerfile["Dockerfile\nNode 22"]
+    scfront --> fdevc[".devcontainer/\nConfig VS Code devcontainer"]
 ```
