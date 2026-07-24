@@ -17,7 +17,7 @@
 | SC_Adminer | 0.00% | 21 MiB | 0.3% |
 | **Total** | | **~1.42 GiB** | **~18.3%** |
 
-> Le 1.37 GiB de SC_Back est quasi-entièrement dû au **VS Code Server** installé dans le container (`/home/sail/.vscode-server` = 1.6 G disque). Ce coût disparaît en production.
+> Le 1.37 GiB de SC_Back est quasi-entièrement dû au **VS Code Server** installé dans le container (`/home/scback/.vscode-server` = 1.6 G disque). Ce coût disparaît en production.
 
 ---
 
@@ -48,7 +48,7 @@ En production (PHP-FPM seul, sans Node/Xdebug/Claude Code) : **image estimée à
 
 | Volume | Contenu | Taille actuelle |
 |---|---|---|
-| `sc_back_sail-pgsql` | Données PostgreSQL (dev) | **69 MB** |
+| `sc_back_scback-pgsql` | Données PostgreSQL (dev) | **69 MB** |
 
 > 69 MB = base de développement quasi-vide. La taille en production dépend entièrement du volume applicatif.
 
