@@ -1,26 +1,10 @@
 #!/usr/bin/env bash
+set -e
 
-if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "scback" ]; then
-    echo "You should set SUPERVISOR_PHP_USER to either 'scback' or 'root'."
-    exit 1
+if [ -n "$WWWUSER" ]; then
+    usermod -u "$WWWUSER" scback
 fi
 
-if [ ! -z "$WWWUSER" ]; then
-    usermod -u $WWWUSER scback
-fi
+gosu scback git config --global --add safe.directory /var/www/html 2>/dev/null || true
 
-if [ ! -d /.composer ]; then
-    mkdir /.composer
-fi
-
-chmod -R ugo+rw /.composer
-
-if [ $# -gt 0 ]; then
-    if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
-        exec "$@"
-    else
-        exec gosu $WWWUSER "$@"
-    fi
-else
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
-fi
+exec gosu scback "$@"

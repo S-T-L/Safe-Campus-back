@@ -20,6 +20,12 @@ if [ ! -f config/sanctum.php ]; then
 fi
 
 php artisan vendor:publish --tag=filament-assets --force
+
+echo "En attente de PostgreSQL..."
+until pg_isready -h pgsql -p 5432 -U "${DB_USERNAME:-sail}" 2>/dev/null; do
+    sleep 2
+done
+
 php artisan migrate --force
 
 echo ""

@@ -117,12 +117,14 @@ ssh-add -l
 
 > Si `SSH_AUTH_SOCK` n'est pas défini au moment d'ouvrir le devcontainer, `git push` depuis le container échouera. Pusher depuis WSL reste toujours possible en secours.
 
-### Cloner le projet
+### Cloner les deux dépôts
+
+Les deux repos doivent être **dans le même dossier parent** — le `docker-compose.yml` du back référence le front via un chemin relatif `../Safe-Campus-front`.
 
 ```bash
-cd ~
-git clone git@github.com:<org>/SC_Back.git
-cd SC_Back
+mkdir -p ~/workspace/safe-campus && cd ~/workspace/safe-campus
+git clone git@github.com:<org>/Safe-Campus-back.git
+git clone git@github.com:<org>/Safe-Campus-front.git
 ```
 
 ---
@@ -172,7 +174,7 @@ code --install-extension ms-azuretools.vscode-docker
 ### Première utilisation
 
 ```bash
-cd SC_Back
+cd Safe-Campus-back
 cp .env.example .env
 ```
 
@@ -184,11 +186,28 @@ Renseigner les variables dans le `.env` :
 
 > Valeurs requises pour la construction de l'image avec l'utilisateur `scback` correspondant à l'utilisateur hôte. Sans ces valeurs, le build échoue.
 
-Dans VS Code : `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**
+Dans VS Code, ouvrir le dossier `Safe-Campus-back` puis : `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**
 
-Le devcontainer installe automatiquement les dépendances Composer, génère la clé d'application, exécute les migrations et démarre `artisan serve`.
+### Ce qui démarre automatiquement
 
-> Laravel ne répond pas immédiatement à l'ouverture du container — le serveur attend la fin de `composer install` avant de démarrer. Le port 8000 devient disponible automatiquement, aucune action manuelle requise.
+Ouvrir le devcontainer du **back** lance l'ensemble du stack :
+
+| Conteneur | Rôle | Démarrage |
+|---|---|---|
+| `SC_Back` | Laravel (PHP 8.4) | Automatique via `artisan serve` |
+| `SC_Front` | Nuxt 3 + Vite HMR | Automatique via `npm run dev` |
+| `SC_Postgres` | PostgreSQL 17 | Automatique |
+| `SC_Adminer` | Interface DB | Automatique |
+
+Le `setup.sh` s'exécute une fois à la création du container et installe les dépendances Composer, génère la clé d'application et exécute les migrations.
+
+### Ouvrir le front indépendamment
+
+Ouvrir `Safe-Campus-front` dans une nouvelle fenêtre VS Code → `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**.
+
+Il utilise le même `docker-compose.yml` que le back — si `SC_Front` tourne déjà, VS Code se connecte au container existant sans en créer un nouveau.
+
+> Utiliser exclusivement **Reopen in Container**. "Attach to Running Container" ne fonctionne pas pour le container front.
 
 ### Ports exposés
 
@@ -225,6 +244,19 @@ sudo mkdir -p /etc/docker
 echo '{"dns": ["8.8.8.8", "8.8.4.4"]}' | sudo tee /etc/docker/daemon.json
 sudo service docker restart
 ```
+
+### `could not translate host name "pgsql"` lors du setup
+
+Symptôme : le container back ne trouve pas PostgreSQL. Cause probable : un container `SC_Postgres` stale d'une session précédente a perdu son attachement réseau.
+
+Solution : toujours repartir d'un état propre avant un rebuild :
+
+```bash
+cd Safe-Campus-back
+docker compose down
+```
+
+Puis relancer le devcontainer depuis VS Code.
 
 ### Rebuild du devcontainer
 
@@ -273,7 +305,10 @@ graph TD
     docs --> back["back.md\nConventions backend"]
     docs --> front["front.md\nPointeur vers Safe-Campus-front"]
     docs --> infra["infra.md\nInfrastructure"]
+    docs --> schema["schema_bd.md\nSchéma de base de données"]
 
-    scfront --> fdockerfile["Dockerfile\nNode 22"]
+    scfront --> fdockerfile["Dockerfile\nNode 22 Alpine"]
     scfront --> fdevc[".devcontainer/\nConfig VS Code devcontainer"]
+    scfront --> pages["pages/\nPages Nuxt"]
+    scfront --> components["components/\nComposants Vue"]
 ```

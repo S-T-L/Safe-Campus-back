@@ -4,9 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Stack
 
-Laravel 12 · PHP 8.4 · Filament 3 · PostgreSQL 17
+Laravel 13 · PHP 8.4 · Filament 3 · PostgreSQL 17
 
 > API/admin backend uniquement. L'UI applicative est [Safe-Campus-front](../Safe-Campus-front) (Nuxt 3 standalone, repo séparé). `routes/api.php` n'existe pas encore — à créer avant toute intégration réelle avec le front.
+
+👉 Voir [README](README.md) pour l'installation, le devcontainer et les limites de ressources.
 
 ## Commands
 
@@ -40,6 +42,7 @@ API/admin backend : les contrôleurs renvoient du JSON, pas de vues. L'admin est
 
 ```
 app/
+├── Enums/              Backed enums castés sur les modèles
 ├── Http/
 │   ├── Controllers/    One controller per resource (PascalCase), max 7 CRUD methods
 │   └── Requests/       Form Requests for all validation (never inline in controllers)
@@ -52,6 +55,8 @@ routes/
 ├── web.php             Actuellement minimal (health check `/`)
 └── api.php             N'existe pas encore — à créer pour servir le front Nuxt
 ```
+
+Le schéma de base de données est décrit dans [docs/schema_bd.md](docs/schema_bd.md).
 
 ## Backend Conventions
 
@@ -72,6 +77,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 **PostgreSQL-specific patterns:**
 - Use `DB::select()` with raw CTEs for recursive scene→choice→scene graph traversal
 - Cast JSONB columns as `'array'`; query with `whereJsonContains()`
+- PostgreSQL n'indexe pas la colonne référençante d'une FK : déclarer `->index()` explicitement
 
 ## Git
 
