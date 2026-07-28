@@ -1,36 +1,6 @@
 # Installation — SAE501
 
-> **Environnement de développement local** — voir la section [Déploiement en production](#déploiement-en-production) avant toute mise en ligne.
-
-Prérequis à installer **sur la machine hôte** avant d'ouvrir le projet dans un devcontainer VS Code.
-
----
-
-## Déploiement en production
-
-Variables `.env` **obligatoirement** à modifier avant toute mise en ligne :
-
-| Variable | Valeur dev (à changer) | Recommandation prod |
-|---|---|---|
-| `APP_ENV` | `local` | `production` |
-| `APP_DEBUG` | `true` | `false` — expose stacktraces et données sensibles si laissé à `true` |
-| `APP_URL` | `http://localhost:8000` | URL publique avec HTTPS |
-| `DB_DATABASE` | `sc_back` | Nom de base spécifique |
-| `DB_USERNAME` | `scback` | Utilisateur dédié sans droits superuser |
-| `DB_PASSWORD` | `password` | Mot de passe fort (min. 20 caractères, aléatoire) |
-| `LOG_LEVEL` | `debug` | `error` |
-
-Commandes à exécuter après déploiement :
-
-```bash
-php artisan key:generate
-php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
-
-> `php artisan migrate --force` bypass la confirmation interactive — ne jamais exécuter sur une base de production sans sauvegarde préalable.
+Environnement de développement local. Le code s'édite sur l'hôte (WSL), toutes les commandes PHP/Composer/Artisan s'exécutent dans le container.
 
 ---
 
@@ -65,6 +35,8 @@ git config --global user.name "Prénom Nom"
 git config --global user.email "ton@email.com"
 ```
 
+Git s'utilise depuis WSL, à l'extérieur des containers.
+
 ### Configurer SSH pour GitHub
 
 Générer une clé SSH (laisser la passphrase vide en appuyant sur Entrée) :
@@ -88,34 +60,6 @@ ssh -T git@github.com
 ```
 
 > La réponse attendue est `Hi <username>! You've successfully authenticated`.
-
-### Activer le SSH agent au démarrage de WSL
-
-Le devcontainer forward le socket SSH de l'hôte pour permettre `git push` depuis l'intérieur du container. L'agent doit être actif **avant** d'ouvrir le devcontainer.
-
-Ajouter à la fin de `~/.bashrc` (ou `~/.zshrc`) sur WSL :
-
-```bash
-# SSH agent — démarrage automatique
-if [ -z "$SSH_AUTH_SOCK" ]; then
-    eval $(ssh-agent -s) > /dev/null
-    ssh-add ~/.ssh/id_ed25519 2>/dev/null
-fi
-```
-
-Recharger le shell :
-
-```bash
-source ~/.bashrc
-```
-
-Vérifier que la clé est bien chargée :
-
-```bash
-ssh-add -l
-```
-
-> Si `SSH_AUTH_SOCK` n'est pas défini au moment d'ouvrir le devcontainer, `git push` depuis le container échouera. Pusher depuis WSL reste toujours possible en secours.
 
 ### Cloner les deux dépôts
 
@@ -149,65 +93,126 @@ Sans cette étape, toute commande `docker` depuis WSL retourne `Cannot connect t
 
 ---
 
-## 3. Extensions VS Code hôte (obligatoires)
+## 3. Extensions VS Code
 
-Extensions permettant à VS Code de se connecter aux conteneurs et environnements distants.
-Installation impossible via `devcontainer.json` — procéder manuellement :
+Le projet s'ouvre dans WSL. Extensions nécessaires côté hôte Windows :
 
 ```bash
-code --install-extension ms-vscode-remote.remote-containers
-code --install-extension ms-vscode-remote.remote-ssh
 code --install-extension ms-vscode-remote.remote-wsl
-code --install-extension ms-vscode.remote-explorer
 code --install-extension ms-azuretools.vscode-docker
 ```
 
-> **Pourquoi ces extensions sont hôte-only ?**
-> Remote SSH et Remote WSL servent de pont entre VS Code (Windows) et l'environnement
-> cible (serveur SSH ou noyau Linux WSL). Le devcontainer s'exécute à l'intérieur de cet
-> environnement — ces extensions doivent être présentes sur la machine hôte, pas dans le conteneur.
+> Remote WSL sert de pont entre VS Code (Windows) et le noyau Linux WSL où vit le code.
+> Ouvrir le dossier via `code .` depuis un terminal WSL, ou `Ctrl+Shift+P` → **WSL: Open Folder in WSL**.
+
+Extensions PHP/Laravel, installées côté WSL :
+
+```bash
+code --install-extension bmewburn.vscode-intelephense-client
+code --install-extension xdebug.php-debug
+code --install-extension onecentlin.laravel5-snippets
+code --install-extension amiralizadeh9480.laravel-extra-intellisense
+code --install-extension alperenersoy.filament-snippets
+code --install-extension cweijan.vscode-postgresql-client2
+code --install-extension mikestead.dotenv
+```
+
+> Intelephense analyse le code depuis l'hôte : il lit `vendor/`, écrit dans le bind mount par `composer install`.
 
 ---
 
 ## 4. Démarrer l'environnement de développement
 
-### Première utilisation
-
 ```bash
 cd Safe-Campus-back
 cp .env.example .env
+sed -i "s/^WWWUSER=.*/WWWUSER=$(id -u)/" .env
+sed -i "s/^WWWGROUP=.*/WWWGROUP=$(id -g)/" .env
+
+docker compose up -d
+
+docker compose exec sc_back php artisan key:generate
+docker compose exec sc_back php artisan migrate
 ```
 
-Renseigner les variables dans le `.env` :
-- `WWWUSER` / `WWWGROUP` — UID/GID de la machine hôte (`id -u` et `id -g`)
-- `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` — credentials PostgreSQL
+Le `.env` est lu par Docker avant le build : `WWWUSER`/`WWWGROUP` créent l'utilisateur `scback` aligné sur l'utilisateur hôte, `DB_*` alimente PostgreSQL.
 
-> Le `.env` doit être présent avant d'ouvrir le devcontainer — VS Code démarre les containers Docker automatiquement via `docker-compose.yml` au "Reopen in Container".
+`SC_Back` exécute `composer install` à chaque démarrage, puis `artisan serve`. `SC_Front` exécute `npm install`, puis `npm run dev`. `key:generate` et `migrate` sont à la main : l'état de la base est piloté par le dev.
 
-> Valeurs requises pour la construction de l'image avec l'utilisateur `scback` correspondant à l'utilisateur hôte. Sans ces valeurs, le build échoue.
+| Conteneur | Rôle |
+|---|---|
+| `SC_Back` | Laravel (PHP 8.4) |
+| `SC_Front` | Nuxt 3 + Vite HMR |
+| `SC_Postgres` | PostgreSQL 17 |
+| `SC_Adminer` | Interface DB |
 
-Dans VS Code, ouvrir le dossier `Safe-Campus-back` puis : `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**
+Ouvrir le code : `code .` depuis WSL, à la racine du repo.
 
-### Ce qui démarre automatiquement
+### Exécuter les commandes dans le container
 
-Ouvrir le devcontainer du **back** lance l'ensemble du stack :
+Le shell hôte n'a ni PHP ni Composer. Toutes les commandes passent par `docker compose exec` :
 
-| Conteneur | Rôle | Démarrage |
-|---|---|---|
-| `SC_Back` | Laravel (PHP 8.4) | Automatique via `artisan serve` |
-| `SC_Front` | Nuxt 3 + Vite HMR | Automatique via `npm run dev` |
-| `SC_Postgres` | PostgreSQL 17 | Automatique |
-| `SC_Adminer` | Interface DB | Automatique |
+```bash
+docker compose exec sc_back php artisan migrate
+```
 
-Le `setup.sh` s'exécute une fois à la création du container et installe les dépendances Composer, génère la clé d'application et exécute les migrations.
+Ou un shell interactif dans le container :
 
-### Ouvrir le front indépendamment
+```bash
+docker compose exec sc_back bash
+```
 
-Ouvrir `Safe-Campus-front` dans une nouvelle fenêtre VS Code → `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**.
+Alias pratique à ajouter dans `~/.bashrc` sur WSL :
 
-Il utilise le même `docker-compose.yml` que le back — si `SC_Front` tourne déjà, VS Code se connecte au container existant sans en créer un nouveau.
+```bash
+alias sc='docker compose exec sc_back'
+# usage : sc php artisan migrate
+```
 
-> Utiliser exclusivement **Reopen in Container**. "Attach to Running Container" ne fonctionne pas pour le container front.
+> ⚠️ Ne pas relancer `php artisan serve` ni `composer dev` via `exec` : le container sert **déjà** sur le port 8000, le bind échouera.
+
+### Logs
+
+```bash
+docker compose logs -f sc_back                                  # sortie du container
+docker compose exec sc_back tail -f storage/logs/laravel.log    # log applicatif Laravel
+```
+
+### Rebuild de l'image
+
+`docker/8.4/Dockerfile`, `php.ini` et `start-container` sont intégrés à l'image au build. Les modifier impose un rebuild :
+
+```bash
+docker compose build sc_back
+docker compose up -d
+```
+
+Le reste du code vit dans le bind mount et ne nécessite aucun rebuild.
+
+### Le front
+
+`sc_front` fait partie du même `docker-compose.yml` : `docker compose up -d` démarre les deux. Le repo [Safe-Campus-front](../Safe-Campus-front) a son propre devcontainer — pour travailler dedans, l'ouvrir dans une nouvelle fenêtre VS Code → `Ctrl+Shift+P` → **Dev Containers: Reopen in Container** (se connecte au container déjà lancé).
+
+### Débogage Xdebug
+
+Xdebug est actif dans l'image (`docker/8.4/php.ini`, port 9003, `start_with_request = yes`). `/.vscode` étant gitignoré, créer la configuration localement dans `.vscode/launch.json` :
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Listen for Xdebug",
+      "type": "php",
+      "request": "launch",
+      "port": 9003,
+      "pathMappings": {
+        "/var/www/html": "${workspaceFolder}"
+      }
+    }
+  ]
+}
+```
 
 ### Ports exposés
 
@@ -218,8 +223,9 @@ Il utilise le même `docker-compose.yml` que le back — si `SC_Front` tourne d�
 | `8080` | Adminer | http://localhost:8080 |
 | `3000` | Nuxt front (`sc_front`, même stack) | http://localhost:3000 |
 | `24678` | Vite HMR du front Nuxt | — |
+| `9003` | Xdebug (container → hôte) | — |
 
-> `sc_front` fait partie du même `docker-compose.yml` — ouvrir le devcontainer `SC_Back` démarre les deux stacks d'un coup. Pour travailler dedans : nouvelle fenêtre VS Code sur [Safe-Campus-front](../Safe-Campus-front) → **Reopen in Container** (se connecte au container déjà lancé).
+Les ports sont publiés par Docker : sous WSL 2 ils sont joignables depuis Windows.
 
 ### Connexion Adminer
 
@@ -233,60 +239,7 @@ Il utilise le même `docker-compose.yml` que le back — si `SC_Front` tourne d�
 
 ---
 
-## 5. Dépannage
-
-### `Could not resolve host: deb.nodesource.com` lors du build Docker
-
-Problème DNS dans le réseau Docker (fréquent sous WSL2). Créer le fichier de config Docker avec un DNS public :
-
-```bash
-sudo mkdir -p /etc/docker
-echo '{"dns": ["8.8.8.8", "8.8.4.4"]}' | sudo tee /etc/docker/daemon.json
-sudo service docker restart
-```
-
-### `could not translate host name "pgsql"` lors du setup
-
-Symptôme : le container back ne trouve pas PostgreSQL. Cause probable : un container `SC_Postgres` stale d'une session précédente a perdu son attachement réseau.
-
-Solution : toujours repartir d'un état propre avant un rebuild :
-
-```bash
-cd Safe-Campus-back
-docker compose down
-```
-
-Puis relancer le devcontainer depuis VS Code.
-
-### Rebuild du devcontainer
-
-Certains fichiers sont copiés dans l'image Docker au moment du build et ne sont **pas** mis à jour par le volume monté. Tout changement sur ces fichiers nécessite un rebuild :
-
-| Fichier modifié | Action requise |
-|---|---|
-| `docker/8.4/Dockerfile` | Rebuild sans cache |
-| `supervisord.conf` | Rebuild (avec ou sans cache) |
-| `docker-compose.yml` | Rebuild |
-| `.devcontainer/devcontainer.json` | Rebuild |
-| `start-container`, `php.ini` | Rebuild |
-
-**Rebuild avec cache** (rapide — réutilise les couches Docker non modifiées) :
-
-`Ctrl+Shift+P` → **Dev Containers: Rebuild Container**
-
-**Rebuild sans cache** (complet — re-télécharge tout, à utiliser si le cache pose problème) :
-
-`Ctrl+Shift+P` → **Dev Containers: Rebuild Without Cache and Reopen in Container**
-
-Ou depuis le terminal WSL avant d'ouvrir VS Code :
-
-```bash
-docker compose build --no-cache
-```
-
----
-
-## 6. Structure du projet
+## 5. Structure du projet
 
 ```mermaid
 graph TD
@@ -297,17 +250,17 @@ graph TD
 
     scback --> readme["README.md\nGuide d'installation"]
     scback --> dc["docker-compose.yml\nOrchestration : sc_back, sc_front, pgsql, adminer"]
-    scback --> devc[".devcontainer/\nConfig VS Code devcontainer"]
     scback --> app["app/\nCode PHP Laravel + Filament"]
-    scback --> docker["docker/8.4/\nDockerfile PHP 8.4"]
+    scback --> docker["docker/8.4/\nDockerfile PHP 8.4\nstart-container (entrypoint)"]
     scback --> docs["docs/\nDocumentation"]
 
     docs --> back["back.md\nConventions backend"]
+    docs --> deploy["deploiement.md\nMise en production"]
     docs --> front["front.md\nPointeur vers Safe-Campus-front"]
     docs --> infra["infra.md\nInfrastructure"]
     docs --> schema["schema_bd.md\nSchéma de base de données"]
 
-    scfront --> fdockerfile["Dockerfile\nNode 22 Alpine"]
+    scfront --> fdockerfile["Dockerfile\nNode 22"]
     scfront --> fdevc[".devcontainer/\nConfig VS Code devcontainer"]
     scfront --> pages["pages/\nPages Nuxt"]
     scfront --> components["components/\nComposants Vue"]

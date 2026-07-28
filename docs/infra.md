@@ -2,22 +2,23 @@
 
 ## Environnement de mesure
 
-- Machine hôte : WSL2 (Linux 6.6, 7.756 GiB RAM allouée à Docker)
-- Stack : SC_Back (Laravel 12) + SC_Postgres (PostgreSQL 17) + SC_Adminer
-- État : devcontainer VS Code actif, base de données de développement (vide)
+- Machine hôte : Docker Desktop sur WSL 2 (noyau 6.6, 8 vCPU, 7.76 GiB RAM allouées à Docker)
+- Stack : SC_Back (Laravel 13, PHP 8.4) + SC_Front (Nuxt 3, Node 22) + SC_Postgres (PostgreSQL 17) + SC_Adminer
+- Base de données de développement quasi-vide
 
 ---
 
-## Consommation runtime (devcontainer actif)
+## Consommation runtime
 
-| Container | CPU | RAM | RAM % hôte |
+| Container | CPU | RAM | Limite compose |
 |---|---|---|---|
-| SC_Back (Laravel + VS Code Server) | 3.98% | 1.37 GiB | 17.7% |
-| SC_Postgres | 0.01% | 24 MiB | 0.3% |
-| SC_Adminer | 0.00% | 21 MiB | 0.3% |
-| **Total** | | **~1.42 GiB** | **~18.3%** |
+| SC_Back | 0.04% | 93 MiB | 2.5 GiB |
+| SC_Front | 0.09% | 275 MiB | 2 GiB |
+| SC_Postgres | 0.00% | 24 MiB | 2 GiB |
+| SC_Adminer | 0.00% | 20 MiB | 256 MiB |
+| **Total** | | **~412 MiB** | **~6.75 GiB** |
 
-> Le 1.37 GiB de SC_Back est quasi-entièrement dû au **VS Code Server** installé dans le container (`/home/scback/.vscode-server` = 1.6 G disque). Ce coût disparaît en production.
+Mesure au repos, aucune requête en cours. `SC_Front` domine : le serveur de dev Vite garde le graphe de modules en mémoire.
 
 ---
 
@@ -25,32 +26,30 @@
 
 | Image | Tag | Taille |
 |---|---|---|
-| sc_back (app dev) | latest | 933 MB |
-| postgres | 17 | 453 MB |
-| adminer | latest | 119 MB |
-| **Total stack dev** | | **~1.5 GB** |
+| safe-campus-back-sc_back | latest | 1.01 GB |
+| safe-campus-back-sc_front | latest | 1.64 GB |
+| postgres | 17 | 645 MB |
+| adminer | latest | 170 MB |
 
-### Composition de l'image app (933 MB)
+`sc_front` est bâtie sur `node:22` (1.64 GB) : elle n'ajoute quasiment rien à sa base.
 
-| Couche | Poids estimé |
+### Composition de l'image `sc_back` (1.01 GB)
+
+| Couche | Poids |
 |---|---|
-| Ubuntu 24.04 | ~78 MB |
-| PHP 8.4 + extensions + Composer | ~250 MB |
-| Node 24 + npm + Claude Code | ~450 MB |
-| PostgreSQL client 17 | ~50 MB |
-| Xdebug + outils dev | ~50 MB |
-
-En production (PHP-FPM seul, sans Node/Xdebug/Claude Code) : **image estimée à 300–400 MB**.
+| Base `php:8.4-cli` | ~825 MB |
+| Extensions PHP + client PostgreSQL + libs système + Xdebug | 182 MB |
+| Composer | 3.65 MB |
+| `php.ini`, `start-container`, utilisateur `scback` | < 1 MB |
 
 ---
 
 ## Stockage volumes
 
-| Volume | Contenu | Taille actuelle |
+| Volume | Contenu | Taille |
 |---|---|---|
-| `sc_back_scback-pgsql` | Données PostgreSQL (dev) | **69 MB** |
-
-> 69 MB = base de développement quasi-vide. La taille en production dépend entièrement du volume applicatif.
+| `safe-campus-back_scback-pgsql` | Données PostgreSQL | 73 MB |
+| `safe-campus-back_sc_front_node_modules` | Dépendances Node du front | 244 MB |
 
 ---
 
@@ -67,10 +66,10 @@ En production (PHP-FPM seul, sans Node/Xdebug/Claude Code) : **image estimée à
 
 ### Hypothèses
 
-- Laravel en production : **128–256 MB RAM** (sans VS Code Server, sans Node)
+- Laravel en production : **128–256 MB RAM** (PHP-FPM, sans Xdebug)
 - PostgreSQL : **256 MB–1 GB RAM** selon charge et taille des données
-- Pas de Redis dans le stack actuel — à prévoir si queues volumineuses
-- Vite est build-time uniquement : aucun coût runtime côté serveur
+- Nuxt en production : build statique ou SSR Node — le serveur de dev Vite et ses 275 MB n'existent pas
+- Pas de Redis dans le stack — à prévoir si queues volumineuses
 
 ### Exemples de sizing cloud (indicatif)
 
@@ -82,24 +81,17 @@ En production (PHP-FPM seul, sans Node/Xdebug/Claude Code) : **image estimée à
 
 ---
 
-## Dette disque locale (à nettoyer)
+## Nettoyage disque local
 
-Constat sur la machine de développement :
-
-| Type | Total | Récupérable |
-|---|---|---|
-| Images | 22.7 GB | 15.1 GB (66%) |
-| Containers | 2.4 GB | 793 MB |
-| Volumes | 9.6 GB | 7.2 GB (75%) |
-| Build cache | 26.6 GB | 20.7 GB |
-
-**5 images dupliquées** générées par VS Code lors des rebuilds du devcontainer (`vsc-sc_back-…`, `vsc-test_sc_back-…`, etc.) représentent ~4.7 GB récupérables sans risque :
+Les rebuilds successifs laissent des images et un cache de build orphelins.
 
 ```bash
-docker image prune -f
+docker system df                  # état actuel
+docker image prune -f             # images sans tag
+docker builder prune -f           # cache de build
 ```
 
-Pour un nettoyage global (tous projets, prudence) :
+Nettoyage global, tous projets confondus — détruit les volumes non utilisés :
 
 ```bash
 docker system prune --volumes

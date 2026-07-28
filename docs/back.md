@@ -169,18 +169,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 ---
 
-## Commandes utiles (dans le devcontainer)
+## Commandes utiles (dans le container)
+
+Depuis l'hôte, à la racine du repo. Le shell hôte n'a ni PHP ni Composer.
 
 ```bash
-# Migrations
-php artisan migrate
-php artisan migrate:fresh --seed
-
-# Modèles / contrôleurs
-php artisan make:model Scene -mfsc    # model + migration + factory + seeder + controller
-php artisan make:request StoreSceneRequest
-
-# Sail (depuis l'hôte)
-./vendor/bin/sail up -d
-./vendor/bin/sail artisan migrate
+docker compose exec sc_back php artisan migrate
 ```
+
+> Alias conseillé : `alias sc='docker compose exec sc_back'` → `sc php artisan migrate`.

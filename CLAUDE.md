@@ -8,33 +8,27 @@ Laravel 13 · PHP 8.4 · Filament 3 · PostgreSQL 17
 
 > API/admin backend uniquement. L'UI applicative est [Safe-Campus-front](../Safe-Campus-front) (Nuxt 3 standalone, repo séparé). `routes/api.php` n'existe pas encore — à créer avant toute intégration réelle avec le front.
 
-👉 Voir [README](README.md) pour l'installation, le devcontainer et les limites de ressources.
+👉 Voir [README](README.md) pour l'installation et le stack Docker, [docs/deploiement.md](docs/deploiement.md) pour la mise en production.
+
+> Le code s'édite sur l'hôte, les commandes s'exécutent dans le container via `docker compose exec sc_back <cmd>`.
 
 ## Commands
 
 ```bash
-# Development (runs Laravel + queue + logs concurrently)
-composer dev
-
-# Or individually
-php artisan serve
-
-# Testing
-composer test          # clears config cache then runs PHPUnit
-php artisan test --filter=TestName   # single test
-
-# Database
-php artisan migrate
-php artisan migrate:fresh --seed
-
-# Generators
-php artisan make:model Scene -mfsc   # model + migration + factory + seeder + controller
-php artisan make:request StoreSceneRequest
-
-# Docker (alternative)
 docker compose up -d
-# Then open VS Code Dev Container
+docker compose logs -f sc_back
+docker compose down
 ```
+
+L'entrypoint de `SC_Back` exécute `composer install` puis `artisan serve`. `key:generate` et `migrate` sont à lancer manuellement.
+
+Toutes les commandes PHP/Composer/Artisan s'exécutent **dans le container**, préfixées par `docker compose exec sc_back` :
+
+```bash
+docker compose exec sc_back php artisan migrate
+```
+
+> `SC_Back` sert déjà sur le port 8000. Ne pas relancer `composer dev` ni `php artisan serve` via `exec` — le bind échouera.
 
 ## Architecture
 
