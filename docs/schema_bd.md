@@ -118,6 +118,7 @@ erDiagram
         int     SousTheme_id       PK
         string  Ref
         string  Libelle
+        text    Resume
         text    Article
         int     FK_Theme           FK
         boolean Permet_signalement
@@ -190,12 +191,26 @@ Nœud de taxonomie **et** page éditoriale. La fiche alcool, c'est la ligne `alc
 |---|---|
 | `Ref` | Clé stable — seeder, URL. Jamais affichée, jamais modifiée. |
 | `Libelle` | Titre affiché de la fiche et libellé dans le menu. |
-| `Article` | Contenu éditorial de la fiche. |
+| `Resume` | Teaser affiché sur la carte d'accueil. Distinct d'`Article` : payload différent, endpoint différent — voir [Consommation API](#consommation-api). |
+| `Article` | Contenu éditorial complet de la fiche, affiché sur la page détail du sous-thème. |
 | `FK_Theme` | Thème parent. |
 | `Permet_signalement` | Expose ou non le formulaire de signalement — voir plus bas. |
 
 Une seule table, donc une seule ressource Filament et un seul jeu de droits. Ni fiche orpheline, ni
 sous-thème sans fiche : les deux cas sont impossibles par construction.
+
+### Consommation API
+
+Deux endpoints publics, deux payloads distincts — pas de sur-fetch :
+
+- `GET /api/themes` — `Theme` avec ses `SousTheme` imbriqués en version légère (`ref`, `libelle`,
+  `resume` — pas d'`article`, pas de `contacts`). Alimente les sections et les cartes de la page
+  d'accueil.
+- `GET /api/sous-themes/{ref}` — un seul sous-thème : `ref`, `libelle`, `article`, `contacts`
+  (triés `Ordre`, filtrés `Actif`) et leurs `Telephone`. Alimente la page détail. Pas de `resume` :
+  inutilisé à cet endroit.
+
+`Article` n'est donc jamais renvoyé par `/api/themes`, `Resume` jamais par `/api/sous-themes/{ref}`.
 
 ### Contact
 
@@ -290,6 +305,7 @@ erDiagram
         int     SousTheme_id       PK
         string  Ref
         string  Libelle
+        text    Resume
         text    Article
         int     FK_Theme           FK
         boolean Permet_signalement
@@ -544,7 +560,7 @@ des deux modèles.
 | Entité MCD | Modèle | Table | Note |
 |---|---|---|---|
 | `Theme` | `Theme` | `themes` | |
-| `SousTheme` | `SousTheme` | `sous_themes` | porte aussi `article` (contenu de la fiche) |
+| `SousTheme` | `SousTheme` | `sous_themes` | porte aussi `resume` (teaser accueil) et `article` (contenu de la fiche) |
 | `Contact` | `Contact` | `contacts` | |
 | `Telephone` | `Telephone` | `telephones` | |
 | `Media` | `Media` | `medias` | **`protected $table = 'medias'`** — Laravel infère `media` |
