@@ -70,6 +70,22 @@ class ContactTest extends TestCase
         $this->assertSame(TelephoneType::Urgence, $telephone->fresh()->type);
     }
 
+    public function test_le_numero_vert_est_faux_par_defaut(): void
+    {
+        $contact = Contact::factory()->create();
+        $telephone = Telephone::factory()->create(['contact_id' => $contact->id]);
+
+        $this->assertFalse($telephone->fresh()->numero_vert);
+    }
+
+    public function test_le_numero_vert_peut_etre_marque_gratuit_depuis_un_fixe(): void
+    {
+        $contact = Contact::factory()->create();
+        $telephone = Telephone::factory()->numeroVert()->create(['contact_id' => $contact->id]);
+
+        $this->assertTrue($telephone->fresh()->numero_vert);
+    }
+
     public function test_le_type_de_telephone_rejette_une_valeur_hors_liste(): void
     {
         $contact = Contact::factory()->create();

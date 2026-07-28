@@ -139,11 +139,12 @@ erDiagram
     }
 
     Telephone {
-        int    Tel_id     PK
-        string Numero
-        enum   Type
-        string Libelle
-        int    FK_Contact FK
+        int     Tel_id      PK
+        string  Numero
+        boolean Numero_vert
+        enum    Type
+        string  Libelle
+        int     FK_Contact  FK
     }
 
     Media {
@@ -232,6 +233,10 @@ n'arbitre pas la géographie.
 
 `Libelle` distingue plusieurs numéros d'une même structure — le commissariat de Nouméa a une ligne
 psychologue et une ligne intervenant social. Sans ce champ, il faut dupliquer le contact.
+
+`Numero_vert` signale un numéro gratuit depuis un poste fixe (0800...). Booléen `false` par défaut,
+non nullable : contrairement à `Gratuit`/`Anonyme` sur `Contact`, c'est une propriété du numéro
+lui-même, toujours connue au moment de la saisie — pas de statut « inconnu » à représenter.
 
 ### Liaison_SousTheme_Contact
 

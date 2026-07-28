@@ -19,6 +19,7 @@ class TelephoneFactory extends Factory
     {
         return [
             'numero' => fake()->numerify('## ## ##'),
+            'numero_vert' => false,
             'type' => fake()->randomElement(TelephoneType::cases()),
             'libelle' => null,
             'contact_id' => Contact::factory(),
@@ -33,6 +34,16 @@ class TelephoneFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'type' => TelephoneType::Urgence,
             'numero' => fake()->numerify('##'),
+        ]);
+    }
+
+    /**
+     * Numero gratuit depuis un poste fixe (0800...).
+     */
+    public function numeroVert(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'numero_vert' => true,
         ]);
     }
 
