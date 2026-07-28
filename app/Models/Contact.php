@@ -35,11 +35,17 @@ class Contact extends Model
         ];
     }
 
+    /**
+     * @return HasMany<Telephone, $this>
+     */
     public function telephones(): HasMany
     {
         return $this->hasMany(Telephone::class);
     }
 
+    /**
+     * @return BelongsToMany<SousTheme, $this>
+     */
     public function sousThemes(): BelongsToMany
     {
         return $this->belongsToMany(SousTheme::class)->withPivot('ordre');
