@@ -30,6 +30,9 @@ class Media extends Model
         ];
     }
 
+    /**
+     * @return BelongsToMany<SousTheme, $this>
+     */
     public function sousThemes(): BelongsToMany
     {
         return $this->belongsToMany(SousTheme::class);
