@@ -68,10 +68,10 @@ services:
         build:
             context: ../Safe-Campus-front
             dockerfile: Dockerfile
+            args:
+                WWWUSER: '${WWWUSER:-1000}'
+                WWWGROUP: '${WWWGROUP:-1000}'
         container_name: SC_Front
-        # Consommé par le devcontainer de Safe-Campus-front
-        labels:
-            - "devcontainer.metadata=[{\"remoteUser\":\"nuxt\",\"workspaceFolder\":\"/app\"}]"
         ports:
             - '${FRONT_PORT:-3000}:3000'
         volumes:

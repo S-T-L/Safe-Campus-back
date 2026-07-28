@@ -191,7 +191,7 @@ Le reste du code vit dans le bind mount et ne nécessite aucun rebuild.
 
 ### Le front
 
-`sc_front` fait partie du même `docker-compose.yml` : `docker compose up -d` démarre les deux. Le repo [Safe-Campus-front](../Safe-Campus-front) a son propre devcontainer — pour travailler dedans, l'ouvrir dans une nouvelle fenêtre VS Code → `Ctrl+Shift+P` → **Dev Containers: Reopen in Container** (se connecte au container déjà lancé).
+`sc_front` fait partie du même `docker-compose.yml` : `docker compose up -d` démarre les deux. Pour ne lancer que le front : `docker compose up -d sc_front`. Le code du front s'édite dans [Safe-Campus-front](../Safe-Campus-front), ses commandes passent par `docker compose exec sc_front`.
 
 ### Débogage Xdebug
 
@@ -261,7 +261,7 @@ graph TD
     docs --> schema["schema_bd.md\nSchéma de base de données"]
 
     scfront --> fdockerfile["Dockerfile\nNode 22"]
-    scfront --> fdevc[".devcontainer/\nConfig VS Code devcontainer"]
+    scfront --> fstart["start-container\nnpm install puis npm run dev"]
     scfront --> pages["pages/\nPages Nuxt"]
     scfront --> components["components/\nComposants Vue"]
 ```
