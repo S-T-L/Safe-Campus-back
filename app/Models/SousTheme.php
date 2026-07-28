@@ -19,6 +19,7 @@ class SousTheme extends Model
     protected $fillable = [
         'ref',
         'libelle',
+        'resume',
         'article',
         'theme_id',
         'permet_signalement',

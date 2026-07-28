@@ -22,6 +22,7 @@ class SousThemeFactory extends Factory
         return [
             'ref' => Str::slug($libelle, '_'),
             'libelle' => Str::ucfirst($libelle),
+            'resume' => fake()->paragraph(),
             'article' => fake()->paragraphs(3, true),
             'theme_id' => Theme::factory(),
             'permet_signalement' => false,

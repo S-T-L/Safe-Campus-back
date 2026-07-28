@@ -13,22 +13,28 @@ class AnnuaireApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_get_themes_liste_les_sous_themes_sans_article_ni_contacts(): void
+    public function test_get_themes_liste_les_sous_themes_avec_resume_mais_sans_article_ni_contacts(): void
     {
         $theme = Theme::factory()->create(['ref' => 'addictions', 'libelle' => 'Addictions']);
-        SousTheme::factory()->create(['theme_id' => $theme->id, 'ref' => 'alcool', 'libelle' => 'Alcool']);
+        SousTheme::factory()->create([
+            'theme_id' => $theme->id,
+            'ref' => 'alcool',
+            'libelle' => 'Alcool',
+            'resume' => 'Teaser alcool.',
+        ]);
 
         $response = $this->getJson('/api/themes');
 
         $response->assertOk();
         $response->assertJsonPath('data.0.ref', 'addictions');
         $response->assertJsonPath('data.0.sous_themes.0.ref', 'alcool');
+        $response->assertJsonPath('data.0.sous_themes.0.resume', 'Teaser alcool.');
         $response->assertJsonMissingPath('data.0.sous_themes.0.article');
     }
 
-    public function test_get_sous_theme_par_ref_renvoie_l_article_et_les_contacts_actifs(): void
+    public function test_get_sous_theme_par_ref_renvoie_l_article_et_les_contacts_actifs_sans_resume(): void
     {
-        $sousTheme = SousTheme::factory()->create(['ref' => 'alcool', 'article' => 'Contenu.']);
+        $sousTheme = SousTheme::factory()->create(['ref' => 'alcool', 'article' => 'Contenu.', 'resume' => 'Teaser.']);
         $contactActif = Contact::factory()->create(['nom' => 'CSAPA']);
         $contactInactif = Contact::factory()->inactif()->create(['nom' => 'Ferme']);
         $sousTheme->contacts()->attach($contactActif->id, ['ordre' => 0]);
@@ -39,6 +45,7 @@ class AnnuaireApiTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('data.ref', 'alcool');
         $response->assertJsonPath('data.article', 'Contenu.');
+        $response->assertJsonMissingPath('data.resume');
         $response->assertJsonCount(1, 'data.contacts');
         $response->assertJsonPath('data.contacts.0.nom', 'CSAPA');
     }
