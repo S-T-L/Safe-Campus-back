@@ -13,6 +13,7 @@ class Telephone extends Model
 
     protected $fillable = [
         'numero',
+        'numero_vert',
         'type',
         'libelle',
         'contact_id',
@@ -22,6 +23,7 @@ class Telephone extends Model
     {
         return [
             'type' => TelephoneType::class,
+            'numero_vert' => 'boolean',
         ];
     }
 
