@@ -76,6 +76,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 ## Git
 
 - Workflow git flow : `feature/*` pour le dev, merge sur `dev` en `--no-ff`. `hotfix/*` créé depuis `main`.
+- Toujours demander confirmation à l'utilisateur avant de merger une `feature/*` sur `dev`. Ne jamais merger de sa propre initiative.
 - Une fois une `feature/*` mergée dans `dev` et poussée sur `origin/dev`, supprimer la branche locale (`git branch -d`). Ne pas laisser de branches `feature/*` locales après clôture.
 - Jamais de `Co-Authored-By` dans les messages de commit.
 - Format de message de commit obligatoire :
