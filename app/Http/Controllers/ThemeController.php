@@ -13,7 +13,7 @@ class ThemeController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $themes = Theme::with('sousThemes')->get();
+        $themes = Theme::with(['sousThemes', 'medias'])->get();
 
         return ThemeResource::collection($themes);
     }

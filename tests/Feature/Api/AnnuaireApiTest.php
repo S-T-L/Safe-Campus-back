@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Api;
 
+use App\Enums\MediaType;
 use App\Models\Contact;
+use App\Models\Media;
 use App\Models\SousTheme;
 use App\Models\Telephone;
 use App\Models\Theme;
@@ -30,6 +32,20 @@ class AnnuaireApiTest extends TestCase
         $response->assertJsonPath('data.0.sous_themes.0.ref', 'alcool');
         $response->assertJsonPath('data.0.sous_themes.0.resume', 'Teaser alcool.');
         $response->assertJsonMissingPath('data.0.sous_themes.0.article');
+    }
+
+    public function test_get_themes_embarque_le_resume_et_les_medias_du_theme(): void
+    {
+        $theme = Theme::factory()->create(['ref' => 'addictions', 'resume' => 'Texte de presentation.']);
+        $video = Media::factory()->type(MediaType::Video)->create(['libelle' => 'Intro addictions']);
+        $theme->medias()->attach($video->id);
+
+        $response = $this->getJson('/api/themes');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.0.resume', 'Texte de presentation.');
+        $response->assertJsonPath('data.0.medias.0.libelle', 'Intro addictions');
+        $response->assertJsonPath('data.0.medias.0.type', 'video');
     }
 
     public function test_get_sous_theme_par_ref_renvoie_l_article_et_les_contacts_actifs_sans_resume(): void

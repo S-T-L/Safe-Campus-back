@@ -112,6 +112,7 @@ erDiagram
         int    Theme_id PK
         string Ref
         string Libelle
+        text   Resume
     }
 
     SousTheme {
@@ -174,6 +175,11 @@ erDiagram
         int FK_Media     FK
     }
 
+    Liaison_Theme_Media {
+        int FK_Theme FK
+        int FK_Media FK
+    }
+
     Theme     ||--o{ SousTheme                 : "contient"
     SousTheme ||--o{ Signalement               : "categorise (si Permet_signalement)"
     SousTheme ||--o{ Liaison_SousTheme_Contact : ""
@@ -181,7 +187,18 @@ erDiagram
     Contact   ||--o{ Telephone                 : "possede"
     SousTheme ||--o{ Liaison_SousTheme_Media   : ""
     Media     ||--o{ Liaison_SousTheme_Media   : ""
+    Theme     ||--o{ Liaison_Theme_Media       : ""
+    Media     ||--o{ Liaison_Theme_Media       : ""
 ```
+
+### Theme
+
+`Resume` est un texte court optionnel, présentation du thème sur l'accueil. Associé à `Liaison_Theme_Media`
+(N-N, comme `Liaison_SousTheme_Media`) : 0 à N `Media` par thème (texte, image, vidéo, logo — non
+exclusifs entre eux). Le front pioche ce qu'il affiche dans cette collection en filtrant par `Type`.
+
+Pas de table dédiée pour cette présentation : `Theme` reste l'entité, `Resume` et la relation `Media`
+sont des attributs qui l'enrichissent, pas une entité séparée — même logique que `SousTheme.Resume`.
 
 ### SousTheme
 
@@ -203,9 +220,9 @@ sous-thème sans fiche : les deux cas sont impossibles par construction.
 
 Deux endpoints publics, deux payloads distincts — pas de sur-fetch :
 
-- `GET /api/themes` — `Theme` avec ses `SousTheme` imbriqués en version légère (`ref`, `libelle`,
-  `resume` — pas d'`article`, pas de `contacts`). Alimente les sections et les cartes de la page
-  d'accueil.
+- `GET /api/themes` — `Theme` (`ref`, `libelle`, `resume`, `medias`) avec ses `SousTheme` imbriqués
+  en version légère (`ref`, `libelle`, `resume` — pas d'`article`, pas de `contacts`). Alimente les
+  sections et les cartes de la page d'accueil.
 - `GET /api/sous-themes/{ref}` — un seul sous-thème : `ref`, `libelle`, `article`, `contacts`
   (triés `Ordre`, filtrés `Actif`) et leurs `Telephone`. Alimente la page détail. Pas de `resume` :
   inutilisé à cet endroit.
@@ -546,6 +563,7 @@ explicitement accessible depuis la NC, et `arretonslesviolences.gouv.fr`, portai
 | `users` | `email` | Standard Laravel |
 | `contact_sous_theme` | (`contact_id`, `sous_theme_id`) | PK composite |
 | `media_sous_theme` | (`media_id`, `sous_theme_id`) | PK composite |
+| `media_theme` | (`media_id`, `theme_id`) | PK composite |
 | `histoire_sous_theme` | (`histoire_id`, `sous_theme_id`) | PK composite |
 | `histoire_scene` | (`histoire_id`, `scene_id`) | PK composite |
 | `histoire_scene` | `histoire_id` où `est_initiale` | Index partiel — une scène initiale par histoire |
@@ -559,7 +577,7 @@ des deux modèles.
 
 | Entité MCD | Modèle | Table | Note |
 |---|---|---|---|
-| `Theme` | `Theme` | `themes` | |
+| `Theme` | `Theme` | `themes` | porte aussi `resume` (teaser accueil, optionnel) |
 | `SousTheme` | `SousTheme` | `sous_themes` | porte aussi `resume` (teaser accueil) et `article` (contenu de la fiche) |
 | `Contact` | `Contact` | `contacts` | |
 | `Telephone` | `Telephone` | `telephones` | |
@@ -570,6 +588,7 @@ des deux modèles.
 | `Choix` | `Choix` | `choix` | **`protected $table = 'choix'`** — Laravel infère `choixes` |
 | `Liaison_SousTheme_Contact` | — | `contact_sous_theme` | pivot + colonne `ordre` |
 | `Liaison_SousTheme_Media` | — | `media_sous_theme` | pivot |
+| `Liaison_Theme_Media` | — | `media_theme` | pivot |
 | `Liaison_Histoire_SousTheme` | — | `histoire_sous_theme` | pivot |
 | `Liaison_Histoire_Scene` | — | `histoire_scene` | pivot + colonne `est_initiale` |
 
