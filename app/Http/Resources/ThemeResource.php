@@ -12,6 +12,8 @@ class ThemeResource extends JsonResource
         return [
             'ref' => $this->ref,
             'libelle' => $this->libelle,
+            'resume' => $this->resume,
+            'medias' => MediaResource::collection($this->whenLoaded('medias')),
             'sous_themes' => SousThemeSummaryResource::collection($this->whenLoaded('sousThemes')),
         ];
     }

@@ -5,6 +5,7 @@ namespace Tests\Feature\Database;
 use App\Enums\MediaType;
 use App\Models\Media;
 use App\Models\SousTheme;
+use App\Models\Theme;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -60,6 +61,31 @@ class MediaTest extends TestCase
         $sousTheme->delete();
 
         $this->assertDatabaseCount('media_sous_theme', 0);
+        $this->assertDatabaseCount('medias', 1);
+    }
+
+    public function test_un_theme_peut_porter_plusieurs_medias_non_exclusifs(): void
+    {
+        // Texte (Theme.resume), logo et video coexistent, aucun n'exclut les autres.
+        $theme = Theme::factory()->create(['resume' => 'Petit texte de presentation.']);
+        $logo = Media::factory()->type(MediaType::Image)->create();
+        $video = Media::factory()->type(MediaType::Video)->create();
+        $theme->medias()->attach([$logo->id, $video->id]);
+
+        $this->assertNotNull($theme->resume);
+        $this->assertCount(2, $theme->medias);
+        $this->assertCount(1, $logo->themes);
+    }
+
+    public function test_supprimer_un_theme_detache_ses_medias_sans_les_supprimer(): void
+    {
+        $media = Media::factory()->create();
+        $theme = Theme::factory()->create();
+        $theme->medias()->attach($media->id);
+
+        $theme->delete();
+
+        $this->assertDatabaseCount('media_theme', 0);
         $this->assertDatabaseCount('medias', 1);
     }
 }
