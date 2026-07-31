@@ -31,7 +31,7 @@ class ContactResource extends Resource
                     ->maxLength(255)
                     ->helperText('Clé de dédoublonnage du seeder. Non modifiable après création.')
                     ->disabled(fn (?Contact $record) => $record !== null)
-                    ->dehydrated(),
+                    ->dehydrated(fn (?Contact $record) => $record === null),
                 Forms\Components\TextInput::make('nom')
                     ->required()
                     ->maxLength(255),

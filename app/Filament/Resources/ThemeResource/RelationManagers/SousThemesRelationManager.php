@@ -24,7 +24,7 @@ class SousThemesRelationManager extends RelationManager
                     ->maxLength(255)
                     ->helperText('Clé stable, jamais affichée. Non modifiable après création.')
                     ->disabled(fn (?SousTheme $record) => $record !== null)
-                    ->dehydrated(),
+                    ->dehydrated(fn (?SousTheme $record) => $record === null),
                 Forms\Components\TextInput::make('libelle')
                     ->required()
                     ->maxLength(255),
