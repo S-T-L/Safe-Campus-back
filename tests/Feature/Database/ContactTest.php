@@ -104,6 +104,11 @@ class ContactTest extends TestCase
     public function test_supprimer_un_contact_efface_ses_donnees_liees_rgpd(): void
     {
         // Droit a l'effacement : nom, prenom et mail d'un referent nomme.
+        // Baseline plutot que 0/1 en dur : la taxonomie de reference
+        // (migration 2026_07_31_120000_seed_taxonomie_themes_sous_themes)
+        // peuple deja sous_themes independamment de ce test.
+        $baselineSousThemes = SousTheme::count();
+
         $contact = Contact::factory()->referentNomme()->create();
         $sousTheme = SousTheme::factory()->create();
         $contact->sousThemes()->attach($sousTheme->id, ['ordre' => 0]);
@@ -115,7 +120,7 @@ class ContactTest extends TestCase
         $this->assertDatabaseCount('telephones', 0);
         $this->assertDatabaseCount('contact_sous_theme', 0);
         // Le sous-theme, lui, survit.
-        $this->assertDatabaseCount('sous_themes', 1);
+        $this->assertSame($baselineSousThemes + 1, SousTheme::count());
     }
 
     public function test_le_scope_actif_ecarte_les_structures_fermees(): void

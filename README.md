@@ -237,6 +237,22 @@ Les ports sont publiés par Docker : sous WSL 2 ils sont joignables depuis Windo
 - **Mot de passe** : valeur de `DB_PASSWORD` dans `.env`
 - **Base de données** : valeur de `DB_DATABASE` dans `.env`
 
+### Connexion au panel admin (Filament)
+
+Panel disponible sur **http://localhost:8000/admin**.
+
+Un compte `webmaster` de démonstration est provisionné automatiquement au `migrate` (hors
+production), identifiants bidon définis dans `.env.example` (`WEBMASTER_DEMO_EMAIL` /
+`WEBMASTER_DEMO_PASSWORD`) :
+
+| Champ | Valeur par défaut |
+|---|---|
+| Email | `webmaster@safe-campus.nc` |
+| Mot de passe | `password` |
+
+Pour changer ces valeurs, surcharger `WEBMASTER_DEMO_EMAIL`/`WEBMASTER_DEMO_PASSWORD` dans `.env`
+avant `migrate` — le compte n'est (re)créé que s'il n'existe pas déjà.
+
 ---
 
 ## 5. Structure du projet
