@@ -21,5 +21,11 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Theme/SousTheme : taxonomie de reference, seedee par la migration
+        // 2026_07_31_120000_seed_taxonomie_themes_sous_themes — pas ici.
+        $this->call([
+            ContactSeeder::class,
+        ]);
     }
 }
