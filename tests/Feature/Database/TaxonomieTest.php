@@ -15,17 +15,17 @@ class TaxonomieTest extends TestCase
 
     public function test_un_theme_contient_plusieurs_sous_themes(): void
     {
-        $theme = Theme::factory()->create(['ref' => 'addictions']);
+        $theme = Theme::factory()->create(['ref' => 'addictions_test']);
         SousTheme::factory()->count(4)->create(['theme_id' => $theme->id]);
 
         $this->assertCount(4, $theme->sousThemes);
-        $this->assertSame('addictions', $theme->sousThemes->first()->theme->ref);
+        $this->assertSame('addictions_test', $theme->sousThemes->first()->theme->ref);
     }
 
     public function test_le_sous_theme_porte_la_fiche(): void
     {
         $sousTheme = SousTheme::factory()->create([
-            'ref' => 'alcool',
+            'ref' => 'alcool_test',
             'libelle' => 'Alcool',
             'article' => 'Contenu editorial de la fiche alcool.',
         ]);
@@ -47,11 +47,11 @@ class TaxonomieTest extends TestCase
 
     public function test_la_ref_d_un_theme_est_unique(): void
     {
-        Theme::factory()->create(['ref' => 'vss']);
+        Theme::factory()->create(['ref' => 'vss_test']);
 
         $this->expectException(UniqueConstraintViolationException::class);
 
-        Theme::factory()->create(['ref' => 'vss']);
+        Theme::factory()->create(['ref' => 'vss_test']);
     }
 
     public function test_la_ref_d_un_sous_theme_est_unique(): void
@@ -75,11 +75,16 @@ class TaxonomieTest extends TestCase
 
     public function test_supprimer_un_theme_supprime_ses_sous_themes(): void
     {
+        // Compare a la baseline plutot qu'a 0 : la taxonomie de reference
+        // (migration 2026_07_31_120000_seed_taxonomie_themes_sous_themes)
+        // peuple deja sous_themes independamment de ce test.
+        $baseline = SousTheme::count();
+
         $theme = Theme::factory()->create();
         SousTheme::factory()->count(3)->create(['theme_id' => $theme->id]);
 
         $theme->delete();
 
-        $this->assertDatabaseCount('sous_themes', 0);
+        $this->assertSame($baseline, SousTheme::count());
     }
 }
