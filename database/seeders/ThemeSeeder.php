@@ -13,12 +13,12 @@ use Illuminate\Database\Seeder;
 class ThemeSeeder extends Seeder
 {
     /**
-     * @var list<array{ref: string, libelle: string, libelle_court: string}>
+     * @var list<array{ref: string, libelle: string, libelle_court: string, ordre: int}>
      */
     private const THEMES = [
-        ['ref' => 'sante_mentale', 'libelle' => 'Santé mentale', 'libelle_court' => 'Santé mentale'],
-        ['ref' => 'addictions', 'libelle' => 'Conduites addictives', 'libelle_court' => 'Addictions'],
-        ['ref' => 'vss', 'libelle' => 'Violences', 'libelle_court' => 'Violences'],
+        ['ref' => 'addictions', 'libelle' => 'Conduites addictives', 'libelle_court' => 'Addictions', 'ordre' => 0],
+        ['ref' => 'sante_mentale', 'libelle' => 'Santé mentale', 'libelle_court' => 'Santé mentale', 'ordre' => 1],
+        ['ref' => 'vss', 'libelle' => 'Violences', 'libelle_court' => 'Violences', 'ordre' => 2],
     ];
 
     public function run(): void
