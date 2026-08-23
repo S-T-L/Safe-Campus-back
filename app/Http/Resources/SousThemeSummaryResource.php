@@ -17,7 +17,6 @@ class SousThemeSummaryResource extends JsonResource
             'ref' => $this->ref,
             'libelle' => $this->libelle,
             'resume' => $this->resume,
-            'ordre' => $this->ordre,
         ];
     }
 }

@@ -44,7 +44,7 @@ table `page` n'existe. Voir [Reste à trancher](#5-reste-à-trancher).
 | `navLabel` | ADDICTIONS | — | **Champ mort** : zéro usage dans le front. Supprimé. |
 | `color` | `#4260e6` | — | **Front.** Charte graphique, non éditable depuis le back. |
 | `colorVar` | `--color-addiction` | — | **Champ mort** : zéro usage. Supprimé. |
-| *(position dans le tableau)* | 1, 2, 3 | — | **Manquant** → `themes.ordre` |
+| *(position dans le tableau)* | 1, 2, 3 | `themes.ordre` | Trie en base (`->ordonne()`), **pas exposé en JSON** — le tableau arrive déjà trié. |
 | *(préfixe du sous-titre)* | COMPORTEMENT ADDICTIF | — | **Front.** Gabarit d'affichage. |
 
 `libelle` et `libelle_court` sont bien deux textes distincts, affichés à des endroits différents :
@@ -53,13 +53,15 @@ table `page` n'existe. Voir [Reste à trancher](#5-reste-à-trancher).
 
 Le préfixe de sous-titre ne se déduit d'aucun libellé (`vss` → « VIOLENCE » au singulier, là où
 `libelle_court` est au pluriel) mais il n'apparaît que dans le drawer et la recherche, jamais sur
-les cartes. Une constante de 3 lignes au front, à côté du mapping des illustrations.
+les cartes. Une constante de 3 lignes au front, à côté du mapping des illustrations. L'ordinal
+(« N°1 », « N°2 ») se calcule sur la position dans `themes[].sous_themes[]` — déjà trié par
+`sous_themes.ordre` côté API — et non sur une valeur `ordre` renvoyée par l'API.
 
 ### 2.2 Sous-thème — 9 lignes
 
 | Champ front | Exemple | Colonne | État |
 |---|---|---|---|
-| `id` | 1, 2, 3 | — | **Manquant** → `sous_themes.ordre`. Sans lui, `hasMany` rend un ordre arbitraire en PostgreSQL et la numérotation des cartes saute. |
+| `id` | 1, 2, 3 | `sous_themes.ordre` | Trie en base. Sans lui, `hasMany` rend un ordre arbitraire en PostgreSQL. **Pas exposé en JSON**, voir 2.1. |
 | `slug` | `alcool` | `sous_themes.ref` | Existe. Deux écarts : `drogues`/`drogue`, `burn-out`/`burn_out`. Le front construit ses URL avec le `ref` de l'API. |
 | `ninja` | `/assets/ninja_alcool.png` | — | **Front.** Asset statique, ~1 Mo pièce. |
 | `title` | Alcool | `sous_themes.libelle` | Existe |

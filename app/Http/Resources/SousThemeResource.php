@@ -8,6 +8,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * Sert /contact/{theme}/{slug} et /ressources/{theme}/{slug} : meme hero,
  * un seul endpoint.
+ *
+ * `theme` n'embarque que ref/libelle_court (le tag affiche) : le reste de
+ * ThemeResource (resume, medias, sous_themes) n'a pas sa place sur la fiche.
  */
 class SousThemeResource extends JsonResource
 {
@@ -18,8 +21,10 @@ class SousThemeResource extends JsonResource
             'libelle' => $this->libelle,
             'article' => $this->article,
             'intro_ressources' => $this->intro_ressources,
-            'ordre' => $this->ordre,
-            'theme' => new ThemeResource($this->whenLoaded('theme')),
+            'theme' => $this->whenLoaded('theme', fn () => [
+                'ref' => $this->theme->ref,
+                'libelle_court' => $this->theme->libelle_court,
+            ]),
             'contacts' => ContactResource::collection($this->whenLoaded('contacts')),
             'documents' => MediaResource::collection($this->whenLoaded('documents')),
         ];
