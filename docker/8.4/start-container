@@ -6,6 +6,9 @@ if [ $# -gt 0 ]; then
     exec "$@"
 fi
 
+# filet de securite : recupere vendor/ si un run precedent (ex. exec -u root) l'a pollue en root:root
+[ -d vendor ] && sudo chown -R scback:scback vendor
+
 # composer install declenche filament:upgrade (post-autoload-dump), qui publie les assets
 COMPOSER_MEMORY_LIMIT=-1 composer install --no-interaction
 
