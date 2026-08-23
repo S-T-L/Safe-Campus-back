@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SousThemeResource\Pages;
+use App\Filament\Resources\SousThemeResource\RelationManagers\MediasRelationManager;
 use App\Models\SousTheme;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -44,6 +45,15 @@ class SousThemeResource extends Resource
                 Forms\Components\RichEditor::make('article')
                     ->helperText('Contenu éditorial complet de la fiche.')
                     ->columnSpanFull(),
+                Forms\Components\Textarea::make('intro_ressources')
+                    ->label('Introduction (page ressources)')
+                    ->helperText('Chapeau de la page ressources, distinct du résumé et de l\'article.')
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('ordre')
+                    ->numeric()
+                    ->default(0)
+                    ->required()
+                    ->helperText('Ordre d\'affichage dans le thème (0 = en tête).'),
                 Forms\Components\Toggle::make('permet_signalement')
                     ->label('Formulaire de signalement')
                     ->default(false),
@@ -62,6 +72,8 @@ class SousThemeResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('libelle')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('ordre')
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('permet_signalement')
                     ->label('Signalement')
                     ->boolean(),
@@ -96,7 +108,7 @@ class SousThemeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            MediasRelationManager::class,
         ];
     }
 

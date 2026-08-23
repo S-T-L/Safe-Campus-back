@@ -33,10 +33,19 @@ class ThemeResource extends Resource
                     ->dehydrated(fn (?Theme $record) => $record === null),
                 Forms\Components\TextInput::make('libelle')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->helperText('Libellé long, affiché dans le menu et la recherche.'),
+                Forms\Components\TextInput::make('libelle_court')
+                    ->maxLength(255)
+                    ->helperText('Libellé court, affiché dans la navigation et les tags de fiche.'),
                 Forms\Components\Textarea::make('resume')
                     ->helperText('Teaser optionnel, présentation du thème sur l\'accueil.')
                     ->columnSpanFull(),
+                Forms\Components\TextInput::make('ordre')
+                    ->numeric()
+                    ->default(0)
+                    ->required()
+                    ->helperText('Ordre d\'affichage des sections sur l\'accueil (0 = en tête).'),
             ]);
     }
 
@@ -48,6 +57,12 @@ class ThemeResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('libelle')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('libelle_court')
+                    ->label('Libellé court')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('ordre')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('sous_themes_count')
                     ->label('Sous-thèmes')
                     ->counts('sousThemes'),
@@ -60,6 +75,7 @@ class ThemeResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('ordre')
             ->filters([
                 //
             ])

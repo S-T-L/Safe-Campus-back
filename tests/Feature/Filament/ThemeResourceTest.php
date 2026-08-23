@@ -70,6 +70,19 @@ class ThemeResourceTest extends TestCase
         $this->assertDatabaseHas('themes', ['id' => $theme->id, 'ref' => 'theme_verrouille', 'libelle' => 'Après modification']);
     }
 
+    public function test_un_webmaster_edite_le_libelle_court_et_l_ordre(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
+        $theme = Theme::factory()->create(['libelle_court' => null, 'ordre' => 0]);
+
+        Livewire::test(EditTheme::class, ['record' => $theme->getKey()])
+            ->fillForm(['libelle_court' => 'Addictions', 'ordre' => 2])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('themes', ['id' => $theme->id, 'libelle_court' => 'Addictions', 'ordre' => 2]);
+    }
+
     public function test_le_relation_manager_cree_un_sous_theme_rattache_au_theme(): void
     {
         $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));

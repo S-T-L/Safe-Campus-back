@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Filament;
 
+use App\Enums\MediaType;
 use App\Enums\UserRole;
 use App\Filament\Resources\SousThemeResource\Pages\CreateSousTheme;
 use App\Filament\Resources\SousThemeResource\Pages\EditSousTheme;
 use App\Filament\Resources\SousThemeResource\Pages\ListSousThemes;
+use App\Filament\Resources\SousThemeResource\RelationManagers\MediasRelationManager;
+use App\Models\Media;
 use App\Models\SousTheme;
 use App\Models\Theme;
 use App\Models\User;
@@ -62,5 +65,45 @@ class SousThemeResourceTest extends TestCase
             ->assertHasNoFormErrors();
 
         $this->assertDatabaseHas('sous_themes', ['id' => $sousTheme->id, 'ref' => 'sous_theme_verrouille', 'libelle' => 'Après modification']);
+    }
+
+    public function test_un_webmaster_edite_l_ordre_et_l_intro_ressources(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
+        $sousTheme = SousTheme::factory()->create(['ordre' => 0, 'intro_ressources' => null]);
+
+        Livewire::test(EditSousTheme::class, ['record' => $sousTheme->getKey()])
+            ->fillForm(['ordre' => 5, 'intro_ressources' => 'Chapeau de la page ressources.'])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('sous_themes', [
+            'id' => $sousTheme->id,
+            'ordre' => 5,
+            'intro_ressources' => 'Chapeau de la page ressources.',
+        ]);
+    }
+
+    public function test_le_relation_manager_medias_attache_avec_un_ordre(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
+        $sousTheme = SousTheme::factory()->create();
+        $media = Media::factory()->type(MediaType::Document)->create();
+
+        Livewire::test(MediasRelationManager::class, [
+            'ownerRecord' => $sousTheme,
+            'pageClass' => EditSousTheme::class,
+        ])
+            ->callTableAction('attach', data: [
+                'recordId' => $media->id,
+                'ordre' => 2,
+            ])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseHas('media_sous_theme', [
+            'sous_theme_id' => $sousTheme->id,
+            'media_id' => $media->id,
+            'ordre' => 2,
+        ]);
     }
 }
