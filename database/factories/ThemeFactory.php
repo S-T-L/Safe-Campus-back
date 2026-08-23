@@ -21,7 +21,9 @@ class ThemeFactory extends Factory
         return [
             'ref' => Str::slug($libelle, '_'),
             'libelle' => Str::ucfirst($libelle),
+            'libelle_court' => Str::ucfirst(fake()->unique()->word()),
             'resume' => fake()->paragraph(),
+            'ordre' => 0,
         ];
     }
 }

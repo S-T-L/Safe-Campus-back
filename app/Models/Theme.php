@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,18 +15,28 @@ class Theme extends Model
     protected $fillable = [
         'ref',
         'libelle',
+        'libelle_court',
         'resume',
+        'ordre',
     ];
 
+    /**
+     * @return HasMany<SousTheme, $this>
+     */
     public function sousThemes(): HasMany
     {
-        return $this->hasMany(SousTheme::class);
+        return $this->hasMany(SousTheme::class)->orderBy('ordre');
     }
 
     /**
-     * Presentation de la page d'accueil : texte, image, video ou logo, non
-     * exclusifs entre eux, comme SousTheme::medias().
-     *
+     * @param  Builder<Theme>  $query
+     */
+    public function scopeOrdonne(Builder $query): void
+    {
+        $query->orderBy('ordre')->orderBy('id');
+    }
+
+    /**
      * @return BelongsToMany<Media, $this>
      */
     public function medias(): BelongsToMany

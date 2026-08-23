@@ -2,11 +2,14 @@
 
 namespace Tests\Feature\Filament;
 
+use App\Enums\MediaType;
 use App\Enums\UserRole;
 use App\Filament\Resources\ThemeResource\Pages\CreateTheme;
 use App\Filament\Resources\ThemeResource\Pages\EditTheme;
 use App\Filament\Resources\ThemeResource\Pages\ListThemes;
+use App\Filament\Resources\ThemeResource\RelationManagers\MediasRelationManager;
 use App\Filament\Resources\ThemeResource\RelationManagers\SousThemesRelationManager;
+use App\Models\Media;
 use App\Models\Theme;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -70,6 +73,19 @@ class ThemeResourceTest extends TestCase
         $this->assertDatabaseHas('themes', ['id' => $theme->id, 'ref' => 'theme_verrouille', 'libelle' => 'Après modification']);
     }
 
+    public function test_un_webmaster_edite_le_libelle_court_et_l_ordre(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
+        $theme = Theme::factory()->create(['libelle_court' => null, 'ordre' => 0]);
+
+        Livewire::test(EditTheme::class, ['record' => $theme->getKey()])
+            ->fillForm(['libelle_court' => 'Addictions', 'ordre' => 2])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('themes', ['id' => $theme->id, 'libelle_court' => 'Addictions', 'ordre' => 2]);
+    }
+
     public function test_le_relation_manager_cree_un_sous_theme_rattache_au_theme(): void
     {
         $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
@@ -86,5 +102,26 @@ class ThemeResourceTest extends TestCase
             ->assertHasNoTableActionErrors();
 
         $this->assertDatabaseHas('sous_themes', ['ref' => 'sous_theme_test', 'theme_id' => $theme->id]);
+    }
+
+    public function test_le_relation_manager_medias_attache_un_media_existant(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
+        $theme = Theme::factory()->create();
+        $media = Media::factory()->type(MediaType::Video)->create();
+
+        Livewire::test(MediasRelationManager::class, [
+            'ownerRecord' => $theme,
+            'pageClass' => EditTheme::class,
+        ])
+            ->callTableAction('attach', data: [
+                'recordId' => $media->id,
+            ])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseHas('media_theme', [
+            'theme_id' => $theme->id,
+            'media_id' => $media->id,
+        ]);
     }
 }

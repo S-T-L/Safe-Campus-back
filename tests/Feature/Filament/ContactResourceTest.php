@@ -104,4 +104,17 @@ class ContactResourceTest extends TestCase
             'ordre' => 2,
         ]);
     }
+
+    public function test_un_webmaster_geocode_un_contact(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
+        $contact = Contact::factory()->create(['latitude' => null, 'longitude' => null]);
+
+        Livewire::test(EditContact::class, ['record' => $contact->getKey()])
+            ->fillForm(['latitude' => -22.2758, 'longitude' => 166.4580])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('contacts', ['id' => $contact->id, 'latitude' => -22.2758, 'longitude' => 166.4580]);
+    }
 }

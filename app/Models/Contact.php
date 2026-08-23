@@ -24,6 +24,8 @@ class Contact extends Model
         'gratuit',
         'anonyme',
         'actif',
+        'latitude',
+        'longitude',
     ];
 
     protected function casts(): array
@@ -32,6 +34,8 @@ class Contact extends Model
             'gratuit' => 'boolean',
             'anonyme' => 'boolean',
             'actif' => 'boolean',
+            'latitude' => 'float',
+            'longitude' => 'float',
         ];
     }
 

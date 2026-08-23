@@ -79,7 +79,10 @@ services:
             - 'sc_front_node_modules:/app/node_modules'
         environment:
             NODE_ENV: development
-            NUXT_PUBLIC_API_BASE: 'http://sc_back:80'
+            # SSR (dans le conteneur) : hostname Docker interne.
+            NUXT_API_BASE_INTERNAL: 'http://sc_back:8000'
+            # Navigateur (hors Docker) : port publie sur l'hote.
+            NUXT_PUBLIC_API_BASE: 'http://localhost:${APP_PORT:-8000}'
         networks:
             - scback
         deploy:

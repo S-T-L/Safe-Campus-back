@@ -19,6 +19,7 @@ class Media extends Model
 
     protected $fillable = [
         'libelle',
+        'description',
         'chemin',
         'type',
     ];
@@ -35,7 +36,7 @@ class Media extends Model
      */
     public function sousThemes(): BelongsToMany
     {
-        return $this->belongsToMany(SousTheme::class);
+        return $this->belongsToMany(SousTheme::class)->withPivot('ordre');
     }
 
     /**

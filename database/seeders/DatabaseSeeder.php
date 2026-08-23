@@ -22,10 +22,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Theme/SousTheme : taxonomie de reference, seedee par la migration
-        // 2026_07_31_120000_seed_taxonomie_themes_sous_themes — pas ici.
+        // Theme/SousTheme : taxonomie + contenu editorial, seedee par la
+        // migration 2026_07_31_120000_seed_taxonomie_themes_sous_themes —
+        // pas ici. MediaSeeder en depend (attache les documents aux
+        // sous-themes), doit donc s'executer apres.
         $this->call([
             ContactSeeder::class,
+            MediaSeeder::class,
         ]);
     }
 }

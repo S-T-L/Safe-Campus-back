@@ -41,6 +41,11 @@ class ContactResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('localisation')
                     ->maxLength(255),
+                Forms\Components\TextInput::make('latitude')
+                    ->numeric()
+                    ->helperText('Coordonnée GPS. Vide tant que l\'adresse n\'est pas géocodée — la carte du front reste masquée sans elle.'),
+                Forms\Components\TextInput::make('longitude')
+                    ->numeric(),
                 Forms\Components\TextInput::make('site_web')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('horaires')
@@ -79,6 +84,11 @@ class ContactResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('localisation')
                     ->searchable(),
+                Tables\Columns\IconColumn::make('latitude')
+                    ->label('Géocodé')
+                    ->boolean()
+                    ->getStateUsing(fn (Contact $record) => $record->latitude !== null && $record->longitude !== null)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('site_web')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
