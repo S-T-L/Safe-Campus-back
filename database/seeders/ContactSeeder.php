@@ -10,10 +10,12 @@ use Illuminate\Database\Seeder;
 use RuntimeException;
 
 /**
- * Contacts en dur, issus de l'ancien database/seeders/data/contact.csv,
- * deja convertis vers la taxonomie 2026-07-31 (3 themes x 3 sous-themes) —
- * ecarts et decisions dans database/seeders/data/NOTES.md. Idempotent via
- * `ref` (updateOrCreate).
+ * Contacts en dur. Base : ancien database/seeders/data/contact.csv (38
+ * contacts territoriaux), deja converti vers la taxonomie 2026-07-31 (3
+ * themes x 3 sous-themes) — ecarts et decisions dans
+ * database/seeders/data/NOTES.md (non retrouve au moment de l'ecriture).
+ * 4 contacts campus UNC ajoutes depuis l'ancien app/data/themes.js du
+ * front (supprime au commit 9113ec0). Idempotent via `ref` (updateOrCreate).
  */
 class ContactSeeder extends Seeder
 {
@@ -24,8 +26,13 @@ class ContactSeeder extends Seeder
      *     mail: ?string,
      *     localisation: ?string,
      *     site_web: ?string,
-     *     telephones: list<array{numero: string, type: TelephoneType}>,
-     *     sous_themes: list<string>
+     *     telephones: list<array{numero: string, type: TelephoneType, numero_vert?: bool}>,
+     *     sous_themes: list<string>,
+     *     horaires?: ?string,
+     *     remarques?: ?string,
+     *     gratuit?: ?bool,
+     *     latitude?: ?float,
+     *     longitude?: ?float
      * }>
      */
     private const CONTACTS = [
@@ -444,6 +451,67 @@ class ContactSeeder extends Seeder
             'telephones' => [],
             'sous_themes' => ['anxiete', 'depression', 'burn_out', 'violences_sexuelles'],
         ],
+        // Contacts campus UNC, repris de l'ancien app/data/themes.js (front, commit 9113ec0~1).
+        // Adresse verifiee : 145 Avenue James Cook, Nouville, Noumea (UNC). Emails @example.com
+        // du front ecartes (placeholders) sauf egalite@unc.nc, seul domaine reel.
+        [
+            'ref' => 'service_sante_etudiante',
+            'nom' => 'Service Sante Etudiante - UNC',
+            'mail' => null,
+            'localisation' => '145 Avenue James Cook, 98800 Noumea',
+            'site_web' => null,
+            'telephones' => [
+                ['numero' => '26 58 00', 'type' => TelephoneType::Fixe],
+            ],
+            'sous_themes' => ['anxiete', 'depression', 'burn_out'],
+            'horaires' => 'Sur rendez-vous, lundi-vendredi',
+            'remarques' => 'Ecoute, orientation et suivi psychologique pour les etudiants',
+            'latitude' => -22.2735,
+            'longitude' => 166.4590,
+        ],
+        [
+            'ref' => 'medecin_universitaire',
+            'nom' => 'Medecin universitaire - UNC',
+            'mail' => null,
+            'localisation' => '145 Avenue James Cook, 98800 Noumea',
+            'site_web' => null,
+            'telephones' => [
+                ['numero' => '26 58 00', 'type' => TelephoneType::Fixe],
+            ],
+            'sous_themes' => ['alcool', 'tabac', 'burn_out'],
+            'horaires' => 'Sur rendez-vous, lundi-vendredi',
+            'remarques' => 'Consultation medicale generale, orientation vers les specialistes du SSU',
+            'latitude' => -22.2735,
+            'longitude' => 166.4590,
+        ],
+        [
+            'ref' => 'referente_egalite',
+            'nom' => 'Referente Egalite - UNC',
+            'mail' => 'egalite@unc.nc',
+            'localisation' => '145 Avenue James Cook, 98800 Noumea',
+            'site_web' => null,
+            'telephones' => [],
+            'sous_themes' => ['violences_sexistes', 'violences_sexuelles', 'harcelement'],
+            'horaires' => 'Contact par email',
+            'remarques' => 'Signalement et accompagnement des situations de discrimination ou de violence, contact confidentiel',
+            'latitude' => -22.2735,
+            'longitude' => 166.4590,
+        ],
+        [
+            'ref' => 'service_mediation',
+            'nom' => 'Service Mediation - UNC',
+            'mail' => null,
+            'localisation' => '145 Avenue James Cook, 98800 Noumea',
+            'site_web' => null,
+            'telephones' => [
+                ['numero' => '26 58 00', 'type' => TelephoneType::Fixe],
+            ],
+            'sous_themes' => ['harcelement'],
+            'horaires' => 'Sur rendez-vous, lundi-vendredi',
+            'remarques' => "Mediation et resolution des conflits au sein de l'universite",
+            'latitude' => -22.2735,
+            'longitude' => 166.4590,
+        ],
     ];
 
     public function run(): void
@@ -460,11 +528,13 @@ class ContactSeeder extends Seeder
                     'mail' => $donnees['mail'],
                     'localisation' => $donnees['localisation'],
                     'site_web' => $donnees['site_web'],
-                    'horaires' => null,
-                    'remarques' => null,
-                    'gratuit' => null,
+                    'horaires' => $donnees['horaires'] ?? null,
+                    'remarques' => $donnees['remarques'] ?? null,
+                    'gratuit' => $donnees['gratuit'] ?? null,
                     'anonyme' => null,
                     'actif' => true,
+                    'latitude' => $donnees['latitude'] ?? null,
+                    'longitude' => $donnees['longitude'] ?? null,
                 ]
             );
 
@@ -474,7 +544,7 @@ class ContactSeeder extends Seeder
                     'contact_id' => $contact->id,
                     'numero' => $telephone['numero'],
                     'type' => $telephone['type'],
-                    'numero_vert' => false,
+                    'numero_vert' => $telephone['numero_vert'] ?? false,
                     'libelle' => null,
                 ]);
             }
