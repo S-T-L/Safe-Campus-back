@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ThemeResource\Pages;
+use App\Filament\Resources\ThemeResource\RelationManagers\MediasRelationManager;
 use App\Filament\Resources\ThemeResource\RelationManagers\SousThemesRelationManager;
 use App\Models\Theme;
 use Filament\Forms;
@@ -93,6 +94,7 @@ class ThemeResource extends Resource
     {
         return [
             SousThemesRelationManager::class,
+            MediasRelationManager::class,
         ];
     }
 
