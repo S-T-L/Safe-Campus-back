@@ -12,7 +12,9 @@ class ThemeResource extends JsonResource
         return [
             'ref' => $this->ref,
             'libelle' => $this->libelle,
+            'libelle_court' => $this->libelle_court,
             'resume' => $this->resume,
+            'ordre' => $this->ordre,
             'medias' => MediaResource::collection($this->whenLoaded('medias')),
             'sous_themes' => SousThemeSummaryResource::collection($this->whenLoaded('sousThemes')),
         ];

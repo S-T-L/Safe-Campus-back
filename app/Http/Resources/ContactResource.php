@@ -8,8 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class ContactResource extends JsonResource
 {
     /**
-     * `telephones` doit etre eager-charge par le controller (`->load('contacts.telephones')`).
-     * `whenLoaded` evite un lazy-load silencieux si ce n'est pas le cas.
+     * `telephones` doit etre eager-charge par le controller.
      */
     public function toArray(Request $request): array
     {
@@ -24,6 +23,8 @@ class ContactResource extends JsonResource
             'remarques' => $this->remarques,
             'gratuit' => $this->gratuit,
             'anonyme' => $this->anonyme,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
             'telephones' => TelephoneResource::collection($this->whenLoaded('telephones')),
         ];
     }

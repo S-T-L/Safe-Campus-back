@@ -11,6 +11,7 @@ class MediaResource extends JsonResource
     {
         return [
             'libelle' => $this->libelle,
+            'description' => $this->description,
             'chemin' => $this->chemin,
             'type' => $this->type->value,
         ];

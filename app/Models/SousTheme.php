@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MediaType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,8 +22,10 @@ class SousTheme extends Model
         'libelle',
         'resume',
         'article',
+        'intro_ressources',
         'theme_id',
         'permet_signalement',
+        'ordre',
     ];
 
     protected function casts(): array
@@ -51,6 +54,16 @@ class SousTheme extends Model
 
     public function medias(): BelongsToMany
     {
-        return $this->belongsToMany(Media::class);
+        return $this->belongsToMany(Media::class)
+            ->withPivot('ordre')
+            ->orderByPivot('ordre');
+    }
+
+    /**
+     * @return BelongsToMany<Media, $this>
+     */
+    public function documents(): BelongsToMany
+    {
+        return $this->medias()->where('type', MediaType::Document);
     }
 }
