@@ -55,10 +55,14 @@ class AnnuaireApiTest extends TestCase
         $this->assertSame('video', $data['medias'][0]['type']);
     }
 
-    public function test_get_themes_expose_le_libelle_court_mais_pas_l_ordre(): void
+    public function test_get_themes_expose_le_libelle_court_et_l_ordre(): void
     {
-        Theme::factory()->create(['ref' => 'addictions_test', 'libelle_court' => 'Addictions']);
-        SousTheme::factory()->create(['ref' => 'alcool_test', 'theme_id' => Theme::where('ref', 'addictions_test')->value('id')]);
+        Theme::factory()->create(['ref' => 'addictions_test', 'libelle_court' => 'Addictions', 'ordre' => 3]);
+        SousTheme::factory()->create([
+            'ref' => 'alcool_test',
+            'theme_id' => Theme::where('ref', 'addictions_test')->value('id'),
+            'ordre' => 5,
+        ]);
 
         $response = $this->getJson('/api/themes');
 
@@ -66,18 +70,12 @@ class AnnuaireApiTest extends TestCase
         $data = collect($response->json('data'))->firstWhere('ref', 'addictions_test');
         $this->assertNotNull($data);
         $this->assertSame('Addictions', $data['libelle_court']);
-        // Le tri se fait en base (Theme::ordonne(), SousTheme::sousThemes()) :
-        // le tableau arrive deja ordonne, la valeur brute n'a rien a faire
-        // dans un payload que le front consomme deja trie.
-        $this->assertArrayNotHasKey('ordre', $data);
-        $this->assertArrayNotHasKey('ordre', $data['sous_themes'][0]);
+        $this->assertSame(3, $data['ordre']);
+        $this->assertSame(5, $data['sous_themes'][0]['ordre']);
     }
 
     public function test_get_themes_respecte_l_ordre_editorial(): void
     {
-        // Le front ne trie pas : il itere le tableau tel que l'API le rend
-        // (v-for, aucun .sort() cote front). Sans ce test, un ->ordonne()
-        // oublie sur un futur endpoint passerait inaperçu.
         Theme::factory()->create(['ref' => 'theme_test_b', 'ordre' => 2]);
         Theme::factory()->create(['ref' => 'theme_test_a', 'ordre' => 0]);
         Theme::factory()->create(['ref' => 'theme_test_c', 'ordre' => 1]);
@@ -85,12 +83,12 @@ class AnnuaireApiTest extends TestCase
         $response = $this->getJson('/api/themes');
 
         $response->assertOk();
-        $refs = collect($response->json('data'))
-            ->pluck('ref')
-            ->filter(fn ($ref) => str_starts_with($ref, 'theme_test_'))
+        $themes = collect($response->json('data'))
+            ->filter(fn ($theme) => str_starts_with($theme['ref'], 'theme_test_'))
             ->values();
 
-        $this->assertSame(['theme_test_a', 'theme_test_c', 'theme_test_b'], $refs->all());
+        $this->assertSame(['theme_test_a', 'theme_test_c', 'theme_test_b'], $themes->pluck('ref')->all());
+        $this->assertSame([0, 1, 2], $themes->pluck('ordre')->all());
     }
 
     public function test_get_themes_ordonne_les_sous_themes_dans_le_theme(): void
@@ -104,10 +102,9 @@ class AnnuaireApiTest extends TestCase
 
         $response->assertOk();
         $data = collect($response->json('data'))->firstWhere('ref', 'addictions_test');
-        $this->assertSame(
-            ['sous_test_a', 'sous_test_c', 'sous_test_b'],
-            collect($data['sous_themes'])->pluck('ref')->all()
-        );
+        $sousThemes = collect($data['sous_themes']);
+        $this->assertSame(['sous_test_a', 'sous_test_c', 'sous_test_b'], $sousThemes->pluck('ref')->all());
+        $this->assertSame([0, 1, 2], $sousThemes->pluck('ordre')->all());
     }
 
     public function test_get_sous_theme_par_ref_renvoie_l_article_et_les_contacts_actifs_sans_resume(): void

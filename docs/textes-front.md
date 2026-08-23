@@ -44,13 +44,20 @@ table `page` n'existe. Voir [Reste à trancher](#5-reste-à-trancher).
 | `navLabel` | ADDICTIONS | — | **Champ mort** : zéro usage dans le front. Supprimé. |
 | `color` | `#4260e6` | — | **Front.** Charte graphique, non éditable depuis le back. |
 | `colorVar` | `--color-addiction` | — | **Champ mort** : zéro usage. Supprimé. |
-| *(position dans le tableau)* | 1, 2, 3 | `themes.ordre` | Trie en base (`->ordonne()`), **pas exposé en JSON** — le tableau arrive déjà trié. |
+| *(position dans le tableau)* | 1, 2, 3 | `themes.ordre` | Exposé sur `/api/themes` (thème et sous-thèmes imbriqués). |
 | *(préfixe du sous-titre)* | COMPORTEMENT ADDICTIF | — | **Front.** Gabarit d'affichage. |
 
 **Contrat de tri.** `GET /api/themes` renvoie `data[]` trié par `themes.ordre`, et chaque
-`sous_themes[]` imbriqué trié par `sous_themes.ordre` — même mécanisme pour `contacts[]`
-(`contact_sous_theme.ordre`) et `documents[]` (`media_sous_theme.ordre`) sur la fiche. Le front
-**itère, il ne trie pas** : `v-for` sur le tableau tel quel, aucune valeur `ordre` transmise.
+`sous_themes[]` imbriqué trié par `sous_themes.ordre` — le tableau arrive déjà dans l'ordre
+d'affichage, le front n'a pas besoin de trier pour afficher. `ordre` est quand même exposé sur les
+deux : ça permet au front de retrier/valider explicitement plutôt que de dépendre implicitement de
+la position du tableau. Absent en revanche sur `contacts[]` et `documents[]` de la fiche (endpoint
+`/api/sous-themes/{ref}`, `contact_sous_theme.ordre` / `media_sous_theme.ordre`) : usage à
+reconsidérer sur ce point si le même besoin de contrôle se présente là aussi.
+
+Absent également sur la fiche seule (`SousThemeResource`) et sur le thème imbriqué dans une fiche :
+pas de liste à cet endroit, pas d'ordinal affiché sur ces pages.
+
 Garanti par `AnnuaireApiTest::test_get_themes_respecte_l_ordre_editorial` et
 `test_get_themes_ordonne_les_sous_themes_dans_le_theme`.
 
