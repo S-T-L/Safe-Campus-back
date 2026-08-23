@@ -28,7 +28,10 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                // Bleu accent du front (--color-primary-light dans
+                // Safe-Campus-front/app/assets/css/main.css), la seule
+                // couleur de marque reellement visible sur le site.
+                'primary' => Color::hex('#4260e6'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
