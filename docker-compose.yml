@@ -79,7 +79,7 @@ services:
             - 'sc_front_node_modules:/app/node_modules'
         environment:
             NODE_ENV: development
-            NUXT_PUBLIC_API_BASE: 'http://sc_back:80'
+            NUXT_PUBLIC_API_BASE: 'http://sc_back:8000'
         networks:
             - scback
         deploy:
