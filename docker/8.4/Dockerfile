@@ -14,8 +14,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq-dev libpng-dev libjpeg-dev libfreetype6-dev libicu-dev libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_pgsql gd bcmath intl pcntl zip \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
