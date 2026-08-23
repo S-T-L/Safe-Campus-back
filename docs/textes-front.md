@@ -47,6 +47,13 @@ table `page` n'existe. Voir [Reste à trancher](#5-reste-à-trancher).
 | *(position dans le tableau)* | 1, 2, 3 | `themes.ordre` | Trie en base (`->ordonne()`), **pas exposé en JSON** — le tableau arrive déjà trié. |
 | *(préfixe du sous-titre)* | COMPORTEMENT ADDICTIF | — | **Front.** Gabarit d'affichage. |
 
+**Contrat de tri.** `GET /api/themes` renvoie `data[]` trié par `themes.ordre`, et chaque
+`sous_themes[]` imbriqué trié par `sous_themes.ordre` — même mécanisme pour `contacts[]`
+(`contact_sous_theme.ordre`) et `documents[]` (`media_sous_theme.ordre`) sur la fiche. Le front
+**itère, il ne trie pas** : `v-for` sur le tableau tel quel, aucune valeur `ordre` transmise.
+Garanti par `AnnuaireApiTest::test_get_themes_respecte_l_ordre_editorial` et
+`test_get_themes_ordonne_les_sous_themes_dans_le_theme`.
+
 `libelle` et `libelle_court` sont bien deux textes distincts, affichés à des endroits différents :
 `libelle_court` dans la nav, les titres de section, les tags et la BottomTabBar (5 usages) ;
 `libelle` dans le NavDrawer et l'index de recherche (3 usages).

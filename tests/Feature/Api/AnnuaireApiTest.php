@@ -73,6 +73,43 @@ class AnnuaireApiTest extends TestCase
         $this->assertArrayNotHasKey('ordre', $data['sous_themes'][0]);
     }
 
+    public function test_get_themes_respecte_l_ordre_editorial(): void
+    {
+        // Le front ne trie pas : il itere le tableau tel que l'API le rend
+        // (v-for, aucun .sort() cote front). Sans ce test, un ->ordonne()
+        // oublie sur un futur endpoint passerait inaperçu.
+        Theme::factory()->create(['ref' => 'theme_test_b', 'ordre' => 2]);
+        Theme::factory()->create(['ref' => 'theme_test_a', 'ordre' => 0]);
+        Theme::factory()->create(['ref' => 'theme_test_c', 'ordre' => 1]);
+
+        $response = $this->getJson('/api/themes');
+
+        $response->assertOk();
+        $refs = collect($response->json('data'))
+            ->pluck('ref')
+            ->filter(fn ($ref) => str_starts_with($ref, 'theme_test_'))
+            ->values();
+
+        $this->assertSame(['theme_test_a', 'theme_test_c', 'theme_test_b'], $refs->all());
+    }
+
+    public function test_get_themes_ordonne_les_sous_themes_dans_le_theme(): void
+    {
+        $theme = Theme::factory()->create(['ref' => 'addictions_test']);
+        SousTheme::factory()->create(['ref' => 'sous_test_b', 'theme_id' => $theme->id, 'ordre' => 2]);
+        SousTheme::factory()->create(['ref' => 'sous_test_a', 'theme_id' => $theme->id, 'ordre' => 0]);
+        SousTheme::factory()->create(['ref' => 'sous_test_c', 'theme_id' => $theme->id, 'ordre' => 1]);
+
+        $response = $this->getJson('/api/themes');
+
+        $response->assertOk();
+        $data = collect($response->json('data'))->firstWhere('ref', 'addictions_test');
+        $this->assertSame(
+            ['sous_test_a', 'sous_test_c', 'sous_test_b'],
+            collect($data['sous_themes'])->pluck('ref')->all()
+        );
+    }
+
     public function test_get_sous_theme_par_ref_renvoie_l_article_et_les_contacts_actifs_sans_resume(): void
     {
         $sousTheme = SousTheme::factory()->create(['ref' => 'alcool_test', 'article' => 'Contenu.', 'resume' => 'Teaser.']);
