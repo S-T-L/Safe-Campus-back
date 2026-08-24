@@ -133,11 +133,14 @@ docker compose up -d
 
 docker compose exec sc_back php artisan key:generate
 docker compose exec sc_back php artisan migrate
+docker compose exec sc_back php artisan db:seed
 ```
 
 Le `.env` est lu par Docker avant le build : `WWWUSER`/`WWWGROUP` créent l'utilisateur `scback` aligné sur l'utilisateur hôte, `DB_*` alimente PostgreSQL.
 
-`SC_Back` exécute `composer install` à chaque démarrage, puis `artisan serve`. `SC_Front` exécute `npm install`, puis `npm run dev`. `key:generate` et `migrate` sont à la main : l'état de la base est piloté par le dev.
+`SC_Back` exécute `composer install` à chaque démarrage, puis `artisan serve`. `SC_Front` exécute `npm install`, puis `npm run dev`. `key:generate`, `migrate` et `db:seed` sont à la main : l'état de la base est piloté par le dev.
+
+> `migrate` seed automatiquement la taxonomie (themes/sous-themes) et le compte webmaster de démo — donnée structurelle requise par l'app. `db:seed` reste nécessaire à part pour l'annuaire de contacts et les médias (`ContactSeeder`, `MediaSeeder`) : volontairement pas dans une migration, pour ne pas polluer la base de test (`RefreshDatabase`) utilisée par la suite de tests, qui crée des contacts avec des `ref` réels (`samu`, `sos_ecoute`, ...). Les deux seeders sont idempotents (rejouables sans dupliquer).
 
 | Conteneur | Rôle |
 |---|---|

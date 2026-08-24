@@ -147,6 +147,8 @@ class ContactSeeder extends Seeder
                 ['numero' => '25 50 78', 'type' => TelephoneType::Fixe],
             ],
             'sous_themes' => ['alcool', 'drogue', 'tabac'],
+            'latitude' => -22.269840994209325,
+            'longitude' => 166.43871348217928,
         ],
         [
             'ref' => 'croix_rouge_aller_vers',
@@ -481,8 +483,8 @@ class ContactSeeder extends Seeder
             'sous_themes' => ['alcool', 'tabac', 'burn_out'],
             'horaires' => 'Sur rendez-vous, lundi-vendredi',
             'remarques' => 'Consultation medicale generale, orientation vers les specialistes du SSU',
-            'latitude' => -22.2735,
-            'longitude' => 166.4590,
+            'latitude' => -22.263457167493094,
+            'longitude' => 166.4019359379999,
         ],
         [
             'ref' => 'referente_egalite',
