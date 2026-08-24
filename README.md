@@ -134,6 +134,7 @@ docker compose up -d
 docker compose exec sc_back php artisan key:generate
 docker compose exec sc_back php artisan migrate
 docker compose exec sc_back php artisan db:seed
+docker compose exec sc_back php artisan storage:link
 ```
 
 Le `.env` est lu par Docker avant le build : `WWWUSER`/`WWWGROUP` créent l'utilisateur `scback` aligné sur l'utilisateur hôte, `DB_*` alimente PostgreSQL.
@@ -141,6 +142,8 @@ Le `.env` est lu par Docker avant le build : `WWWUSER`/`WWWGROUP` créent l'util
 `SC_Back` exécute `composer install` à chaque démarrage, puis `artisan serve`. `SC_Front` exécute `npm install`, puis `npm run dev`. `key:generate`, `migrate` et `db:seed` sont à la main : l'état de la base est piloté par le dev.
 
 > `migrate` seed automatiquement la taxonomie (themes/sous-themes) et le compte webmaster de démo — donnée structurelle requise par l'app. `db:seed` reste nécessaire à part pour l'annuaire de contacts et les médias (`ContactSeeder`, `MediaSeeder`) : volontairement pas dans une migration, pour ne pas polluer la base de test (`RefreshDatabase`) utilisée par la suite de tests, qui crée des contacts avec des `ref` réels (`samu`, `sos_ecoute`, ...). Les deux seeders sont idempotents (rejouables sans dupliquer).
+
+> `storage:link` crée `public/storage` → `storage/app/public` (symlink, gitignoré). Sans ça, les fichiers uploadés via Filament (médias : images, PDF, ...) sont bien enregistrés mais renvoient 404 côté front.
 
 | Conteneur | Rôle |
 |---|---|
@@ -195,6 +198,24 @@ Le reste du code vit dans le bind mount et ne nécessite aucun rebuild.
 ### Le front
 
 `sc_front` fait partie du même `docker-compose.yml` : `docker compose up -d` démarre les deux. Pour ne lancer que le front : `docker compose up -d sc_front`. Le code du front s'édite dans [Safe-Campus-front](../Safe-Campus-front), ses commandes passent par `docker compose exec sc_front`.
+
+### Fichiers médias (images, PDF, ...)
+
+Uploadés depuis le panel Filament (ressource **Médias**), stockés sur le disque `public` (`config/filesystems.php`), sous `storage/app/public/medias/{type}/` — un sous-dossier par valeur de `App\Enums\MediaType`, pour mimer la colonne `type` de la table `medias` :
+
+```
+storage/app/public/medias/
+├── image/
+├── video/
+├── audio/
+└── document/     ← PDF (fiches ressources)
+```
+
+Aucun nouveau volume Docker : `sc_back` bind-mount déjà tout le repo (`.:/var/www/html`), `storage/` persiste comme le reste du code. Un volume nommé ne sera à envisager que pour une éventuelle stack de prod sans bind mount (pas encore définie, voir [docs/deploiement.md](docs/deploiement.md)).
+
+Servis en statique via le lien symbolique `public/storage` (voir `storage:link` ci-dessus), donc accessibles en lecture directe par le front — un PDF s'ouvre dans un nouvel onglet via un simple lien (`target="_blank"`, pas de viewer embarqué), sans endpoint de téléchargement dédié.
+
+L'API expose l'URL calculée, jamais le chemin disque brut : `Media::url` (accesseur du modèle) → `MediaResource.url` (JSON).
 
 ### Débogage Xdebug
 

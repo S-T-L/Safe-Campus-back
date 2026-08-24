@@ -7,6 +7,7 @@ use App\Filament\Resources\MediaResource\Pages;
 use App\Models\Media;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -32,17 +33,23 @@ class MediaResource extends Resource
                 Forms\Components\Textarea::make('description')
                     ->helperText('Texte affiché sous le titre d\'une fiche réflective. Inutile pour une illustration.')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('chemin')
-                    ->required()
-                    ->maxLength(255)
-                    ->helperText('Chemin de stockage du fichier.'),
                 Forms\Components\Select::make('type')
                     ->options(array_combine(
                         array_map(fn (MediaType $type) => $type->value, MediaType::cases()),
                         array_map(fn (MediaType $type) => $type->libelle(), MediaType::cases()),
                     ))
                     ->required()
-                    ->native(false),
+                    ->native(false)
+                    ->live(),
+                Forms\Components\FileUpload::make('chemin')
+                    ->label('Fichier')
+                    ->disk('public')
+                    ->directory(fn (Get $get) => 'medias/'.($get('type') ?? MediaType::Document->value))
+                    ->visibility('public')
+                    ->downloadable()
+                    ->openable()
+                    ->required()
+                    ->helperText('Stocke sous storage/app/public/medias/{type}/, servi via /storage/... (voir README).'),
             ]);
     }
 

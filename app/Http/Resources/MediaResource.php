@@ -12,7 +12,7 @@ class MediaResource extends JsonResource
         return [
             'libelle' => $this->libelle,
             'description' => $this->description,
-            'chemin' => $this->chemin,
+            'url' => $this->url,
             'type' => $this->type->value,
         ];
     }

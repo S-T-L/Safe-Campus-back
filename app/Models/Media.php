@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Enums\MediaType;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 class Media extends Model
 {
@@ -29,6 +31,17 @@ class Media extends Model
         return [
             'type' => MediaType::class,
         ];
+    }
+
+    /**
+     * `chemin` est relatif au disque `public` (voir config/filesystems.php) —
+     * cet accesseur evite au front de connaitre la convention de stockage.
+     */
+    protected function url(): Attribute
+    {
+        return Attribute::get(
+            fn () => $this->chemin ? Storage::disk('public')->url($this->chemin) : null
+        );
     }
 
     /**
