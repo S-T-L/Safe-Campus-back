@@ -82,7 +82,7 @@ class ContactSeeder extends Seeder
         ],
         [
             'ref' => 'sms_signalement_violence',
-            'nom' => 'SMS signalement violence (OPT)',
+            'nom' => 'SMS signalement violence (DTAV)',
             'mail' => null,
             'localisation' => 'Tout le territoire NC',
             'site_web' => null,
@@ -90,7 +90,7 @@ class ContactSeeder extends Seeder
                 ['numero' => '500 067', 'type' => TelephoneType::Sms],
             ],
             'sous_themes' => ['harcelement', 'violences_sexuelles'],
-            'remarques' => 'Preciser un nom et un numero pour etre rappele. Service relaye notamment par la DTAV.',
+            'remarques' => 'Service porte par la DTAV. Preciser un nom et un numero pour etre rappele.',
         ],
         [
             'ref' => 'sos_ecoute',
