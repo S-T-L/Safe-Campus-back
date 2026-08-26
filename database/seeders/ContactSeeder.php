@@ -82,7 +82,7 @@ class ContactSeeder extends Seeder
         ],
         [
             'ref' => 'sms_signalement_violence',
-            'nom' => 'SMS signalement violence (OPT)',
+            'nom' => 'SMS signalement violence (DTAV)',
             'mail' => null,
             'localisation' => 'Tout le territoire NC',
             'site_web' => null,
@@ -90,6 +90,7 @@ class ContactSeeder extends Seeder
                 ['numero' => '500 067', 'type' => TelephoneType::Sms],
             ],
             'sous_themes' => ['harcelement', 'violences_sexuelles'],
+            'remarques' => 'Service porte par la DTAV. Preciser un nom et un numero pour etre rappele.',
         ],
         [
             'ref' => 'sos_ecoute',
@@ -101,7 +102,7 @@ class ContactSeeder extends Seeder
                 ['numero' => '05 30 30', 'type' => TelephoneType::Fixe, 'numero_vert' => true],
             ],
             'sous_themes' => ['anxiete', 'depression', 'burn_out', 'alcool', 'drogue', 'violences_sexuelles', 'violences_sexistes', 'harcelement'],
-            'horaires' => 'Lun-sam 9h-1h, dim 9h-13h et 17h-1h (tous les jours, week-end et feries compris)',
+            'horaires' => 'Lun-sam 9h-13h, dim 9h-13h et 17h-19h (tous les jours, week-end et feries compris)',
         ],
         [
             'ref' => 'adavi_siege',
@@ -225,9 +226,10 @@ class ContactSeeder extends Seeder
             'site_web' => 'violences-conjugales.gouv.nc/organismes/sos-victimes',
             'telephones' => [
                 ['numero' => '05 11 11', 'type' => TelephoneType::Fixe, 'numero_vert' => true],
-                ['numero' => '25 00 04', 'type' => TelephoneType::Fixe],
+                ['numero' => '25 00 04', 'type' => TelephoneType::Fixe, 'numero_vert' => true],
             ],
             'sous_themes' => ['violences_sexistes', 'violences_sexuelles'],
+            'horaires' => 'Lun-jeu 8h-11h30 et 13h-16h, ven 13h-15h',
             'remarques' => "Accompagnement judiciaire et presence aux audiences, administrateur ad hoc. Peut etre contacte a tout moment, avant ou apres depot de plainte.",
         ],
         [
@@ -395,6 +397,8 @@ class ContactSeeder extends Seeder
             'site_web' => null,
             'telephones' => [
                 ['numero' => '45 06 23', 'type' => TelephoneType::Fixe],
+                ['numero' => '45 52 46', 'type' => TelephoneType::Fixe],
+                ['numero' => '73 07 92', 'type' => TelephoneType::Mobile],
             ],
             'sous_themes' => ['anxiete', 'depression', 'burn_out', 'harcelement', 'alcool'],
         ],
@@ -470,16 +474,18 @@ class ContactSeeder extends Seeder
             'sous_themes' => ['anxiete', 'depression', 'burn_out', 'violences_sexuelles'],
         ],
         [
-            'ref' => 'cafd_kamalac',
-            'nom' => 'Centre d\'Accueil des Femmes en Difficulte de Kamalac',
+            'ref' => 'cafd_pNord',
+            'nom' => 'Centre d\'Accueil des Femmes en Difficulte - Province Nord',
             'mail' => null,
             'localisation' => 'Kamalac, Province Nord',
             'site_web' => 'province-nord.nc/femme/structures-daccueil',
             'telephones' => [
                 ['numero' => '42 39 74', 'type' => TelephoneType::Fixe],
                 ['numero' => '71 72 96', 'type' => TelephoneType::Mobile],
+                ['numero' => '05 00 35', 'type' => TelephoneType::Fixe, 'numero_vert' => true],
             ],
             'sous_themes' => ['violences_sexistes', 'violences_sexuelles'],
+            'remarques' => 'Ligne juriste CAFED (numero gratuit) : 05 00 35.',
         ],
         [
             'ref' => 'dtav',
@@ -491,6 +497,45 @@ class ContactSeeder extends Seeder
                 ['numero' => '24 34 24', 'type' => TelephoneType::Fixe],
             ],
             'sous_themes' => ['violences_sexistes', 'violences_sexuelles', 'harcelement'],
+            'horaires' => 'Lun-ven 8h-12h15 et 12h45-17h',
+            'remarques' => 'Psychologue Anne Cecile Selefen (voir contact commissariat_noumea_psy) et intervenante sociale Laurence Grangeon (voir contact commissariat_noumea_social) rattachees a la DTAV.',
+        ],
+        [
+            'ref' => 'gendarmerie_social_sud',
+            'nom' => 'Intervenante sociale - Gendarmerie Province Sud',
+            'mail' => null,
+            'localisation' => 'Province Sud',
+            'site_web' => null,
+            'telephones' => [
+                ['numero' => '73 06 99', 'type' => TelephoneType::Mobile],
+                ['numero' => '20 78 23', 'type' => TelephoneType::Fixe],
+                ['numero' => '50 63 94', 'type' => TelephoneType::Fixe],
+            ],
+            'sous_themes' => ['violences_sexuelles', 'harcelement'],
+        ],
+        [
+            'ref' => 'prismes',
+            'nom' => 'P.R.I.S.M.E.S',
+            'mail' => null,
+            'localisation' => null,
+            'site_web' => null,
+            'telephones' => [
+                ['numero' => '24 15 17', 'type' => TelephoneType::Fixe],
+            ],
+            'sous_themes' => ['violences_sexuelles'],
+            'remarques' => "Preservatifs gratuits, consultations gratuites de sexologie, ecoute et depistage divers, suivi de grossesse. Permanence RAINBOWLUTION (LGBTQIA+) le premier mercredi de chaque mois, 11h30-16h30, sans rendez-vous (contact via Facebook et Instagram).",
+        ],
+        [
+            'ref' => 'espas_cmp',
+            'nom' => 'ESPAS CMP',
+            'mail' => null,
+            'localisation' => null,
+            'site_web' => null,
+            'telephones' => [
+                ['numero' => '20 47 40', 'type' => TelephoneType::Fixe],
+            ],
+            'sous_themes' => ['violences_sexuelles'],
+            'remarques' => 'Depistage anonyme et gratuit, preservatifs (CCF, etc.).',
         ],
         // Contacts campus UNC, repris de l'ancien app/data/themes.js (front, commit 9113ec0~1).
         // Adresse verifiee : 145 Avenue James Cook, Nouville, Noumea (UNC). Emails @example.com
