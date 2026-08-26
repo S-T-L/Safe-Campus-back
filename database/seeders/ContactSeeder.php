@@ -32,7 +32,8 @@ class ContactSeeder extends Seeder
      *     remarques?: ?string,
      *     gratuit?: ?bool,
      *     latitude?: ?float,
-     *     longitude?: ?float
+     *     longitude?: ?float,
+     *     actif?: bool
      * }>
      */
     private const CONTACTS = [
@@ -618,7 +619,7 @@ class ContactSeeder extends Seeder
                     'remarques' => $donnees['remarques'] ?? null,
                     'gratuit' => $donnees['gratuit'] ?? null,
                     'anonyme' => null,
-                    'actif' => true,
+                    'actif' => $donnees['actif'] ?? true,
                     'latitude' => $donnees['latitude'] ?? null,
                     'longitude' => $donnees['longitude'] ?? null,
                 ]

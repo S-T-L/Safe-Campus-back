@@ -23,6 +23,7 @@ class TelephoneFactory extends Factory
             'type' => fake()->randomElement(TelephoneType::cases()),
             'libelle' => null,
             'contact_id' => Contact::factory(),
+            'actif' => true,
         ];
     }
 
@@ -54,6 +55,16 @@ class TelephoneFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'libelle' => $libelle,
+        ]);
+    }
+
+    /**
+     * Ligne retiree : reste en base, disparait du front.
+     */
+    public function inactif(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'actif' => false,
         ]);
     }
 }

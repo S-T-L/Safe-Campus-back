@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\MediaType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,18 +27,31 @@ class SousTheme extends Model
         'theme_id',
         'permet_signalement',
         'ordre',
+        'actif',
     ];
 
     protected function casts(): array
     {
         return [
             'permet_signalement' => 'boolean',
+            'actif' => 'boolean',
         ];
     }
 
     public function theme(): BelongsTo
     {
         return $this->belongsTo(Theme::class);
+    }
+
+    /**
+     * Sous-themes publiables. Un sous-theme inactif reste en base mais
+     * disparait du front.
+     *
+     * @param  Builder<SousTheme>  $query
+     */
+    public function scopeActif(Builder $query): void
+    {
+        $query->where('actif', true);
     }
 
     public function signalements(): HasMany

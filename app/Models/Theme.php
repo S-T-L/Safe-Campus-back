@@ -18,7 +18,15 @@ class Theme extends Model
         'libelle_court',
         'resume',
         'ordre',
+        'actif',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'actif' => 'boolean',
+        ];
+    }
 
     /**
      * @return HasMany<SousTheme, $this>
@@ -34,6 +42,14 @@ class Theme extends Model
     public function scopeOrdonne(Builder $query): void
     {
         $query->orderBy('ordre')->orderBy('id');
+    }
+
+    /**
+     * Themes publiables. Un theme inactif reste en base mais disparait du front.
+     */
+    public function scopeActif(Builder $query): void
+    {
+        $query->where('actif', true);
     }
 
     /**

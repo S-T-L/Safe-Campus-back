@@ -107,6 +107,34 @@ class AnnuaireApiTest extends TestCase
         $this->assertSame([0, 1, 2], $sousThemes->pluck('ordre')->all());
     }
 
+    public function test_get_themes_ecarte_les_themes_inactifs(): void
+    {
+        Theme::factory()->inactif()->create(['ref' => 'theme_test_ferme']);
+
+        $response = $this->getJson('/api/themes');
+
+        $response->assertOk();
+        $data = collect($response->json('data'))->firstWhere('ref', 'theme_test_ferme');
+        $this->assertNull($data);
+    }
+
+    public function test_get_themes_ecarte_les_sous_themes_et_medias_inactifs_dun_theme_actif(): void
+    {
+        $theme = Theme::factory()->create(['ref' => 'addictions_test']);
+        SousTheme::factory()->create(['ref' => 'sous_test_actif', 'theme_id' => $theme->id]);
+        SousTheme::factory()->inactif()->create(['ref' => 'sous_test_inactif', 'theme_id' => $theme->id]);
+        $mediaActif = Media::factory()->create(['libelle' => 'Media actif']);
+        $mediaInactif = Media::factory()->inactif()->create(['libelle' => 'Media inactif']);
+        $theme->medias()->attach([$mediaActif->id, $mediaInactif->id]);
+
+        $response = $this->getJson('/api/themes');
+
+        $response->assertOk();
+        $data = collect($response->json('data'))->firstWhere('ref', 'addictions_test');
+        $this->assertSame(['sous_test_actif'], collect($data['sous_themes'])->pluck('ref')->all());
+        $this->assertSame(['Media actif'], collect($data['medias'])->pluck('libelle')->all());
+    }
+
     public function test_get_sous_theme_par_ref_renvoie_l_article_et_les_contacts_actifs_sans_resume(): void
     {
         $sousTheme = SousTheme::factory()->create(['ref' => 'alcool_test', 'article' => 'Contenu.', 'resume' => 'Teaser.']);
@@ -123,6 +151,13 @@ class AnnuaireApiTest extends TestCase
         $response->assertJsonMissingPath('data.resume');
         $response->assertJsonCount(1, 'data.contacts');
         $response->assertJsonPath('data.contacts.0.nom', 'CSAPA');
+    }
+
+    public function test_get_sous_theme_par_ref_inactif_renvoie_404(): void
+    {
+        SousTheme::factory()->inactif()->create(['ref' => 'ferme_test']);
+
+        $this->getJson('/api/sous-themes/ferme_test')->assertNotFound();
     }
 
     public function test_get_sous_theme_embarque_le_theme_parent_de_facon_minimale(): void
@@ -177,6 +212,21 @@ class AnnuaireApiTest extends TestCase
         $response->assertJsonPath('data.documents.1.libelle', 'Fiche B');
     }
 
+    public function test_get_sous_theme_ecarte_les_documents_inactifs(): void
+    {
+        $sousTheme = SousTheme::factory()->create(['ref' => 'alcool_test']);
+        $documentActif = Media::factory()->type(MediaType::Document)->create(['libelle' => 'Fiche active']);
+        $documentInactif = Media::factory()->type(MediaType::Document)->inactif()->create(['libelle' => 'Fiche retiree']);
+        $sousTheme->medias()->attach($documentActif->id, ['ordre' => 0]);
+        $sousTheme->medias()->attach($documentInactif->id, ['ordre' => 1]);
+
+        $response = $this->getJson('/api/sous-themes/alcool_test');
+
+        $response->assertOk();
+        $response->assertJsonCount(1, 'data.documents');
+        $response->assertJsonPath('data.documents.0.libelle', 'Fiche active');
+    }
+
     public function test_get_sous_theme_par_ref_inconnue_renvoie_404(): void
     {
         $this->getJson('/api/sous-themes/inconnu')->assertNotFound();
@@ -215,5 +265,20 @@ class AnnuaireApiTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('data.contacts.0.telephones.0.libelle', 'Ecoute');
         $response->assertJsonPath('data.contacts.0.telephones.0.numero_vert', true);
+    }
+
+    public function test_get_sous_theme_ecarte_les_telephones_inactifs(): void
+    {
+        $sousTheme = SousTheme::factory()->create(['ref' => 'urgences']);
+        $contact = Contact::factory()->create();
+        $sousTheme->contacts()->attach($contact->id, ['ordre' => 0]);
+        Telephone::factory()->libelle('Ligne active')->create(['contact_id' => $contact->id]);
+        Telephone::factory()->inactif()->libelle('Ligne retiree')->create(['contact_id' => $contact->id]);
+
+        $response = $this->getJson('/api/sous-themes/urgences');
+
+        $response->assertOk();
+        $response->assertJsonCount(1, 'data.contacts.0.telephones');
+        $response->assertJsonPath('data.contacts.0.telephones.0.libelle', 'Ligne active');
     }
 }
