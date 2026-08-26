@@ -19,9 +19,15 @@ class TelephonesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('numero')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('numero')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Toggle::make('actif')
+                            ->required()
+                            ->default(true),
+                    ]),
                 Forms\Components\Select::make('type')
                     ->options(array_combine(
                         array_map(fn (TelephoneType $type) => $type->value, TelephoneType::cases()),
@@ -34,9 +40,6 @@ class TelephonesRelationManager extends RelationManager
                     ->maxLength(255),
                 Forms\Components\Toggle::make('numero_vert')
                     ->label('Numéro vert (gratuit depuis un fixe)'),
-                Forms\Components\Toggle::make('actif')
-                    ->required()
-                    ->default(true),
             ]);
     }
 

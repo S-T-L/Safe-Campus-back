@@ -26,30 +26,48 @@ class ContactResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('ref')
-                    ->required()
-                    ->maxLength(255)
-                    ->helperText('Clé de dédoublonnage du seeder. Non modifiable après création.')
-                    ->disabled(fn (?Contact $record) => $record !== null)
-                    ->dehydrated(fn (?Contact $record) => $record === null),
-                Forms\Components\TextInput::make('nom')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('prenom')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('mail')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('localisation')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('latitude')
-                    ->numeric()
-                    ->helperText('Coordonnée GPS. Vide tant que l\'adresse n\'est pas géocodée — la carte du front reste masquée sans elle.'),
-                Forms\Components\TextInput::make('longitude')
-                    ->numeric(),
-                Forms\Components\TextInput::make('site_web')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('horaires')
-                    ->maxLength(255),
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('ref')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('Clé de dédoublonnage du seeder. Non modifiable après création.')
+                            ->disabled(fn (?Contact $record) => $record !== null)
+                            ->dehydrated(fn (?Contact $record) => $record === null),
+                        Forms\Components\Toggle::make('actif')
+                            ->required()
+                            ->default(true),
+                    ]),
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('nom')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('prenom')
+                            ->maxLength(255),
+                    ]),
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('mail')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('localisation')
+                            ->maxLength(255),
+                    ]),
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('longitude')
+                            ->numeric(),
+                        Forms\Components\TextInput::make('latitude')
+                            ->numeric()
+                            ->helperText('Coordonnée GPS. Vide tant que l\'adresse n\'est pas géocodée — la carte du front reste masquée sans elle.'),
+                    ]),
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('horaires')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('site_web')
+                            ->maxLength(255),
+                    ]),
                 Forms\Components\Textarea::make('remarques')
                     ->helperText('Public visé et conditions d\'accueil (ex. "réservé aux moins de 25 ans").')
                     ->columnSpanFull(),
@@ -63,9 +81,6 @@ class ContactResource extends Resource
                     ->options(['1' => 'Oui', '0' => 'Non'])
                     ->helperText('Non renseigné = inconnu, distinct de "Non".')
                     ->native(false),
-                Forms\Components\Toggle::make('actif')
-                    ->required()
-                    ->default(true),
             ]);
     }
 

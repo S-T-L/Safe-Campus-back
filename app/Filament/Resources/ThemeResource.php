@@ -26,16 +26,22 @@ class ThemeResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('libelle')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('Libellé long, affiché dans le menu et la recherche.'),
+                        Forms\Components\Toggle::make('actif')
+                            ->required()
+                            ->default(true),
+                    ]),
                 Forms\Components\TextInput::make('ref')
                     ->required()
                     ->maxLength(255)
                     ->helperText('Clé stable, jamais affichée. Non modifiable après création.')
                     ->disabled(fn (?Theme $record) => $record !== null)
                     ->dehydrated(fn (?Theme $record) => $record === null),
-                Forms\Components\TextInput::make('libelle')
-                    ->required()
-                    ->maxLength(255)
-                    ->helperText('Libellé long, affiché dans le menu et la recherche.'),
                 Forms\Components\TextInput::make('libelle_court')
                     ->maxLength(255)
                     ->helperText('Libellé court, affiché dans la navigation et les tags de fiche.'),
@@ -47,9 +53,6 @@ class ThemeResource extends Resource
                     ->default(0)
                     ->required()
                     ->helperText('Ordre d\'affichage des sections sur l\'accueil (0 = en tête).'),
-                Forms\Components\Toggle::make('actif')
-                    ->required()
-                    ->default(true),
             ]);
     }
 

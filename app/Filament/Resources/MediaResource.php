@@ -26,10 +26,16 @@ class MediaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('libelle')
-                    ->required()
-                    ->maxLength(255)
-                    ->helperText('Clé de recherche du média dans les sélecteurs.'),
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('libelle')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('Clé de recherche du média dans les sélecteurs.'),
+                        Forms\Components\Toggle::make('actif')
+                            ->required()
+                            ->default(true),
+                    ]),
                 Forms\Components\Textarea::make('description')
                     ->helperText('Texte affiché sous le titre d\'une fiche réflective. Inutile pour une illustration.')
                     ->columnSpanFull(),
@@ -50,9 +56,6 @@ class MediaResource extends Resource
                     ->openable()
                     ->required()
                     ->helperText('Stocke sous storage/app/public/medias/{type}/, servi via /storage/... (voir README).'),
-                Forms\Components\Toggle::make('actif')
-                    ->required()
-                    ->default(true),
             ]);
     }
 
