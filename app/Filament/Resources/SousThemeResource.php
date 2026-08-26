@@ -25,6 +25,15 @@ class SousThemeResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('libelle')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Toggle::make('actif')
+                            ->required()
+                            ->default(true),
+                    ]),
                 Forms\Components\Select::make('theme_id')
                     ->label('Thème')
                     ->relationship('theme', 'libelle')
@@ -36,9 +45,6 @@ class SousThemeResource extends Resource
                     ->helperText('Clé stable, jamais affichée. Non modifiable après création.')
                     ->disabled(fn (?SousTheme $record) => $record !== null)
                     ->dehydrated(fn (?SousTheme $record) => $record === null),
-                Forms\Components\TextInput::make('libelle')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\Textarea::make('resume')
                     ->helperText('Teaser affiché sur la carte d\'accueil.')
                     ->columnSpanFull(),
@@ -80,6 +86,8 @@ class SousThemeResource extends Resource
                 Tables\Columns\TextColumn::make('contacts_count')
                     ->label('Contacts')
                     ->counts('contacts'),
+                Tables\Columns\IconColumn::make('actif')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -94,6 +102,7 @@ class SousThemeResource extends Resource
                 Tables\Filters\SelectFilter::make('theme')
                     ->relationship('theme', 'libelle'),
                 Tables\Filters\TernaryFilter::make('permet_signalement'),
+                Tables\Filters\TernaryFilter::make('actif'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -32,7 +32,8 @@ class ContactSeeder extends Seeder
      *     remarques?: ?string,
      *     gratuit?: ?bool,
      *     latitude?: ?float,
-     *     longitude?: ?float
+     *     longitude?: ?float,
+     *     actif?: bool
      * }>
      */
     private const CONTACTS = [
@@ -465,15 +466,6 @@ class ContactSeeder extends Seeder
             'sous_themes' => ['alcool', 'drogue', 'tabac'],
         ],
         [
-            'ref' => 'mij',
-            'nom' => 'MIJ - Mission Information Jeunesse',
-            'mail' => null,
-            'localisation' => 'Permanences quartiers de Noumea',
-            'site_web' => null,
-            'telephones' => [],
-            'sous_themes' => ['anxiete', 'depression', 'burn_out', 'violences_sexuelles'],
-        ],
-        [
             'ref' => 'cafd_pNord',
             'nom' => 'Centre d\'Accueil des Femmes en Difficulte - Province Nord',
             'mail' => null,
@@ -618,7 +610,7 @@ class ContactSeeder extends Seeder
                     'remarques' => $donnees['remarques'] ?? null,
                     'gratuit' => $donnees['gratuit'] ?? null,
                     'anonyme' => null,
-                    'actif' => true,
+                    'actif' => $donnees['actif'] ?? true,
                     'latitude' => $donnees['latitude'] ?? null,
                     'longitude' => $donnees['longitude'] ?? null,
                 ]

@@ -19,9 +19,15 @@ class TelephonesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('numero')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('numero')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Toggle::make('actif')
+                            ->required()
+                            ->default(true),
+                    ]),
                 Forms\Components\Select::make('type')
                     ->options(array_combine(
                         array_map(fn (TelephoneType $type) => $type->value, TelephoneType::cases()),
@@ -50,9 +56,11 @@ class TelephonesRelationManager extends RelationManager
                 Tables\Columns\IconColumn::make('numero_vert')
                     ->boolean()
                     ->label('Vert'),
+                Tables\Columns\IconColumn::make('actif')
+                    ->boolean(),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('actif'),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),

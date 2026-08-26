@@ -26,16 +26,22 @@ class ThemeResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('libelle')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('Libellé long, affiché dans le menu et la recherche.'),
+                        Forms\Components\Toggle::make('actif')
+                            ->required()
+                            ->default(true),
+                    ]),
                 Forms\Components\TextInput::make('ref')
                     ->required()
                     ->maxLength(255)
                     ->helperText('Clé stable, jamais affichée. Non modifiable après création.')
                     ->disabled(fn (?Theme $record) => $record !== null)
                     ->dehydrated(fn (?Theme $record) => $record === null),
-                Forms\Components\TextInput::make('libelle')
-                    ->required()
-                    ->maxLength(255)
-                    ->helperText('Libellé long, affiché dans le menu et la recherche.'),
                 Forms\Components\TextInput::make('libelle_court')
                     ->maxLength(255)
                     ->helperText('Libellé court, affiché dans la navigation et les tags de fiche.'),
@@ -67,6 +73,8 @@ class ThemeResource extends Resource
                 Tables\Columns\TextColumn::make('sous_themes_count')
                     ->label('Sous-thèmes')
                     ->counts('sousThemes'),
+                Tables\Columns\IconColumn::make('actif')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -78,7 +86,7 @@ class ThemeResource extends Resource
             ])
             ->defaultSort('ordre')
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('actif'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

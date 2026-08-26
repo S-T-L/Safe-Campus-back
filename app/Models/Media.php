@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\MediaType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,12 +25,14 @@ class Media extends Model
         'description',
         'chemin',
         'type',
+        'actif',
     ];
 
     protected function casts(): array
     {
         return [
             'type' => MediaType::class,
+            'actif' => 'boolean',
         ];
     }
 
@@ -58,5 +61,15 @@ class Media extends Model
     public function themes(): BelongsToMany
     {
         return $this->belongsToMany(Theme::class);
+    }
+
+    /**
+     * Medias publiables. Un media inactif reste en base mais disparait du front.
+     *
+     * @param  Builder<Media>  $query
+     */
+    public function scopeActif(Builder $query): void
+    {
+        $query->where('actif', true);
     }
 }

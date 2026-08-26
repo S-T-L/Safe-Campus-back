@@ -26,10 +26,16 @@ class MediaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('libelle')
-                    ->required()
-                    ->maxLength(255)
-                    ->helperText('Clé de recherche du média dans les sélecteurs.'),
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('libelle')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('Clé de recherche du média dans les sélecteurs.'),
+                        Forms\Components\Toggle::make('actif')
+                            ->required()
+                            ->default(true),
+                    ]),
                 Forms\Components\Textarea::make('description')
                     ->helperText('Texte affiché sous le titre d\'une fiche réflective. Inutile pour une illustration.')
                     ->columnSpanFull(),
@@ -67,6 +73,8 @@ class MediaResource extends Resource
                     ->formatStateUsing(fn (MediaType $state) => $state->libelle()),
                 Tables\Columns\TextColumn::make('chemin')
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\IconColumn::make('actif')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -78,6 +86,7 @@ class MediaResource extends Resource
                         array_map(fn (MediaType $type) => $type->value, MediaType::cases()),
                         array_map(fn (MediaType $type) => $type->libelle(), MediaType::cases()),
                     )),
+                Tables\Filters\TernaryFilter::make('actif'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
