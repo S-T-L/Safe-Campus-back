@@ -57,6 +57,9 @@ class SousThemeResource extends Resource
                 Forms\Components\Toggle::make('permet_signalement')
                     ->label('Formulaire de signalement')
                     ->default(false),
+                Forms\Components\Toggle::make('actif')
+                    ->required()
+                    ->default(true),
             ]);
     }
 
@@ -80,6 +83,8 @@ class SousThemeResource extends Resource
                 Tables\Columns\TextColumn::make('contacts_count')
                     ->label('Contacts')
                     ->counts('contacts'),
+                Tables\Columns\IconColumn::make('actif')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -94,6 +99,7 @@ class SousThemeResource extends Resource
                 Tables\Filters\SelectFilter::make('theme')
                     ->relationship('theme', 'libelle'),
                 Tables\Filters\TernaryFilter::make('permet_signalement'),
+                Tables\Filters\TernaryFilter::make('actif'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

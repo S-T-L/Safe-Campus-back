@@ -47,6 +47,9 @@ class ThemeResource extends Resource
                     ->default(0)
                     ->required()
                     ->helperText('Ordre d\'affichage des sections sur l\'accueil (0 = en tête).'),
+                Forms\Components\Toggle::make('actif')
+                    ->required()
+                    ->default(true),
             ]);
     }
 
@@ -67,6 +70,8 @@ class ThemeResource extends Resource
                 Tables\Columns\TextColumn::make('sous_themes_count')
                     ->label('Sous-thèmes')
                     ->counts('sousThemes'),
+                Tables\Columns\IconColumn::make('actif')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -78,7 +83,7 @@ class ThemeResource extends Resource
             ])
             ->defaultSort('ordre')
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('actif'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

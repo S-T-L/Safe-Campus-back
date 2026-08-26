@@ -34,6 +34,9 @@ class TelephonesRelationManager extends RelationManager
                     ->maxLength(255),
                 Forms\Components\Toggle::make('numero_vert')
                     ->label('Numéro vert (gratuit depuis un fixe)'),
+                Forms\Components\Toggle::make('actif')
+                    ->required()
+                    ->default(true),
             ]);
     }
 
@@ -50,9 +53,11 @@ class TelephonesRelationManager extends RelationManager
                 Tables\Columns\IconColumn::make('numero_vert')
                     ->boolean()
                     ->label('Vert'),
+                Tables\Columns\IconColumn::make('actif')
+                    ->boolean(),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('actif'),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),

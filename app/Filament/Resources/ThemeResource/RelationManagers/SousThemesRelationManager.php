@@ -36,6 +36,9 @@ class SousThemesRelationManager extends RelationManager
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('permet_signalement')
                     ->label('Formulaire de signalement'),
+                Forms\Components\Toggle::make('actif')
+                    ->required()
+                    ->default(true),
             ]);
     }
 
@@ -54,9 +57,11 @@ class SousThemesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('contacts_count')
                     ->label('Contacts')
                     ->counts('contacts'),
+                Tables\Columns\IconColumn::make('actif')
+                    ->boolean(),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('actif'),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),

@@ -50,6 +50,9 @@ class MediaResource extends Resource
                     ->openable()
                     ->required()
                     ->helperText('Stocke sous storage/app/public/medias/{type}/, servi via /storage/... (voir README).'),
+                Forms\Components\Toggle::make('actif')
+                    ->required()
+                    ->default(true),
             ]);
     }
 
@@ -67,6 +70,8 @@ class MediaResource extends Resource
                     ->formatStateUsing(fn (MediaType $state) => $state->libelle()),
                 Tables\Columns\TextColumn::make('chemin')
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\IconColumn::make('actif')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -78,6 +83,7 @@ class MediaResource extends Resource
                         array_map(fn (MediaType $type) => $type->value, MediaType::cases()),
                         array_map(fn (MediaType $type) => $type->libelle(), MediaType::cases()),
                     )),
+                Tables\Filters\TernaryFilter::make('actif'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
