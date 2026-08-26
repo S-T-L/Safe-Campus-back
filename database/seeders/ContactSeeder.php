@@ -466,15 +466,6 @@ class ContactSeeder extends Seeder
             'sous_themes' => ['alcool', 'drogue', 'tabac'],
         ],
         [
-            'ref' => 'mij',
-            'nom' => 'MIJ - Mission Information Jeunesse',
-            'mail' => null,
-            'localisation' => 'Permanences quartiers de Noumea',
-            'site_web' => null,
-            'telephones' => [],
-            'sous_themes' => ['anxiete', 'depression', 'burn_out', 'violences_sexuelles'],
-        ],
-        [
             'ref' => 'cafd_pNord',
             'nom' => 'Centre d\'Accueil des Femmes en Difficulte - Province Nord',
             'mail' => null,
