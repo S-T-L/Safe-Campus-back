@@ -6,12 +6,14 @@ services:
             args:
                 WWWUSER: '${WWWUSER:-1000}'
                 WWWGROUP: '${WWWGROUP:-1000}'
+                APP_PORT: '${APP_PORT:-8000}'
         container_name: SC_Back
         ports:
-            - '${APP_PORT:-8000}:8000'
+            - '${APP_PORT:-8000}:${APP_PORT:-8000}'
         volumes:
             - '.:/var/www/html'
         environment:
+            APP_PORT: '${APP_PORT:-8000}'
             DB_HOST: pgsql
             DB_DATABASE: '${DB_DATABASE}'
             DB_USERNAME: '${DB_USERNAME}'
@@ -64,35 +66,6 @@ services:
                 reservations:
                     memory: 1G
 
-    sc_front:
-        build:
-            context: ../Safe-Campus-front
-            dockerfile: Dockerfile
-            args:
-                WWWUSER: '${WWWUSER:-1000}'
-                WWWGROUP: '${WWWGROUP:-1000}'
-        container_name: SC_Front
-        ports:
-            - '${FRONT_PORT:-3000}:3000'
-        volumes:
-            - '../Safe-Campus-front:/app'
-            - 'sc_front_node_modules:/app/node_modules'
-        environment:
-            NODE_ENV: development
-            # SSR (dans le conteneur) : hostname Docker interne.
-            NUXT_API_BASE_INTERNAL: 'http://sc_back:8000'
-            # Navigateur (hors Docker) : port publie sur l'hote.
-            NUXT_PUBLIC_API_BASE: 'http://localhost:${APP_PORT:-8000}'
-        networks:
-            - scback
-        deploy:
-            resources:
-                limits:
-                    cpus: '2'
-                    memory: 2G
-                reservations:
-                    memory: 1G
-
     adminer:
         image: 'adminer:latest'
         container_name: SC_Adminer
@@ -113,10 +86,11 @@ services:
 
 networks:
     scback:
+        # Nom fixe : partage le reseau avec le docker-compose.yml de Safe-Campus-front,
+        # que la stack back ou front soit demarree en premier.
+        name: scback
         driver: bridge
 
 volumes:
     scback-pgsql:
-        driver: local
-    sc_front_node_modules:
         driver: local
