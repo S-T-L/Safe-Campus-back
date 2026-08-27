@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SousThemeResource\Pages;
+use App\Filament\Resources\SousThemeResource\RelationManagers\ContactsRelationManager;
 use App\Filament\Resources\SousThemeResource\RelationManagers\MediasRelationManager;
 use App\Models\SousTheme;
 use Filament\Forms;
@@ -117,6 +118,7 @@ class SousThemeResource extends Resource
     public static function getRelations(): array
     {
         return [
+            ContactsRelationManager::class,
             MediasRelationManager::class,
         ];
     }
