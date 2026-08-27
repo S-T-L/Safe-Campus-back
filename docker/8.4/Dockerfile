@@ -4,6 +4,7 @@ FROM php:8.4-cli
 # memes identifiants, les fichiers ecrits dans le bind mount lui appartiennent.
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
+ARG APP_PORT=8000
 
 WORKDIR /var/www/html
 
@@ -28,7 +29,7 @@ RUN chmod +x /usr/local/bin/start-container
 
 USER scback
 
-EXPOSE 8000
+EXPOSE ${APP_PORT}
 
 # Sans argument, start-container lance composer install puis artisan serve
 ENTRYPOINT ["start-container"]

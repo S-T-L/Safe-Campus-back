@@ -63,7 +63,7 @@ ssh -T git@github.com
 
 ### Cloner les deux dépôts
 
-Les deux repos doivent être **dans le même dossier parent** — le `docker-compose.yml` du back référence le front via un chemin relatif `../Safe-Campus-front`.
+Chaque repo a son propre `docker-compose.yml` et se lance indépendamment. Les cloner dans un dossier parent commun reste conseillé pour s'y retrouver, mais ce n'est plus une contrainte technique.
 
 ```bash
 mkdir -p ~/workspace/safe-campus && cd ~/workspace/safe-campus
@@ -139,18 +139,18 @@ docker compose exec sc_back php artisan storage:link
 
 Le `.env` est lu par Docker avant le build : `WWWUSER`/`WWWGROUP` créent l'utilisateur `scback` aligné sur l'utilisateur hôte, `DB_*` alimente PostgreSQL.
 
-`SC_Back` exécute `composer install` à chaque démarrage, puis `artisan serve`. `SC_Front` exécute `npm install`, puis `npm run dev`. `key:generate`, `migrate` et `db:seed` sont à la main : l'état de la base est piloté par le dev.
+`SC_Back` exécute `composer install` à chaque démarrage, puis `artisan serve`. `key:generate`, `migrate` et `db:seed` sont à la main : l'état de la base est piloté par le dev.
 
 > `migrate` seed automatiquement la taxonomie (themes/sous-themes) et le compte webmaster de démo — donnée structurelle requise par l'app. `db:seed` reste nécessaire à part pour l'annuaire de contacts et les médias (`ContactSeeder`, `MediaSeeder`) : volontairement pas dans une migration, pour ne pas polluer la base de test (`RefreshDatabase`) utilisée par la suite de tests, qui crée des contacts avec des `ref` réels (`samu`, `sos_ecoute`, ...). Les deux seeders sont idempotents (rejouables sans dupliquer).
 
 > `storage:link` crée `public/storage` → `storage/app/public` (symlink, gitignoré). Sans ça, les fichiers uploadés via Filament (médias : images, PDF, ...) sont bien enregistrés mais renvoient 404 côté front.
 
-| Conteneur | Rôle |
-|---|---|
-| `SC_Back` | Laravel (PHP 8.4) |
-| `SC_Front` | Nuxt 3 + Vite HMR |
-| `SC_Postgres` | PostgreSQL 17 |
-| `SC_Adminer` | Interface DB |
+| Conteneur | Rôle | Stack |
+|---|---|---|
+| `SC_Back` | Laravel (PHP 8.4) | ce repo |
+| `SC_Postgres` | PostgreSQL 17 | ce repo |
+| `SC_Adminer` | Interface DB | ce repo |
+| `SC_Front` | Nuxt 3 + Vite HMR | [Safe-Campus-front](../Safe-Campus-front) |
 
 Ouvrir le code : `code .` depuis WSL, à la racine du repo.
 
@@ -197,7 +197,7 @@ Le reste du code vit dans le bind mount et ne nécessite aucun rebuild.
 
 ### Le front
 
-`sc_front` fait partie du même `docker-compose.yml` : `docker compose up -d` démarre les deux. Pour ne lancer que le front : `docker compose up -d sc_front`. Le code du front s'édite dans [Safe-Campus-front](../Safe-Campus-front), ses commandes passent par `docker compose exec sc_front`.
+`sc_front` a son propre `docker-compose.yml` dans [Safe-Campus-front](../Safe-Campus-front) — stack indépendante, à démarrer séparément (`cd ../Safe-Campus-front && docker compose up -d`). Les deux stacks partagent le réseau Docker `scback` (nom fixe) : si les deux tournent, `sc_front` joint `sc_back` par son nom de conteneur pour le SSR ; sinon `sc_back` reste simplement injoignable depuis le front. Le code du front s'édite dans ce repo, ses commandes passent par `docker compose exec sc_front` (depuis `Safe-Campus-front`).
 
 ### Fichiers médias (images, PDF, ...)
 
@@ -245,9 +245,9 @@ Xdebug est actif dans l'image (`docker/8.4/php.ini`, port 9003, `start_with_requ
 | `8000` | Laravel | http://localhost:8000 |
 | `5432` | PostgreSQL | — |
 | `8080` | Adminer | http://localhost:8080 |
-| `3000` | Nuxt front (`sc_front`, même stack) | http://localhost:3000 |
-| `24678` | Vite HMR du front Nuxt | — |
 | `9003` | Xdebug (container → hôte) | — |
+
+Ports du front (`sc_front`, stack séparée) : voir le [README de Safe-Campus-front](../Safe-Campus-front/README.md).
 
 Les ports sont publiés par Docker : sous WSL 2 ils sont joignables depuis Windows.
 
@@ -289,7 +289,7 @@ graph TD
     root --> scfront["Safe-Campus-front/\nUI principale\nNuxt 3 standalone"]
 
     scback --> readme["README.md\nGuide d'installation"]
-    scback --> dc["docker-compose.yml\nOrchestration : sc_back, sc_front, pgsql, adminer"]
+    scback --> dc["docker-compose.yml\nOrchestration : sc_back, pgsql, adminer"]
     scback --> app["app/\nCode PHP Laravel + Filament"]
     scback --> docker["docker/8.4/\nDockerfile PHP 8.4\nstart-container (entrypoint)"]
     scback --> docs["docs/\nDocumentation"]
@@ -301,6 +301,7 @@ graph TD
     docs --> schema["schema_bd.md\nSchéma de base de données"]
 
     scfront --> fdockerfile["Dockerfile\nNode 22"]
+    scfront --> fdc["docker-compose.yml\nOrchestration : sc_front\n(reseau `scback` partage avec le back)"]
     scfront --> fstart["start-container\nnpm install puis npm run dev"]
     scfront --> pages["pages/\nPages Nuxt"]
     scfront --> components["components/\nComposants Vue"]

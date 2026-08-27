@@ -12,4 +12,4 @@ fi
 # composer install declenche filament:upgrade (post-autoload-dump), qui publie les assets
 COMPOSER_MEMORY_LIMIT=-1 composer install --no-interaction
 
-exec php artisan serve --host=0.0.0.0 --port=8000
+exec php artisan serve --host=0.0.0.0 --port="${APP_PORT:-8000}"

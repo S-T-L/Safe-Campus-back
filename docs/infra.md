@@ -24,10 +24,12 @@ Mesure au repos, aucune requête en cours. `SC_Front` domine : le serveur de dev
 
 ## Tailles des images Docker
 
+> Mesures antérieures au split des `docker-compose.yml` (back/front séparés) : `sc_front` est bâti par une stack compose distincte, préfixe d'image `safe-campus-front-*` désormais.
+
 | Image | Tag | Taille |
 |---|---|---|
 | safe-campus-back-sc_back | latest | 1.01 GB |
-| safe-campus-back-sc_front | latest | 1.64 GB |
+| safe-campus-front-sc_front | latest | 1.64 GB |
 | postgres | 17 | 645 MB |
 | adminer | latest | 170 MB |
 
@@ -49,7 +51,7 @@ Mesure au repos, aucune requête en cours. `SC_Front` domine : le serveur de dev
 | Volume | Contenu | Taille |
 |---|---|---|
 | `safe-campus-back_scback-pgsql` | Données PostgreSQL | 73 MB |
-| `safe-campus-back_sc_front_node_modules` | Dépendances Node du front | 244 MB |
+| `safe-campus-front_sc_front_node_modules` | Dépendances Node du front | 244 MB |
 
 ---
 
