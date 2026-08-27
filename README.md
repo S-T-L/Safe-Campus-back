@@ -195,6 +195,8 @@ docker compose up -d
 
 Le reste du code vit dans le bind mount et ne nécessite aucun rebuild.
 
+> Ce `docker-compose.yml` est un stack de **développement** uniquement. La stack de production (`docker-compose.prod.yml`, `docker/8.4/Dockerfile.prod`, buildée par Dockploy) est documentée dans [docs/deploiement.md](docs/deploiement.md).
+
 ### Le front
 
 `sc_front` a son propre `docker-compose.yml` dans [Safe-Campus-front](../Safe-Campus-front) — stack indépendante, à démarrer séparément (`cd ../Safe-Campus-front && docker compose up -d`). Les deux stacks partagent le réseau Docker `scback` (nom fixe) : si les deux tournent, `sc_front` joint `sc_back` par son nom de conteneur pour le SSR ; sinon `sc_back` reste simplement injoignable depuis le front. Le code du front s'édite dans ce repo, ses commandes passent par `docker compose exec sc_front` (depuis `Safe-Campus-front`).
@@ -291,7 +293,7 @@ graph TD
     scback --> readme["README.md\nGuide d'installation"]
     scback --> dc["docker-compose.yml\nOrchestration : sc_back, pgsql, adminer"]
     scback --> app["app/\nCode PHP Laravel + Filament"]
-    scback --> docker["docker/8.4/\nDockerfile PHP 8.4\nstart-container (entrypoint)"]
+    scback --> docker["docker/8.4/\nDockerfile PHP 8.4 (dev)\nDockerfile.prod (Dockploy)\nstart-container (entrypoint)"]
     scback --> docs["docs/\nDocumentation"]
 
     docs --> back["back.md\nConventions backend"]
@@ -300,9 +302,8 @@ graph TD
     docs --> infra["infra.md\nInfrastructure"]
     docs --> schema["schema_bd.md\nSchéma de base de données"]
 
-    scfront --> fdockerfile["Dockerfile\nNode 22"]
+    scfront --> fdocker["docker/\nDockerfile Node 22 (dev)\nDockerfile.prod (Dockploy)\nstart-container (entrypoint dev)"]
     scfront --> fdc["docker-compose.yml\nOrchestration : sc_front\n(reseau `scback` partage avec le back)"]
-    scfront --> fstart["start-container\nnpm install puis npm run dev"]
     scfront --> pages["pages/\nPages Nuxt"]
     scfront --> components["components/\nComposants Vue"]
 ```

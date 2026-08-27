@@ -1,0 +1,85 @@
+services:
+    sc_back:
+        build:
+            context: .
+            dockerfile: docker/8.4/Dockerfile.prod
+            args:
+                APP_PORT: '${APP_PORT:-8000}'
+        image: safe-campus-back-sc_back-prod
+        container_name: SC_Back_Prod
+        restart: unless-stopped
+        ports:
+            - '${APP_PORT:-8000}:${APP_PORT:-8000}'
+        environment:
+            APP_PORT: '${APP_PORT:-8000}'
+            APP_ENV: production
+            APP_DEBUG: 'false'
+            APP_KEY: '${APP_KEY}'
+            APP_URL: '${APP_URL}'
+            DB_HOST: pgsql
+            DB_DATABASE: '${DB_DATABASE}'
+            DB_USERNAME: '${DB_USERNAME}'
+            DB_PASSWORD: '${DB_PASSWORD}'
+            LOG_LEVEL: error
+            CORS_ALLOWED_ORIGINS: '${CORS_ALLOWED_ORIGINS}'
+            SANCTUM_STATEFUL_DOMAINS: '${SANCTUM_STATEFUL_DOMAINS}'
+        depends_on:
+            pgsql:
+                condition: service_healthy
+        networks:
+            - scback_prod
+        # Point de depart, pas mesure en charge reelle (a ajuster selon le trafic
+        # observe sur Dockploy) : cf. docs/infra.md pour la mesure au repos en dev.
+        deploy:
+            resources:
+                limits:
+                    cpus: '2'
+                    memory: 2G
+                reservations:
+                    memory: 1G
+
+    pgsql:
+        image: 'postgres:17'
+        container_name: SC_Postgres_Prod
+        restart: unless-stopped
+        # Pas de port publie sur l'hote : seul sc_back doit atteindre la base,
+        # via le reseau interne (contrairement au stack dev, pas d'Adminer non plus).
+        environment:
+            POSTGRES_DB: '${DB_DATABASE}'
+            POSTGRES_USER: '${DB_USERNAME}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD}'
+        volumes:
+            - 'scback-pgsql-prod:/var/lib/postgresql/data'
+        networks:
+            - scback_prod
+        healthcheck:
+            test:
+                - CMD
+                - pg_isready
+                - '-q'
+                - '-d'
+                - '${DB_DATABASE}'
+                - '-U'
+                - '${DB_USERNAME}'
+            interval: 5s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 2G
+                reservations:
+                    memory: 1G
+
+networks:
+    scback_prod:
+        # Nom distinct du reseau dev (`scback`) : les deux stacks peuvent tourner
+        # cote a cote sans collision.
+        name: scback_prod
+        driver: bridge
+
+volumes:
+    scback-pgsql-prod:
+        driver: local
