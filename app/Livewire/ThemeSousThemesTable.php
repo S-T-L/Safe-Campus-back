@@ -36,7 +36,9 @@ class ThemeSousThemesTable extends Component implements HasForms, HasTable
                     ->sortable(),
                 Tables\Columns\IconColumn::make('permet_signalement')
                     ->label('Signalement')
-                    ->boolean(),
+                    ->boolean()
+                    ->falseIcon('heroicon-o-minus')
+                    ->falseColor('gray'),
                 Tables\Columns\TextColumn::make('contacts_count')
                     ->label('Contacts')
                     ->counts('contacts'),

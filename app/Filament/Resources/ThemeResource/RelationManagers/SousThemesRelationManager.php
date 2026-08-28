@@ -58,7 +58,9 @@ class SousThemesRelationManager extends RelationManager
                     ->tooltip('Une thématique précise rattachée à ce thème, par exemple « Alcool ».'),
                 Tables\Columns\IconColumn::make('permet_signalement')
                     ->boolean()
-                    ->label('Signalement'),
+                    ->label('Signalement')
+                    ->falseIcon('heroicon-o-minus')
+                    ->falseColor('gray'),
                 Tables\Columns\TextColumn::make('contacts_count')
                     ->label('Contacts')
                     ->counts('contacts'),
