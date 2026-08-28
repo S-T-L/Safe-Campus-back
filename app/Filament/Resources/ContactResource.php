@@ -92,8 +92,6 @@ class ContactResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nom')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('prenom')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('mail')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
