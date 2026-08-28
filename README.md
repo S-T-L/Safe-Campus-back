@@ -75,11 +75,11 @@ git clone git@github.com:<org>/Safe-Campus-front.git
 
 ## 1. Logiciels requis
 
-| Outil | Version minimale | Lien |
-|---|---|---|
-| Docker Desktop | 4.x | https://www.docker.com/products/docker-desktop |
-| VS Code | 1.85+ | https://code.visualstudio.com |
-| Git | 2.x | https://git-scm.com |
+| Outil          | Version minimale | Lien                                           |
+| -------------- | ---------------- | ---------------------------------------------- |
+| Docker Desktop | 4.x              | https://www.docker.com/products/docker-desktop |
+| VS Code        | 1.85+            | https://code.visualstudio.com                  |
+| Git            | 2.x              | https://git-scm.com                            |
 
 ---
 
@@ -136,6 +136,11 @@ docker compose exec sc_back php artisan migrate
 docker compose exec sc_back php artisan db:seed
 docker compose exec sc_back php artisan storage:link
 ```
+Pour un reset clean: 
+
+```sh 
+docker compose exec sc_back php artisan migrate:fresh --seed
+```
 
 Le `.env` est lu par Docker avant le build : `WWWUSER`/`WWWGROUP` créent l'utilisateur `scback` aligné sur l'utilisateur hôte, `DB_*` alimente PostgreSQL.
 
@@ -145,12 +150,12 @@ Le `.env` est lu par Docker avant le build : `WWWUSER`/`WWWGROUP` créent l'util
 
 > `storage:link` crée `public/storage` → `storage/app/public` (symlink, gitignoré). Sans ça, les fichiers uploadés via Filament (médias : images, PDF, ...) sont bien enregistrés mais renvoient 404 côté front.
 
-| Conteneur | Rôle | Stack |
-|---|---|---|
-| `SC_Back` | Laravel (PHP 8.4) | ce repo |
-| `SC_Postgres` | PostgreSQL 17 | ce repo |
-| `SC_Adminer` | Interface DB | ce repo |
-| `SC_Front` | Nuxt 3 + Vite HMR | [Safe-Campus-front](../Safe-Campus-front) |
+| Conteneur     | Rôle              | Stack                                     |
+| ------------- | ----------------- | ----------------------------------------- |
+| `SC_Back`     | Laravel (PHP 8.4) | ce repo                                   |
+| `SC_Postgres` | PostgreSQL 17     | ce repo                                   |
+| `SC_Adminer`  | Interface DB      | ce repo                                   |
+| `SC_Front`    | Nuxt 3 + Vite HMR | [Safe-Campus-front](../Safe-Campus-front) |
 
 Ouvrir le code : `code .` depuis WSL, à la racine du repo.
 
@@ -242,12 +247,12 @@ Xdebug est actif dans l'image (`docker/8.4/php.ini`, port 9003, `start_with_requ
 
 ### Ports exposés
 
-| Port | Service | URL |
-|---|---|---|
-| `8000` | Laravel | http://localhost:8000 |
-| `5432` | PostgreSQL | — |
-| `8080` | Adminer | http://localhost:8080 |
-| `9003` | Xdebug (container → hôte) | — |
+| Port   | Service                   | URL                   |
+| ------ | ------------------------- | --------------------- |
+| `8000` | Laravel                   | http://localhost:8000 |
+| `5432` | PostgreSQL                | —                     |
+| `8080` | Adminer                   | http://localhost:8080 |
+| `9003` | Xdebug (container → hôte) | —                     |
 
 Ports du front (`sc_front`, stack séparée) : voir le [README de Safe-Campus-front](../Safe-Campus-front/README.md).
 
@@ -271,10 +276,10 @@ Un compte `webmaster` de démonstration est provisionné automatiquement au `mig
 production), identifiants bidon définis dans `.env.example` (`WEBMASTER_DEMO_EMAIL` /
 `WEBMASTER_DEMO_PASSWORD`) :
 
-| Champ | Valeur par défaut |
-|---|---|
-| Email | `webmaster@safe-campus.nc` |
-| Mot de passe | `password` |
+| Champ        | Valeur par défaut          |
+| ------------ | -------------------------- |
+| Email        | `webmaster@safe-campus.nc` |
+| Mot de passe | `password`                 |
 
 Pour changer ces valeurs, surcharger `WEBMASTER_DEMO_EMAIL`/`WEBMASTER_DEMO_PASSWORD` dans `.env`
 avant `migrate` — le compte n'est (re)créé que s'il n'existe pas déjà.
