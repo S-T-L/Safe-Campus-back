@@ -18,8 +18,6 @@ class SousThemeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Annuaire';
-
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
