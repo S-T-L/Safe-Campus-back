@@ -6,7 +6,7 @@
 @endphp
 
 <x-filament-widgets::widget>
-    <x-filament::section collapsible>
+    <x-filament::section collapsible collapsed>
         <x-slot name="heading">
             Guide rapide — Webmaster
         </x-slot>

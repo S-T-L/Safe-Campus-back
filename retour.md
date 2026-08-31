@@ -4,7 +4,7 @@ Filtré sur les retours back uniquement. Trié par temps de travail estimé, du 
 
 - [x] **[XS]** Infobulles / libellés clairs pour Thème et Sous-thème (à quoi ça correspond sur le site).
 - [x] **[XS]** Rendre explicite que cliquer sur une ligne sous-thème dans le tableau ouvre la modification/création.
-- [ ] **[S]** Contraste des bordures : revoir les variables root Tailwind pour mieux faire ressortir les éléments d'UI.
+- [x] **[S]** Contraste des bordures : revoir les variables root Tailwind pour mieux faire ressortir les éléments d'UI.
 - [ ] **[S]** Visibilité du dépliant guide sur l'accueil : améliorer et remanier son emplacement/mise en avant.
 - [ ] **[S/M]** Rappel guide par section (petit encart d'aide contextuel par section du panel).
 - [ ] **[S/M]** Guide : expliquer clairement comment rattacher un média / contact à un sous-thème.
@@ -21,3 +21,7 @@ Légende : XS < 2h · S ≈ demi-journée · M ≈ 1 jour · L ≈ 2-3 jours (es
 - [x] Icône de « signalement » absent : trait gris au lieu du rond rouge à croix (absence ≠ interdiction).
 - [x] Colonne « prénom » retirée du tableau contacts.
 - [x] Menu latéral : suppression du sous-menu déroulant « Annuaire », items à plat.
+- [x] Contraste mode clair : séparateurs de tableau / bordures de champs quasi invisibles (`gray-200`, ~1.3:1) retintés en bleu de marque directement dans la palette `gray` du panel (`AdminPanelProvider::colors()`).
+- [x] Contours des sections, de la sidebar, de la topbar et des champs de formulaire (`ring-gray-950/5` et `/10`) renforcés en bleu de marque.
+- [x] Menu latéral : l'item actif est désormais encadré d'une bordure bleue, en plus du fond grisé.
+- [x] Chevron plier/déplier d'une section (guide webmaster, blocs de formulaire) agrandi et coloré en bleu pour repérer l'état replié/déplié au premier coup d'œil.

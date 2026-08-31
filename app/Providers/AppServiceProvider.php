@@ -10,6 +10,7 @@ use App\Filament\Resources\ThemeResource\RelationManagers\SousThemesRelationMana
 use App\Livewire\ThemeSousThemesTable;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerClickToEditHints();
+        $this->registerAdminBorderStyles();
     }
 
     /**
@@ -54,5 +56,41 @@ class AppServiceProvider extends ServiceProvider
                 scopes: $scopes,
             );
         }
+    }
+
+    private function registerAdminBorderStyles(): void
+    {
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::STYLES_AFTER,
+            fn () => Blade::render(<<<'HTML'
+                <style>
+                    .ring-gray-950\/5 {
+                        --tw-ring-color: rgb(66 96 230 / 0.45) !important;
+                    }
+
+                    .ring-gray-950\/10 {
+                        --tw-ring-color: rgb(66 96 230 / 0.6) !important;
+                    }
+
+                    .fi-sidebar-item.fi-active > .fi-sidebar-item-button {
+                        border: 1px solid rgb(66 96 230 / 0.6);
+                    }
+
+                    .fi-section-header .fi-icon-btn {
+                        color: rgb(66 96 230) !important;
+                    }
+
+                    .fi-section-header .fi-icon-btn:hover {
+                        color: rgb(59 86 207) !important;
+                    }
+
+                    .fi-section-header .fi-icon-btn-icon {
+                        width: 1.75rem !important;
+                        height: 1.75rem !important;
+                    }
+                </style>
+                HTML
+            ),
+        );
     }
 }
