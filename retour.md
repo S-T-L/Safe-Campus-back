@@ -5,8 +5,8 @@ Filtré sur les retours back uniquement. Trié par temps de travail estimé, du 
 - [x] **[XS]** Infobulles / libellés clairs pour Thème et Sous-thème (à quoi ça correspond sur le site).
 - [x] **[XS]** Rendre explicite que cliquer sur une ligne sous-thème dans le tableau ouvre la modification/création.
 - [x] **[S]** Contraste des bordures : revoir les variables root Tailwind pour mieux faire ressortir les éléments d'UI.
-- [ ] **[S]** Visibilité du dépliant guide sur l'accueil : améliorer et remanier son emplacement/mise en avant.
-- [ ] **[S/M]** Rappel guide par section (petit encart d'aide contextuel par section du panel).
+- [x] **[S]** Visibilité du dépliant guide sur l'accueil : améliorer et remanier son emplacement/mise en avant.
+- [x] **[S/M]** Rappel guide par section (petit encart d'aide contextuel par section du panel).
 - [ ] **[S/M]** Guide : expliquer clairement comment rattacher un média / contact à un sous-thème.
 - [ ] **[M]** Compléter les sites internet pour les sites officiels et structures (Province Sud, etc.).
 - [ ] **[M]** Étoffer le guide avec plus d'éléments d'information.
@@ -25,3 +25,4 @@ Légende : XS < 2h · S ≈ demi-journée · M ≈ 1 jour · L ≈ 2-3 jours (es
 - [x] Contours des sections, de la sidebar, de la topbar et des champs de formulaire (`ring-gray-950/5` et `/10`) renforcés en bleu de marque.
 - [x] Menu latéral : l'item actif est désormais encadré d'une bordure bleue, en plus du fond grisé.
 - [x] Chevron plier/déplier d'une section (guide webmaster, blocs de formulaire) agrandi et coloré en bleu pour repérer l'état replié/déplié au premier coup d'œil.
+- [x] Entête de section lisible dès le premier coup d'œil (contraste renforcé + chevron bleu agrandi), qui sert désormais de rappel visuel systématique qu'un guide/encart d'aide est disponible par section.
