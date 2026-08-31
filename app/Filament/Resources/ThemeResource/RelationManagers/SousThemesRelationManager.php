@@ -49,14 +49,18 @@ class SousThemesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('libelle')
+            ->recordAction(Tables\Actions\EditAction::class)
             ->columns([
                 Tables\Columns\TextColumn::make('ref')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('libelle')
-                    ->searchable(),
+                    ->searchable()
+                    ->tooltip('Une thématique précise rattachée à ce thème, par exemple « Alcool ».'),
                 Tables\Columns\IconColumn::make('permet_signalement')
                     ->boolean()
-                    ->label('Signalement'),
+                    ->label('Signalement')
+                    ->falseIcon('heroicon-o-minus')
+                    ->falseColor('gray'),
                 Tables\Columns\TextColumn::make('contacts_count')
                     ->label('Contacts')
                     ->counts('contacts'),

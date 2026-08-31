@@ -18,8 +18,6 @@ class ContactResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Annuaire';
-
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
@@ -91,8 +89,6 @@ class ContactResource extends Resource
                 Tables\Columns\TextColumn::make('ref')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nom')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('prenom')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('mail')
                     ->searchable()

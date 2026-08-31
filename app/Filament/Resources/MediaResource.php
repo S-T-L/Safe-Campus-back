@@ -18,8 +18,6 @@ class MediaResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-photo';
 
-    protected static ?string $navigationGroup = 'Annuaire';
-
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form

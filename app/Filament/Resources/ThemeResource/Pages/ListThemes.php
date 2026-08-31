@@ -16,4 +16,9 @@ class ListThemes extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    public function getSubheading(): ?string
+    {
+        return 'Un thème est une grande catégorie du site, par exemple « Addiction ».';
+    }
 }

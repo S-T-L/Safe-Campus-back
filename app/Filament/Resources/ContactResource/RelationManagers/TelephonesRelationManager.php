@@ -47,6 +47,7 @@ class TelephonesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('numero')
+            ->recordAction(Tables\Actions\EditAction::class)
             ->columns([
                 Tables\Columns\TextColumn::make('numero'),
                 Tables\Columns\TextColumn::make('type')

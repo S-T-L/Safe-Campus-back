@@ -18,8 +18,6 @@ class SousThemeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Annuaire';
-
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
@@ -83,7 +81,9 @@ class SousThemeResource extends Resource
                     ->sortable(),
                 Tables\Columns\IconColumn::make('permet_signalement')
                     ->label('Signalement')
-                    ->boolean(),
+                    ->boolean()
+                    ->falseIcon('heroicon-o-minus')
+                    ->falseColor('gray'),
                 Tables\Columns\TextColumn::make('contacts_count')
                     ->label('Contacts')
                     ->counts('contacts'),

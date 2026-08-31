@@ -16,7 +16,7 @@
 
             <p>
                 <strong>Contacts</strong>
-                <x-filament::link :href="ContactResource::getUrl()" target="_blank" icon="heroicon-o-arrow-top-right-on-square" icon-position="after" size="xs">
+                <x-filament::link :href="ContactResource::getUrl()" icon="heroicon-o-arrow-right" icon-position="after" size="xs">
                     Ouvrir la page Contacts
                 </x-filament::link>
             </p>
@@ -31,7 +31,7 @@
 
             <p>
                 <strong>Sous-thèmes</strong>
-                <x-filament::link :href="SousThemeResource::getUrl()" target="_blank" icon="heroicon-o-arrow-top-right-on-square" icon-position="after" size="xs">
+                <x-filament::link :href="SousThemeResource::getUrl()" icon="heroicon-o-arrow-right" icon-position="after" size="xs">
                     Ouvrir la page Sous-thèmes
                 </x-filament::link>
             </p>
@@ -43,7 +43,7 @@
 
             <p>
                 <strong>Thèmes</strong>
-                <x-filament::link :href="ThemeResource::getUrl()" target="_blank" icon="heroicon-o-arrow-top-right-on-square" icon-position="after" size="xs">
+                <x-filament::link :href="ThemeResource::getUrl()" icon="heroicon-o-arrow-right" icon-position="after" size="xs">
                     Ouvrir la page Thèmes
                 </x-filament::link>
             </p>
@@ -55,7 +55,7 @@
 
             <p>
                 <strong>Médias</strong>
-                <x-filament::link :href="MediaResource::getUrl()" target="_blank" icon="heroicon-o-arrow-top-right-on-square" icon-position="after" size="xs">
+                <x-filament::link :href="MediaResource::getUrl()" icon="heroicon-o-arrow-right" icon-position="after" size="xs">
                     Ouvrir la page Médias
                 </x-filament::link>
             </p>
