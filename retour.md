@@ -8,8 +8,8 @@ Filtré sur les retours back uniquement. Trié par temps de travail estimé, du 
 - [x] **[S]** Visibilité du dépliant guide sur l'accueil : améliorer et remanier son emplacement/mise en avant.
 - [x] **[S/M]** Rappel guide par section (petit encart d'aide contextuel par section du panel).
 - [ ] **[S/M]** Guide : expliquer clairement comment rattacher un média / contact à un sous-thème.
-- [ ] **[M]** Compléter les sites internet pour les sites officiels et structures (Province Sud, etc.).
-- [ ] **[M]** Étoffer le guide avec plus d'éléments d'information.
+- [x] **[M]** Compléter les sites internet pour les sites officiels et structures (Province Sud, etc.).
+- [x] **[M]** Étoffer le guide avec plus d'éléments d'information.
 - [ ] **[M/L]** Vérifier la gestion des langues FR/EN (comment fonctionnent les traductions) et permettre de choisir français/anglais.
 - [ ] **[L]** À la saisie d'adresse en back, afficher un embed Leaflet pour visualiser le point sur la carte, avec possibilité d'ajuster légèrement la position depuis l'embed (et répercussion côté front).
 
