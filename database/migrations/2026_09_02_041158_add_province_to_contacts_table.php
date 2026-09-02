@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('contacts', function (Blueprint $table) {
-            $table->enum('province', ['p-sud', 'p-nord', 'p-iles', 'all'])->nullable();
+            $table->enum('province', ['p-sud', 'p-nord', 'p-iles'])->nullable();
         });
     }
 

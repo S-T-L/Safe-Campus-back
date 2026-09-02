@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Province;
 use App\Enums\TelephoneType;
 use App\Models\Contact;
 use App\Models\SousTheme;
@@ -25,6 +26,7 @@ class ContactSeeder extends Seeder
      *     nom: string,
      *     mail: ?string,
      *     localisation: ?string,
+     *     province: ?Province,
      *     site_web: ?string,
      *     telephones: list<array{numero: string, type: TelephoneType, numero_vert?: bool}>,
      *     sous_themes: list<string>,
@@ -42,6 +44,7 @@ class ContactSeeder extends Seeder
             'nom' => 'SAMU',
             'mail' => null,
             'localisation' => 'Tout le territoire NC',
+            'province' => null,
             'site_web' => 'cht.nc',
             'telephones' => [
                 ['numero' => '15', 'type' => TelephoneType::Urgence],
@@ -53,6 +56,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Police / Gendarmerie',
             'mail' => null,
             'localisation' => 'Tout le territoire NC',
+            'province' => null,
             'site_web' => 'gendarmerie.interieur.gouv.fr',
             'telephones' => [
                 ['numero' => '17', 'type' => TelephoneType::Urgence],
@@ -64,6 +68,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Sapeurs-Pompiers',
             'mail' => null,
             'localisation' => 'Tout le territoire NC',
+            'province' => null,
             'site_web' => 'securite-civile.gouv.nc',
             'telephones' => [
                 ['numero' => '18', 'type' => TelephoneType::Urgence],
@@ -75,6 +80,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Prevention du suicide (3114)',
             'mail' => null,
             'localisation' => 'Ligne nationale accessible depuis la NC',
+            'province' => null,
             'site_web' => '3114.fr',
             'telephones' => [
                 ['numero' => '3114', 'type' => TelephoneType::Urgence],
@@ -86,6 +92,7 @@ class ContactSeeder extends Seeder
             'nom' => 'SMS signalement violence (DTAV)',
             'mail' => null,
             'localisation' => 'Tout le territoire NC',
+            'province' => null,
             'site_web' => null,
             'telephones' => [
                 ['numero' => '500 067', 'type' => TelephoneType::Sms],
@@ -98,6 +105,7 @@ class ContactSeeder extends Seeder
             'nom' => 'SOS Ecoute - Point Ecoute (ACSMS)',
             'mail' => 'point-ecoute@hotmail.com',
             'localisation' => 'Service telephonique - tout le territoire NC',
+            'province' => null,
             'site_web' => 'acsms.nc/lepointsosecoute',
             'telephones' => [
                 ['numero' => '05 30 30', 'type' => TelephoneType::Fixe, 'numero_vert' => true],
@@ -110,6 +118,7 @@ class ContactSeeder extends Seeder
             'nom' => 'ADAVI - Aide aux victimes (siege)',
             'mail' => 'accueil@adavi.nc',
             'localisation' => '33 avenue Henri Lafleur, 98800 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'violences-conjugales.gouv.nc/organismes/association-pour-lacces-au-droit-et-laide-aux-victimes-adavi',
             'telephones' => [
                 ['numero' => '27 76 08', 'type' => TelephoneType::Fixe],
@@ -121,6 +130,7 @@ class ContactSeeder extends Seeder
             'nom' => 'MCPF - Gendarmerie NC (Noumea)',
             'mail' => 'mpf.comgendnc@gendarmerie.interieur.gouv.fr',
             'localisation' => 'Noumea',
+            'province' => Province::Sud,
             'site_web' => 'gendarmerie.interieur.gouv.fr',
             'telephones' => [
                 ['numero' => '29 56 91', 'type' => TelephoneType::Fixe],
@@ -133,6 +143,7 @@ class ContactSeeder extends Seeder
             'nom' => 'MCPF - Gendarmerie NC (Kone)',
             'mail' => 'mpf.comgendnc@gendarmerie.interieur.gouv.fr',
             'localisation' => 'Kone',
+            'province' => Province::Nord,
             'site_web' => 'gendarmerie.interieur.gouv.fr',
             'telephones' => [
                 ['numero' => '45 12 19', 'type' => TelephoneType::Fixe],
@@ -145,6 +156,7 @@ class ContactSeeder extends Seeder
             'nom' => 'DECLIC - ASS-NC (jeunes -25 ans)',
             'mail' => 'declic@ass.nc',
             'localisation' => '16 rue Gallieni, 98851 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'santepourtous.nc/les-thematiques/addictions/trouver-de-l-aide/declic',
             'telephones' => [
                 ['numero' => '25 50 78', 'type' => TelephoneType::Fixe],
@@ -158,6 +170,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Croix-Rouge NC - Aller vers',
             'mail' => 'allervers.dt988@croix-rouge.fr',
             'localisation' => '23 rue du Dr Collard, 98845 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'croix-rouge.nc',
             'telephones' => [
                 ['numero' => '96 35 95', 'type' => TelephoneType::Fixe],
@@ -169,6 +182,7 @@ class ContactSeeder extends Seeder
             'nom' => 'CMP Gallieni - CHS Albert Bousquet (adultes)',
             'mail' => 'sec.gallieni@chs.nc',
             'localisation' => '1 rue du general Gallieni, 98845 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'chs.nc',
             'telephones' => [
                 ['numero' => '27 52 56', 'type' => TelephoneType::Fixe],
@@ -180,6 +194,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Accueil Urgences Psychiatriques - CHT Gaston-Bourret',
             'mail' => null,
             'localisation' => '110 bd Joseph Wamytan, 98835 Dumbea (Medipole de Koutio)',
+            'province' => Province::Sud,
             'site_web' => 'cht.nc',
             'telephones' => [
                 ['numero' => '20 80 00', 'type' => TelephoneType::Fixe],
@@ -191,6 +206,7 @@ class ContactSeeder extends Seeder
             'nom' => 'CSAPA - Addictologie (+25 ans)',
             'mail' => 'secretariat.csa@chs.nc',
             'localisation' => '83 bd Joseph Wamytan, 98800 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'drogues-info-service.fr/Adresses-utiles/100373',
             'telephones' => [
                 ['numero' => '24 01 66', 'type' => TelephoneType::Fixe],
@@ -202,6 +218,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Prenez Soin De Vous (PSDV) - Croix-Rouge NC',
             'mail' => null,
             'localisation' => '28 rue du Commandant Riviere, 98800 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'croix-rouge.nc',
             'telephones' => [
                 ['numero' => '27 92 98', 'type' => TelephoneType::Fixe],
@@ -213,6 +230,7 @@ class ContactSeeder extends Seeder
             'nom' => "DAV - Dispositif d'Accueil des Victimes (Medipole)",
             'mail' => 'dav@cht.nc',
             'localisation' => '110 bd Joseph Wamytan, 98835 Dumbea-sur-Mer',
+            'province' => Province::Sud,
             'site_web' => 'cht.nc',
             'telephones' => [
                 ['numero' => '20 83 40', 'type' => TelephoneType::Fixe],
@@ -224,6 +242,7 @@ class ContactSeeder extends Seeder
             'nom' => 'SOS Victimes',
             'mail' => 'contact@sosvictimesnc.nc',
             'localisation' => '53 rue Georges Clemenceau - BP 2629, 98846 Noumea Cedex',
+            'province' => Province::Sud,
             'site_web' => 'violences-conjugales.gouv.nc/organismes/sos-victimes',
             'telephones' => [
                 ['numero' => '05 11 11', 'type' => TelephoneType::Fixe, 'numero_vert' => true],
@@ -238,6 +257,7 @@ class ContactSeeder extends Seeder
             'nom' => 'SOS Victimes - Permanence Kone',
             'mail' => 'contact@sosvictimesnc.nc',
             'localisation' => 'WVR8+3C3, Kone',
+            'province' => Province::Nord,
             'site_web' => 'violences-conjugales.gouv.nc/organismes/sos-victimes',
             'telephones' => [
                 ['numero' => '05 11 11', 'type' => TelephoneType::Fixe, 'numero_vert' => true],
@@ -250,6 +270,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Relais violences conjugales et intrafamiliales - Province Sud',
             'mail' => null,
             'localisation' => '12 avenue Paul Doumer, 98800 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'province-sud.nc/sante-social-egalite/egalite-genres-droits-intrafamiliaux/relais-violences-conjugales-et-intrafamiliales',
             'telephones' => [
                 ['numero' => '23 26 26', 'type' => TelephoneType::Fixe],
@@ -263,6 +284,7 @@ class ContactSeeder extends Seeder
             'nom' => 'CIDFE - Droits des Femmes et Egalite',
             'mail' => 'cidfe@province-sud.nc',
             'localisation' => '6 route des Artifices, 98849 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'province-sud.nc/votre-province/administration/cidfe',
             'telephones' => [
                 ['numero' => '20 37 40', 'type' => TelephoneType::Fixe],
@@ -274,6 +296,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Commissariat Noumea - Psychologue',
             'mail' => 'dtpn988-stsp-psychologue@interieur.gouv.fr',
             'localisation' => '36 rue de Sebastopol, 98800 Noumea',
+            'province' => Province::Sud,
             'site_web' => null,
             'telephones' => [
                 ['numero' => '24 33 52', 'type' => TelephoneType::Fixe],
@@ -285,6 +308,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Commissariat Noumea - Intervenant social',
             'mail' => 'laurence.grangeon-988@interieur.gouv.fr',
             'localisation' => '36 rue de Sebastopol, 98800 Noumea',
+            'province' => Province::Sud,
             'site_web' => null,
             'telephones' => [
                 ['numero' => '24 34 18', 'type' => TelephoneType::Fixe],
@@ -296,6 +320,7 @@ class ContactSeeder extends Seeder
             'nom' => 'DASSPS - Province Nord',
             'mail' => 'dassps-sas@province-nord.nc',
             'localisation' => 'Hotel de la Province Nord, 41 av. Jimmy Welepane, 98860 Kone',
+            'province' => Province::Nord,
             'site_web' => 'province-nord.nc/sante-cohesion-sociale/permanencier-social',
             'telephones' => [
                 ['numero' => '47 72 30', 'type' => TelephoneType::Fixe],
@@ -307,6 +332,7 @@ class ContactSeeder extends Seeder
             'nom' => 'CHN - Hopital Paula Thavoavianon (Koumac)',
             'mail' => 'direction@chn.nc',
             'localisation' => 'Avenue Emile Frouin, 98850 Koumac',
+            'province' => Province::Nord,
             'site_web' => 'gouv.nc/etablissement-public/centre-hospitalier-du-nord-0',
             'telephones' => [
                 ['numero' => '42 65 14', 'type' => TelephoneType::Fixe],
@@ -318,6 +344,7 @@ class ContactSeeder extends Seeder
             'nom' => 'CHN - Hopital Raymond Doui Nebayes (Poindimie)',
             'mail' => 'poindimie@chn.nc',
             'localisation' => 'RT3, 98822 Poindimie',
+            'province' => Province::Nord,
             'site_web' => 'gouv.nc/etablissement-public/centre-hospitalier-du-nord-0',
             'telephones' => [
                 ['numero' => '42 71 44', 'type' => TelephoneType::Fixe],
@@ -329,6 +356,7 @@ class ContactSeeder extends Seeder
             'nom' => 'CHN - Pole Sanitaire du Nord (Kone)',
             'mail' => 'kone@chn.nc',
             'localisation' => '41 av. Jimmy Welepane, 98860 Kone',
+            'province' => Province::Nord,
             'site_web' => 'gouv.nc/etablissement-public/centre-hospitalier-du-nord-0',
             'telephones' => [
                 ['numero' => '42 10 00', 'type' => TelephoneType::Fixe],
@@ -340,6 +368,7 @@ class ContactSeeder extends Seeder
             'nom' => 'ASS-NC - Addictologie Province Nord',
             'mail' => null,
             'localisation' => 'CHN Koumac / Kone',
+            'province' => Province::Nord,
             'site_web' => 'santepourtous.nc',
             'telephones' => [
                 ['numero' => '42 11 75', 'type' => TelephoneType::Fixe],
@@ -351,6 +380,7 @@ class ContactSeeder extends Seeder
             'nom' => 'ADAVI - Permanence Kone',
             'mail' => 'accueil@adavi.nc',
             'localisation' => 'Tribunal - section detachee de Kone',
+            'province' => Province::Nord,
             'site_web' => 'violences-conjugales.gouv.nc/organismes/association-pour-lacces-au-droit-et-laide-aux-victimes-adavi',
             'telephones' => [
                 ['numero' => '27 76 08', 'type' => TelephoneType::Fixe],
@@ -362,6 +392,7 @@ class ContactSeeder extends Seeder
             'nom' => 'CHS Albert Bousquet - Antenne Koumac',
             'mail' => null,
             'localisation' => 'Village RT1, 98850 Koumac',
+            'province' => Province::Nord,
             'site_web' => 'chs.nc',
             'telephones' => [
                 ['numero' => '42 76 56', 'type' => TelephoneType::Fixe],
@@ -373,6 +404,7 @@ class ContactSeeder extends Seeder
             'nom' => 'CHS Albert Bousquet - Antenne Poindimie',
             'mail' => 'sec.poindimie@chs.nc',
             'localisation' => 'Village RP3, 98822 Poindimie',
+            'province' => Province::Nord,
             'site_web' => 'chs.nc',
             'telephones' => [
                 ['numero' => '42 60 34', 'type' => TelephoneType::Fixe],
@@ -384,6 +416,7 @@ class ContactSeeder extends Seeder
             'nom' => 'CHS Albert Bousquet - Antenne UFN Kone',
             'mail' => null,
             'localisation' => 'Village Route Provinciale 1, Kone',
+            'province' => Province::Nord,
             'site_web' => 'chs.nc',
             'telephones' => [
                 ['numero' => '24 36 36', 'type' => TelephoneType::Fixe],
@@ -395,6 +428,7 @@ class ContactSeeder extends Seeder
             'nom' => 'DACAS - Province des Iles',
             'mail' => 'sec_dacas@loyalty.nc',
             'localisation' => 'BP 50 We, 98820 Lifou',
+            'province' => Province::Iles,
             'site_web' => 'province-iles.nc/page/la-direction-de-laction-communautaire-et-de-laction-sanitaire-dacas',
             'telephones' => [
                 ['numero' => '45 06 23', 'type' => TelephoneType::Fixe],
@@ -408,6 +442,7 @@ class ContactSeeder extends Seeder
             'nom' => 'ADAVI - Permanences Lifou / Ile des Pins',
             'mail' => 'accueil@adavi.nc',
             'localisation' => 'Lifou / Ile des Pins',
+            'province' => Province::Iles,
             'site_web' => 'violences-conjugales.gouv.nc/organismes/association-pour-lacces-au-droit-et-laide-aux-victimes-adavi',
             'telephones' => [
                 ['numero' => '27 76 08', 'type' => TelephoneType::Fixe],
@@ -419,6 +454,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Gendarmerie - brigades locales (iles)',
             'mail' => 'mpf.comgendnc@gendarmerie.interieur.gouv.fr',
             'localisation' => 'Mare, Lifou, Ouvea, Ile des Pins',
+            'province' => Province::Iles,
             'site_web' => 'gendarmerie.interieur.gouv.fr',
             'telephones' => [
                 ['numero' => '17', 'type' => TelephoneType::Urgence],
@@ -430,6 +466,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Portail national signalement violences',
             'mail' => null,
             'localisation' => null,
+            'province' => null,
             'site_web' => 'arretonslesviolences.gouv.fr',
             'telephones' => [],
             'sous_themes' => ['violences_sexuelles', 'harcelement'],
@@ -439,6 +476,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Application Dignity',
             'mail' => null,
             'localisation' => null,
+            'province' => null,
             'site_web' => 'dignity-asso.com',
             'telephones' => [
                 ['numero' => '500 067', 'type' => TelephoneType::Sms],
@@ -450,6 +488,7 @@ class ContactSeeder extends Seeder
             'nom' => 'CAVAD-NC - Cartographie aide aux victimes',
             'mail' => null,
             'localisation' => null,
+            'province' => null,
             'site_web' => 'violencesconjugales.gouv.nc',
             'telephones' => [],
             'sous_themes' => ['harcelement', 'violences_sexuelles'],
@@ -459,6 +498,7 @@ class ContactSeeder extends Seeder
             'nom' => 'ASS-NC - Agence Sanitaire et Sociale',
             'mail' => 'ass.nc@ass.nc',
             'localisation' => '16 rue Gallieni, 98800 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'santepourtous.nc',
             'telephones' => [
                 ['numero' => '25 07 60', 'type' => TelephoneType::Fixe],
@@ -470,6 +510,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Centre d\'Accueil des Femmes en Difficulte - Province Nord',
             'mail' => null,
             'localisation' => 'Kamalac, Province Nord',
+            'province' => Province::Nord,
             'site_web' => 'province-nord.nc/femme/structures-daccueil',
             'telephones' => [
                 ['numero' => '42 39 74', 'type' => TelephoneType::Fixe],
@@ -484,6 +525,7 @@ class ContactSeeder extends Seeder
             'nom' => "DTAV - Delegation Territoriale d'Aides aux Victimes",
             'mail' => 'victime-988@interieur.gouv.fr',
             'localisation' => 'Centre administratif du Haut-Commissariat, 9 bis rue de la Republique, Noumea',
+            'province' => Province::Sud,
             'site_web' => 'province-sud.nc/exposition/silences-brises/dtav',
             'telephones' => [
                 ['numero' => '24 34 24', 'type' => TelephoneType::Fixe],
@@ -497,6 +539,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Intervenante sociale - Gendarmerie Province Sud',
             'mail' => null,
             'localisation' => 'Province Sud',
+            'province' => Province::Sud,
             'site_web' => 'gendarmerie.interieur.gouv.fr',
             'telephones' => [
                 ['numero' => '73 06 99', 'type' => TelephoneType::Mobile],
@@ -510,6 +553,7 @@ class ContactSeeder extends Seeder
             'nom' => 'P.R.I.S.M.E.S',
             'mail' => null,
             'localisation' => null,
+            'province' => Province::Sud,
             'site_web' => null,
             'telephones' => [
                 ['numero' => '24 15 17', 'type' => TelephoneType::Fixe],
@@ -522,6 +566,7 @@ class ContactSeeder extends Seeder
             'nom' => 'ESPAS CMP',
             'mail' => null,
             'localisation' => null,
+            'province' => Province::Sud,
             'site_web' => 'province-sud.nc/sante-social-egalite/services-medico-sociaux-et-consultations/espace-sante-contraception-ivg-et-depistage-des-ist/espace-sante',
             'telephones' => [
                 ['numero' => '20 47 40', 'type' => TelephoneType::Fixe],
@@ -537,6 +582,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Service Sante Etudiante - UNC',
             'mail' => null,
             'localisation' => '145 Avenue James Cook, 98800 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'unc.nc/vie-etudiante/sante',
             'telephones' => [
                 ['numero' => '26 58 00', 'type' => TelephoneType::Fixe],
@@ -552,6 +598,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Medecin universitaire - UNC',
             'mail' => null,
             'localisation' => '145 Avenue James Cook, 98800 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'unc.nc/vie-etudiante/sante',
             'telephones' => [
                 ['numero' => '26 58 00', 'type' => TelephoneType::Fixe],
@@ -567,6 +614,7 @@ class ContactSeeder extends Seeder
             'nom' => 'Service Mediation - UNC',
             'mail' => null,
             'localisation' => '145 Avenue James Cook, 98800 Noumea',
+            'province' => Province::Sud,
             'site_web' => 'unc.nc/universite/clinique-du-droit-et-de-la-mediation',
             'telephones' => [
                 ['numero' => '26 58 00', 'type' => TelephoneType::Fixe],
@@ -592,6 +640,7 @@ class ContactSeeder extends Seeder
                     'prenom' => null,
                     'mail' => $donnees['mail'],
                     'localisation' => $donnees['localisation'],
+                    'province' => $donnees['province'],
                     'site_web' => $donnees['site_web'],
                     'horaires' => $donnees['horaires'] ?? null,
                     'remarques' => $donnees['remarques'] ?? null,
