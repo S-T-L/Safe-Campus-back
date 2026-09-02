@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Province;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,7 @@ class Contact extends Model
         'actif',
         'latitude',
         'longitude',
+        'province',
     ];
 
     protected function casts(): array
@@ -36,6 +38,7 @@ class Contact extends Model
             'actif' => 'boolean',
             'latitude' => 'float',
             'longitude' => 'float',
+            'province' => Province::class,
         ];
     }
 
