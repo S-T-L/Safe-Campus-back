@@ -27,6 +27,7 @@ class Contact extends Model
         'actif',
         'latitude',
         'longitude',
+        'position_territoire',
         'province',
     ];
 
@@ -38,6 +39,7 @@ class Contact extends Model
             'actif' => 'boolean',
             'latitude' => 'float',
             'longitude' => 'float',
+            'position_territoire' => 'boolean',
             'province' => Province::class,
         ];
     }
