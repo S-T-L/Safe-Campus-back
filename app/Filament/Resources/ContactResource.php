@@ -72,7 +72,7 @@ class ContactResource extends Resource
                 Forms\Components\TextInput::make('localisation')
                     ->maxLength(255)
                     ->columnSpanFull()
-                    ->suffixAction(
+                    ->suffixActions([
                         Action::make('geocoder')
                             ->label('Géocoder')
                             ->icon('heroicon-o-map-pin')
@@ -108,19 +108,44 @@ class ContactResource extends Resource
                                     ->success()
                                     ->send();
                             }),
-                    ),
+                        Action::make('effacer_position')
+                            ->label('Effacer')
+                            ->icon('heroicon-o-x-circle')
+                            ->color('danger')
+                            ->requiresConfirmation()
+                            ->modalHeading('Effacer la position ?')
+                            ->modalDescription('Latitude et longitude seront vidées. Le pin disparaîtra de la carte du front.')
+                            ->action(function (Set $set): void {
+                                $set('latitude', null);
+                                $set('longitude', null);
+
+                                Notification::make()
+                                    ->title('Position effacée.')
+                                    ->success()
+                                    ->send();
+                            }),
+                    ]),
                 Forms\Components\Grid::make(2)
                     ->schema([
                         Forms\Components\TextInput::make('longitude')
                             ->numeric()
                             ->disabled()
-                            ->dehydrated(),
+                            ->dehydrated()
+                            ->helperText('Calculée automatiquement, non modifiable à la main.'),
                         Forms\Components\TextInput::make('latitude')
                             ->numeric()
                             ->disabled()
                             ->dehydrated()
-                            ->helperText('Coordonnée GPS. Renseignée via le bouton Géocoder ou en déplaçant le pin sur la carte.'),
+                            ->helperText('Calculée automatiquement, non modifiable à la main.'),
                     ]),
+                Forms\Components\Placeholder::make('map_hint')
+                    ->hiddenLabel()
+                    ->content(new HtmlString(
+                        '<p class="flex items-center gap-2 text-base font-semibold text-gray-700 dark:text-gray-200">'
+                        .'📍 Glisse le pin sur la carte pour corriger la position'
+                        .'</p>'
+                    ))
+                    ->columnSpanFull(),
                 MapField::make('carte')
                     ->label('Carte'),
 

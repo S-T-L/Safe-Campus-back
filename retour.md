@@ -12,6 +12,7 @@ Filtré sur les retours back uniquement. Trié par temps de travail estimé, du 
 - [x] **[M]** Étoffer le guide avec plus d'éléments d'information.
 - [ ] **[M/L]** Vérifier la gestion des langues FR/EN (comment fonctionnent les traductions) et permettre de choisir français/anglais.
 - [ ] **[L]** À la saisie d'adresse en back, afficher un embed Leaflet pour visualiser le point sur la carte, avec possibilité d'ajuster légèrement la position depuis l'embed (et répercussion côté front).
+- [ ] Split le guide rapide en plusieurs section pour mimic les menus et pas avoir un seul gros block a déplier
 
 Légende : XS < 2h · S ≈ demi-journée · M ≈ 1 jour · L ≈ 2-3 jours (estimations à affiner).
 

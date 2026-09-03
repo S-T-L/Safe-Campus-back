@@ -22,7 +22,9 @@ class GeocodingService
             'q' => $address,
             'format' => 'json',
             'limit' => 1,
-            'countrycodes' => 'nc',
+            // OSM/Nominatim rattache la Nouvelle-Caledonie a la France (ISO3166-2: FR-NC),
+            // pas au code pays "nc" : filtrer sur "nc" excluait tous les resultats calédoniens.
+            'countrycodes' => 'fr',
         ]);
 
         if ($response->failed()) {

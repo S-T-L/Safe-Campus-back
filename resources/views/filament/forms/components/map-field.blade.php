@@ -64,7 +64,4 @@
     x-init="$nextTick(() => initMap())"
 >
     <div x-ref="mapContainer" style="height: 320px; border-radius: 0.5rem;"></div>
-    <p class="fi-fo-field-wrp-helper-text text-xs text-gray-500 dark:text-gray-400 mt-1">
-        Glisse le pin pour corriger la position.
-    </p>
 </div>
