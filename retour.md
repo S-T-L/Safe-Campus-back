@@ -27,3 +27,8 @@ Légende : XS < 2h · S ≈ demi-journée · M ≈ 1 jour · L ≈ 2-3 jours (es
 - [x] Menu latéral : l'item actif est désormais encadré d'une bordure bleue, en plus du fond grisé.
 - [x] Chevron plier/déplier d'une section (guide webmaster, blocs de formulaire) agrandi et coloré en bleu pour repérer l'état replié/déplié au premier coup d'œil.
 - [x] Entête de section lisible dès le premier coup d'œil (contraste renforcé + chevron bleu agrandi), qui sert désormais de rappel visuel systématique qu'un guide/encart d'aide est disponible par section.
+
+
+Dans le seeder. Le cht n'est pas le site interne pour le contact samu. 
+Suprimer toute notion de ref dans les form. Un amdin utilisateur landa n'as pas a connaitre cette notion
+/contacts il faut changer les le contnue de la table. Suprime la re, laisse le nom la coluationsation les numéros de téléphone si possible le status gratui et anomyme est a retirer ce serra visible dans le détail du conctact

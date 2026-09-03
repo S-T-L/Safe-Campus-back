@@ -10,6 +10,7 @@
         map: null,
         marker: null,
         isDragging: false,
+        skipNextViewReset: false,
         initMap() {
             const hasCoords = this.lat && this.lng;
             this.map = L.map(this.$refs.mapContainer).setView(
@@ -17,9 +18,21 @@
                 hasCoords ? 15 : 6,
             );
 
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            // Plan OpenStreetMap (detaille, couverture fiable partout y compris NC) et
+            // Satellite Esri (legacy, sans cle API ni inscription) pour se situer visuellement.
+            const planLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors',
                 maxZoom: 19,
+            }).addTo(this.map);
+
+            const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Sources : Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+                maxZoom: 19,
+            });
+
+            L.control.layers({
+                'Plan': planLayer,
+                'Satellite': satelliteLayer,
             }).addTo(this.map);
 
             if (hasCoords) {
@@ -39,9 +52,14 @@
             this.marker.on('dragstart', () => { this.isDragging = true; });
             this.marker.on('dragend', () => {
                 const position = this.marker.getLatLng();
+                this.isDragging = false;
+                // Le pin est deja au bon endroit et le zoom courant choisi par
+                // l'utilisateur ne doit pas changer : seul le geocodage doit
+                // recentrer/re-zoomer la carte (nouvelle adresse, hors vue actuelle).
+                this.skipNextViewReset = true;
                 this.lat = position.lat;
                 this.lng = position.lng;
-                this.isDragging = false;
+                this.$nextTick(() => { this.skipNextViewReset = false; });
             });
         },
         syncMarker() {
@@ -59,6 +77,10 @@
                 this.marker.setLatLng(position);
             } else {
                 this.placeMarker(position);
+            }
+
+            if (this.skipNextViewReset) {
+                return;
             }
 
             this.map.setView(position, 15);
