@@ -181,6 +181,7 @@ class ContactResource extends Resource
                         Forms\Components\Repeater::make('telephones')
                             ->relationship()
                             ->label('Téléphones')
+                            ->defaultItems(0)
                             ->schema([
                                 Forms\Components\Grid::make(2)
                                     ->schema([
