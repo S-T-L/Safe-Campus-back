@@ -69,6 +69,17 @@ class ContactResource extends Resource
                     ]),
 
                 static::sectionDivider('Location'),
+                Forms\Components\Toggle::make('position_territoire')
+                    ->label('Couvre tout le territoire')
+                    ->helperText('Structure sans implantation ponctuelle (numero national, dispositif NC entier...). Aucune coordonnee ne sera enregistree.')
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, bool $state): void {
+                        if ($state) {
+                            $set('latitude', null);
+                            $set('longitude', null);
+                        }
+                    })
+                    ->columnSpanFull(),
                 Forms\Components\TextInput::make('localisation')
                     ->maxLength(255)
                     ->columnSpanFull()
@@ -76,6 +87,7 @@ class ContactResource extends Resource
                         Action::make('geocoder')
                             ->label('Géocoder')
                             ->icon('heroicon-o-map-pin')
+                            ->visible(fn (Get $get): bool => ! $get('position_territoire'))
                             ->action(function (Get $get, Set $set, GeocodingService $geocodingService): void {
                                 $address = $get('localisation');
 
@@ -112,16 +124,15 @@ class ContactResource extends Resource
                             ->label('Effacer')
                             ->icon('heroicon-o-x-circle')
                             ->color('danger')
-                            ->requiresConfirmation()
-                            ->modalHeading('Effacer la position ?')
-                            ->modalDescription('Latitude et longitude seront vidées. Le pin disparaîtra de la carte du front.')
+                            ->visible(fn (Get $get): bool => ! $get('position_territoire'))
                             ->action(function (Set $set): void {
                                 $set('latitude', null);
                                 $set('longitude', null);
 
                                 Notification::make()
-                                    ->title('Position effacée.')
-                                    ->success()
+                                    ->title('Position vidée du formulaire.')
+                                    ->body('Pense à cliquer sur Enregistrer pour appliquer le changement.')
+                                    ->warning()
                                     ->send();
                             }),
                     ]),
@@ -131,13 +142,17 @@ class ContactResource extends Resource
                             ->numeric()
                             ->disabled()
                             ->dehydrated()
+                            ->dehydratedWhenHidden()
                             ->helperText('Calculée automatiquement, non modifiable à la main.'),
                         Forms\Components\TextInput::make('latitude')
                             ->numeric()
                             ->disabled()
                             ->dehydrated()
+                            ->dehydratedWhenHidden()
                             ->helperText('Calculée automatiquement, non modifiable à la main.'),
-                    ]),
+                    ])
+                    ->visible(fn (Get $get): bool => ! $get('position_territoire'))
+                    ->dehydratedWhenHidden(),
                 Forms\Components\Placeholder::make('map_hint')
                     ->hiddenLabel()
                     ->content(new HtmlString(
@@ -145,9 +160,11 @@ class ContactResource extends Resource
                         .'📍 Glisse le pin sur la carte pour corriger la position'
                         .'</p>'
                     ))
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->visible(fn (Get $get): bool => ! $get('position_territoire')),
                 MapField::make('carte')
-                    ->label('Carte'),
+                    ->label('Carte')
+                    ->visible(fn (Get $get): bool => ! $get('position_territoire')),
 
                 static::sectionDivider('Contacts'),
                 Forms\Components\Grid::make(2)
@@ -221,10 +238,19 @@ class ContactResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('localisation')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('latitude')
-                    ->label('Géocodé')
-                    ->boolean()
-                    ->getStateUsing(fn (Contact $record) => $record->latitude !== null && $record->longitude !== null)
+                Tables\Columns\TextColumn::make('position')
+                    ->label('Position')
+                    ->badge()
+                    ->getStateUsing(fn (Contact $record) => match (true) {
+                        $record->position_territoire => 'Tout le territoire',
+                        $record->latitude !== null && $record->longitude !== null => 'Géocodé',
+                        default => 'Non renseigné',
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'Tout le territoire' => 'info',
+                        'Géocodé' => 'success',
+                        default => 'gray',
+                    })
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('site_web')
                     ->searchable()

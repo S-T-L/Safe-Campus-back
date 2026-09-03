@@ -35,6 +35,7 @@ class ContactSeeder extends Seeder
      *     gratuit?: ?bool,
      *     latitude?: ?float,
      *     longitude?: ?float,
+     *     position_territoire?: bool,
      *     actif?: bool
      * }>
      */
@@ -45,6 +46,7 @@ class ContactSeeder extends Seeder
             'mail' => null,
             'localisation' => 'Tout le territoire NC',
             'province' => null,
+            'position_territoire' => true,
             'site_web' => 'cht.nc',
             'telephones' => [
                 ['numero' => '15', 'type' => TelephoneType::Urgence],
@@ -57,6 +59,7 @@ class ContactSeeder extends Seeder
             'mail' => null,
             'localisation' => 'Tout le territoire NC',
             'province' => null,
+            'position_territoire' => true,
             'site_web' => 'gendarmerie.interieur.gouv.fr',
             'telephones' => [
                 ['numero' => '17', 'type' => TelephoneType::Urgence],
@@ -69,6 +72,7 @@ class ContactSeeder extends Seeder
             'mail' => null,
             'localisation' => 'Tout le territoire NC',
             'province' => null,
+            'position_territoire' => true,
             'site_web' => 'securite-civile.gouv.nc',
             'telephones' => [
                 ['numero' => '18', 'type' => TelephoneType::Urgence],
@@ -93,6 +97,7 @@ class ContactSeeder extends Seeder
             'mail' => null,
             'localisation' => 'Tout le territoire NC',
             'province' => null,
+            'position_territoire' => true,
             'site_web' => null,
             'telephones' => [
                 ['numero' => '500 067', 'type' => TelephoneType::Sms],
@@ -106,6 +111,7 @@ class ContactSeeder extends Seeder
             'mail' => 'point-ecoute@hotmail.com',
             'localisation' => 'Service telephonique - tout le territoire NC',
             'province' => null,
+            'position_territoire' => true,
             'site_web' => 'acsms.nc/lepointsosecoute',
             'telephones' => [
                 ['numero' => '05 30 30', 'type' => TelephoneType::Fixe, 'numero_vert' => true],
@@ -649,6 +655,7 @@ class ContactSeeder extends Seeder
                     'actif' => $donnees['actif'] ?? true,
                     'latitude' => $donnees['latitude'] ?? null,
                     'longitude' => $donnees['longitude'] ?? null,
+                    'position_territoire' => $donnees['position_territoire'] ?? false,
                 ]
             );
 

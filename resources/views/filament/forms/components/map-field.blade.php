@@ -1,8 +1,6 @@
-@once
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-@endonce
-
+{{-- Leaflet CSS/JS charges via FilamentAsset (AdminPanelProvider) : ce champ peut apparaitre
+    uniquement apres un premier rendu Livewire (ex. toggle "tout le territoire" desactive),
+    hors d'un chargement de page complet ou un <script> injecte ici ne serait pas execute. --}}
 {{-- Nouvelle-Caledonie par defaut tant qu'aucune coordonnee n'est renseignee. --}}
 <div
     wire:ignore
@@ -30,6 +28,11 @@
 
             this.$watch('lat', () => this.isDragging || this.syncMarker());
             this.$watch('lng', () => this.isDragging || this.syncMarker());
+
+            // Le conteneur vient d'etre (re)insere par Livewire (ex. reapparition apres
+            // desactivation du toggle territoire) : Leaflet peut calculer une taille
+            // erronee avant que le navigateur n'ait termine sa mise en page.
+            requestAnimationFrame(() => this.map.invalidateSize());
         },
         placeMarker(position) {
             this.marker = L.marker(position, { draggable: true }).addTo(this.map);
