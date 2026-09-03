@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\MediaType;
 use App\Filament\Resources\MediaResource\Pages;
+use App\Filament\Resources\MediaResource\RelationManagers\SousThemesRelationManager;
 use App\Models\Media;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -99,7 +100,7 @@ class MediaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            SousThemesRelationManager::class,
         ];
     }
 
