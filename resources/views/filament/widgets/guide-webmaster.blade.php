@@ -24,7 +24,7 @@
                 <li>Chaque contact représente une structure. Cette structure peut être une association, un numéro d'urgence ou un service public.</li>
                 <li>Le champ <code>ref</code> identifie le contact de façon unique. Ce champ se fige après la création : tu ne peux plus le modifier ensuite.</li>
                 <li>L'onglet <em>Téléphones</em> liste les numéros du contact. Un contact peut avoir plusieurs numéros. Choisis le bon type pour chaque numéro (fixe, mobile, SMS ou urgence).</li>
-                <li>L'onglet <em>Sous-thèmes</em> rattache le contact à une ou plusieurs rubriques. Ce rattachement détermine où le contact apparaît sur le site.</li>
+                <li>L'onglet <em>Sous-thèmes</em> de la fiche contact rattache le contact à une ou plusieurs rubriques (bouton <em>Attacher</em>, puis choisis le sous-thème et son <em>Ordre</em> d'affichage). Ce rattachement détermine où le contact apparaît sur le site. Le même rattachement est aussi possible dans l'autre sens, depuis l'onglet <em>Contacts</em> d'un sous-thème.</li>
                 <li>L'interrupteur <em>Actif</em> retire le contact du site sans le supprimer. Utilise cet interrupteur dès que tu as un doute sur une information.</li>
                 <li>Les champs Latitude et Longitude placent le contact sur la carte du site. Laisse ces champs vides si tu ne connais pas les coordonnées : le site masque alors simplement le repère.</li>
             </ul>
@@ -61,7 +61,7 @@
             </p>
             <ul>
                 <li>Un média est un fichier utile aux visiteurs : un PDF, une image ou un autre document.</li>
-                <li>Cette page te permet d'ajouter un fichier et de le rattacher à un ou plusieurs sous-thèmes.</li>
+                <li>Cette page te permet d'ajouter un fichier. Rattache-le ensuite à un ou plusieurs sous-thèmes via l'onglet <em>Sous-thèmes</em> de la fiche média (bouton <em>Attacher</em>, puis choisis le sous-thème et son <em>Ordre</em> d'affichage), ou depuis l'onglet <em>Médias</em> d'un sous-thème.</li>
                 <li>L'interrupteur <em>Actif</em> retire le média du site sans le supprimer.</li>
             </ul>
 
