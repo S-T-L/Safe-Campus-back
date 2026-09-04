@@ -35,14 +35,26 @@ class ContactResourceTest extends TestCase
         Livewire::test(ListContacts::class)->assertSuccessful();
     }
 
+    public function test_la_liste_affiche_les_numeros_de_telephone(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
+        $contact = Contact::factory()->create();
+        $contact->telephones()->create([
+            'numero' => '25 07 60',
+            'type' => TelephoneType::Fixe,
+        ]);
+
+        Livewire::test(ListContacts::class)->assertSee('25 07 60');
+    }
+
     public function test_un_webmaster_cree_un_contact_sans_sous_theme(): void
     {
         // Etat normal entre la creation et l'assignation — voir docs/schema_bd.md § Contact.
+        // Le champ ref n'existe plus dans le formulaire : le webmaster n'a pas a le renseigner.
         $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
 
         Livewire::test(CreateContact::class)
             ->fillForm([
-                'ref' => 'samu',
                 'nom' => 'SAMU',
                 'actif' => true,
             ])
@@ -52,13 +64,29 @@ class ContactResourceTest extends TestCase
         $this->assertDatabaseHas('contacts', ['ref' => 'samu', 'nom' => 'SAMU']);
     }
 
-    public function test_le_ref_est_verrouille_en_edition(): void
+    public function test_le_ref_genere_se_deduplique_en_cas_de_collision(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
+        Contact::factory()->create(['ref' => 'samu', 'nom' => 'SAMU']);
+
+        Livewire::test(CreateContact::class)
+            ->fillForm([
+                'nom' => 'SAMU',
+                'actif' => true,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('contacts', ['ref' => 'samu_2', 'nom' => 'SAMU']);
+    }
+
+    public function test_le_ref_reste_inchange_a_l_edition(): void
     {
         $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
         $contact = Contact::factory()->create(['ref' => 'sos_ecoute', 'nom' => 'SOS Ecoute']);
 
         Livewire::test(EditContact::class, ['record' => $contact->getKey()])
-            ->fillForm(['ref' => 'autre_ref', 'nom' => 'SOS Ecoute (modifie)'])
+            ->fillForm(['nom' => 'SOS Ecoute (modifie)'])
             ->call('save')
             ->assertHasNoFormErrors();
 

@@ -33,19 +33,9 @@ class ContactResource extends Resource
         return $form
             ->schema([
                 static::sectionDivider('Identité'),
-                Forms\Components\Grid::make(2)
-                    ->schema([
-                        Forms\Components\TextInput::make('ref')
-                            ->required()
-                            ->maxLength(255)
-                            ->helperText('Clé de dédoublonnage du seeder. Non modifiable après création.')
-                            ->disabled(fn (?Contact $record) => $record !== null)
-                            ->dehydrated(fn (?Contact $record) => $record === null)
-                            ->hidden(fn (?Contact $record) => $record !== null),
-                        Forms\Components\Toggle::make('actif')
-                            ->required()
-                            ->default(true),
-                    ]),
+                Forms\Components\Toggle::make('actif')
+                    ->required()
+                    ->default(true),
                 Forms\Components\Grid::make(2)
                     ->schema([
                         Forms\Components\TextInput::make('nom')
@@ -230,8 +220,6 @@ class ContactResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('ref')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('nom')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('mail')
@@ -239,6 +227,9 @@ class ContactResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('localisation')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('telephones.numero')
+                    ->label('Téléphones')
+                    ->listWithLineBreaks(),
                 Tables\Columns\TextColumn::make('position')
                     ->label('Position')
                     ->badge()
@@ -255,14 +246,10 @@ class ContactResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('site_web')
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('horaires')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\IconColumn::make('gratuit')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('anonyme')
-                    ->boolean(),
                 Tables\Columns\IconColumn::make('actif')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
