@@ -47,7 +47,7 @@ class ContactSeeder extends Seeder
             'localisation' => 'Tout le territoire NC',
             'province' => null,
             'position_territoire' => true,
-            'site_web' => 'cht.nc',
+            'site_web' => null,
             'telephones' => [
                 ['numero' => '15', 'type' => TelephoneType::Urgence],
             ],

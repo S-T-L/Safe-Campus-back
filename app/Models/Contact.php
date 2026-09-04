@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Contact extends Model
 {
@@ -42,6 +43,35 @@ class Contact extends Model
             'position_territoire' => 'boolean',
             'province' => Province::class,
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Contact $contact): void {
+            if (filled($contact->ref)) {
+                return;
+            }
+
+            $contact->ref = static::genererRefUnique($contact->nom);
+        });
+    }
+
+    /**
+     * Cle de dedoublonnage du seeder, invisible pour un webmaster qui cree un
+     * contact depuis Filament : deduite du nom, deduplique par suffixe si besoin.
+     */
+    private static function genererRefUnique(string $nom): string
+    {
+        $base = Str::slug($nom, '_') ?: 'contact';
+        $ref = $base;
+        $suffixe = 2;
+
+        while (static::where('ref', $ref)->exists()) {
+            $ref = "{$base}_{$suffixe}";
+            $suffixe++;
+        }
+
+        return $ref;
     }
 
     /**
