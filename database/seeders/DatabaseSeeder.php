@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ContactSeeder::class,
             MediaSeeder::class,
+            HistoireSeeder::class,
         ]);
     }
 }

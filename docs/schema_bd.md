@@ -376,6 +376,7 @@ erDiagram
         int     FK_Histoire  FK
         int     FK_Scene     FK
         boolean Est_initiale
+        int     Ordre
     }
 
     User      ||--o{ Histoire                   : "redige"
@@ -411,6 +412,10 @@ l'autre sans duplication de contenu.
 d'entrée d'une histoire et une étape intermédiaire d'une autre — un booléen sur `Scene` ne saurait
 pas le dire. Contrainte : un index unique partiel garantit **une seule** ligne `Est_initiale = true`
 par histoire.
+
+`Ordre` est porté par la **liaison** pour la même raison : une scène partagée peut avoir un rang
+différent dans chaque histoire. C'est un repère de classement pour le back-office, pas le parcours —
+celui-ci est décidé par les `Choix`. Non unique par histoire, `0` par défaut.
 
 ```sql
 CREATE UNIQUE INDEX histoire_scene_initiale_unique
@@ -590,7 +595,7 @@ des deux modèles.
 | `Liaison_SousTheme_Media` | — | `media_sous_theme` | pivot |
 | `Liaison_Theme_Media` | — | `media_theme` | pivot |
 | `Liaison_Histoire_SousTheme` | — | `histoire_sous_theme` | pivot |
-| `Liaison_Histoire_Scene` | — | `histoire_scene` | pivot + colonne `est_initiale` |
+| `Liaison_Histoire_Scene` | — | `histoire_scene` | pivot + colonnes `est_initiale`, `ordre` |
 
 `Media` et `Choix` sont les deux seuls cas où l'inflecteur Laravel se trompe. Vérifié en exécutant
 `Str::snake(Str::pluralStudly('Media'))` → `media` et `…('Choix')` → `choixes`. Sans `$table`
