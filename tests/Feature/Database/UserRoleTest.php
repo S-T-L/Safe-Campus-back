@@ -6,14 +6,11 @@ use App\Enums\UserRole;
 use App\Models\User;
 use Filament\Panel;
 use Illuminate\Database\QueryException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class UserRoleTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_le_role_est_caste_en_enum(): void
     {
         $user = User::factory()->create(['role' => UserRole::Webmaster]);

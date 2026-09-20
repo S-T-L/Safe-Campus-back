@@ -9,13 +9,11 @@ use App\Models\SousTheme;
 use App\Models\Telephone;
 use App\Models\Theme;
 use Database\Seeders\MediaSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AnnuaireApiTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_get_themes_liste_les_sous_themes_avec_resume_mais_sans_article_ni_contacts(): void
     {
         $theme = Theme::factory()->create(['ref' => 'addictions_test', 'libelle' => 'Addictions']);
@@ -237,9 +235,11 @@ class AnnuaireApiTest extends TestCase
         // Vise le ref 'alcool' de la taxonomie reelle plutot qu'un ref _test :
         // verifie que le seeder est effectivement rejoue, pas juste que le
         // modele sait porter ces colonnes. article/intro_ressources viennent
-        // de la migration 2026_07_31 (toujours rejouee par RefreshDatabase) ;
+        // de la migration 2026_07_31 (deja appliquee en base) ;
         // documents vient de MediaSeeder, appele depuis DatabaseSeeder — a
-        // seeder explicitement, comme ContactSeeder.
+        // seeder explicitement, comme ContactSeeder. Disque fake : le seeder
+        // copie des PDF, ils ne doivent pas atterrir dans storage/ pour de bon.
+        Storage::fake('public');
         $this->seed(MediaSeeder::class);
 
         $response = $this->getJson('/api/sous-themes/alcool');

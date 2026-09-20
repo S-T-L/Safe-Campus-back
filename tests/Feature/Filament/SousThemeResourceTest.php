@@ -12,14 +12,11 @@ use App\Models\Media;
 use App\Models\SousTheme;
 use App\Models\Theme;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class SousThemeResourceTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_un_redacteur_est_refuse_sur_la_liste(): void
     {
         $this->actingAs(User::factory()->create(['role' => UserRole::Redacteur]));
@@ -38,7 +35,7 @@ class SousThemeResourceTest extends TestCase
     {
         // Refs distinctes de la taxonomie posee par la migration
         // 2026_07_31_120000_seed_taxonomie_themes_sous_themes (deja en base
-        // via RefreshDatabase) : eviter toute collision sur `ref`.
+        // via DatabaseTransactions) : eviter toute collision sur `ref`.
         $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
         $theme = Theme::factory()->create(['ref' => 'theme_parent_test']);
 
