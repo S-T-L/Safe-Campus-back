@@ -16,6 +16,7 @@ class SousThemeController extends Controller
             'contacts' => fn ($query) => $query->actif(),
             'contacts.telephones' => fn ($query) => $query->actif(),
             'documents' => fn ($query) => $query->actif(),
+            'histoires' => fn ($query) => $query->publiee()->orderBy('histoires.titre'),
         ]);
 
         return new SousThemeResource($sousTheme);

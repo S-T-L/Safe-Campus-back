@@ -11,6 +11,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *
  * `theme` n'embarque que ref/libelle_court (le tag affiche) : le reste de
  * ThemeResource (resume, medias, sous_themes) n'a pas sa place sur la fiche.
+ *
+ * `histoires` : ref et titre des histoires publiees seulement, de quoi activer
+ * le bouton « Suivre l'histoire » ; le graphe se lit sur /api/histoires/{ref}.
  */
 class SousThemeResource extends JsonResource
 {
@@ -27,6 +30,9 @@ class SousThemeResource extends JsonResource
             ]),
             'contacts' => ContactResource::collection($this->whenLoaded('contacts')),
             'documents' => MediaResource::collection($this->whenLoaded('documents')),
+            'histoires' => $this->whenLoaded('histoires', fn () => $this->histoires
+                ->map(fn ($histoire) => ['ref' => $histoire->ref, 'titre' => $histoire->titre])
+                ->values()),
         ];
     }
 }
