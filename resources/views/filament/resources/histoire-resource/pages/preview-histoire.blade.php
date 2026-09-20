@@ -11,6 +11,14 @@
                 {{ $scene->titre }}
             </x-slot>
 
+            @if ($scene->media?->type === \App\Enums\MediaType::Image && $scene->media->url)
+                <img
+                    src="{{ $scene->media->url }}"
+                    alt="{{ $scene->media->libelle }}"
+                    class="mb-4 max-h-96 w-full rounded-lg object-cover"
+                />
+            @endif
+
             <p class="text-base leading-relaxed">{{ $scene->dialogue_text }}</p>
 
             <div class="mt-6 flex flex-col gap-2">

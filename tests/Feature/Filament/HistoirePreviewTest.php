@@ -9,6 +9,7 @@ use App\Filament\Resources\HistoireResource\Pages\PreviewHistoire;
 use App\Models\Choix;
 use App\Models\Contact;
 use App\Models\Histoire;
+use App\Models\Media;
 use App\Models\Scene;
 use App\Models\SousTheme;
 use App\Models\User;
@@ -30,6 +31,20 @@ class HistoirePreviewTest extends TestCase
             ->assertSuccessful()
             ->assertSee('Tu arrives à une soirée.')
             ->assertSee('Entrer');
+    }
+
+    public function test_la_preview_affiche_l_image_de_la_scene(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Redacteur]));
+
+        $histoire = Histoire::factory()->create();
+        $media = Media::factory()->create(['libelle' => 'Illustration de test', 'chemin' => 'medias/image/illustration-test.jpg']);
+        $scene = Scene::factory()->create(['media_id' => $media->id]);
+        $histoire->scenes()->attach($scene->id, ['est_initiale' => true]);
+
+        Livewire::test(PreviewHistoire::class, ['record' => $histoire->getKey()])
+            ->assertSeeHtml('src="'.$media->url.'"')
+            ->assertSeeHtml('alt="Illustration de test"');
     }
 
     public function test_cliquer_un_choix_avance_a_la_scene_suivante(): void

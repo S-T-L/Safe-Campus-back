@@ -52,7 +52,7 @@ class PreviewHistoire extends Page
             return null;
         }
 
-        return Scene::with('choix')->find($this->sceneActuelleId);
+        return Scene::with(['choix', 'media'])->find($this->sceneActuelleId);
     }
 
     public function getChoixFinal(): ?Choix
