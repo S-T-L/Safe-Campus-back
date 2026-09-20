@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Filament\Resources\ContactResource\Pages\ListContacts;
 use App\Filament\Resources\ContactResource\RelationManagers\TelephonesRelationManager;
+use App\Filament\Resources\HistoireResource\Pages\ListHistoires;
+use App\Filament\Resources\HistoireResource\RelationManagers\ScenesRelationManager;
 use App\Filament\Resources\MediaResource\Pages\ListMedia;
 use App\Filament\Resources\ThemeResource\Pages\ListThemes;
 use App\Filament\Resources\ThemeResource\RelationManagers\SousThemesRelationManager;
@@ -45,13 +47,19 @@ class AppServiceProvider extends ServiceProvider
             'contact' => [ListContacts::class],
             'média' => [ListMedia::class],
             'téléphone' => [TelephonesRelationManager::class],
+            'histoire' => [ListHistoires::class],
+            'scène' => [ScenesRelationManager::class],
         ];
 
+        $feminins = ['histoire'];
+
         foreach ($hints as $label => $scopes) {
+            $article = in_array($label, $feminins, true) ? 'une' : 'un';
+
             FilamentView::registerRenderHook(
                 TablesRenderHook::TOOLBAR_START,
                 fn () => Blade::render(
-                    '<span class="fi-ta-hint text-sm italic text-gray-500 dark:text-gray-400">Pour modifier un '.e($label).', cliquez dessus.</span>'
+                    '<span class="fi-ta-hint text-sm italic text-gray-500 dark:text-gray-400">Pour modifier '.$article.' '.e($label).', cliquez dessus.</span>'
                 ),
                 scopes: $scopes,
             );
