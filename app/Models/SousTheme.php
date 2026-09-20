@@ -66,6 +66,14 @@ class SousTheme extends Model
             ->orderByPivot('ordre');
     }
 
+    /**
+     * @return BelongsToMany<Histoire, $this>
+     */
+    public function histoires(): BelongsToMany
+    {
+        return $this->belongsToMany(Histoire::class);
+    }
+
     public function medias(): BelongsToMany
     {
         return $this->belongsToMany(Media::class)

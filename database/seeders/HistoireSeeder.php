@@ -86,7 +86,7 @@ class HistoireSeeder extends Seeder
             ['ref' => self::REF],
             [
                 'titre' => 'Une soirée qui dérape (démo)',
-                'etat' => EtatHistoire::Brouillon,
+                'etat' => EtatHistoire::Publie,
                 'user_id' => $redacteur->id,
             ],
         );

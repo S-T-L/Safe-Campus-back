@@ -218,16 +218,53 @@ sous-thème sans fiche : les deux cas sont impossibles par construction.
 
 ### Consommation API
 
-Deux endpoints publics, deux payloads distincts — pas de sur-fetch :
+Trois endpoints publics, trois payloads distincts — pas de sur-fetch :
 
 - `GET /api/themes` — `Theme` (`ref`, `libelle`, `resume`, `medias`) avec ses `SousTheme` imbriqués
   en version légère (`ref`, `libelle`, `resume` — pas d'`article`, pas de `contacts`). Alimente les
   sections et les cartes de la page d'accueil.
 - `GET /api/sous-themes/{ref}` — un seul sous-thème : `ref`, `libelle`, `article`, `contacts`
-  (triés `Ordre`, filtrés `Actif`) et leurs `Telephone`. Alimente la page détail. Pas de `resume` :
-  inutilisé à cet endroit.
+  (triés `Ordre`, filtrés `Actif`) et leurs `Telephone`, plus `histoires` (`ref`, `titre` des seules
+  histoires `publie`, triées par titre : de quoi activer le bouton « Suivre l'histoire »). Alimente
+  la page détail. Pas de `resume` : inutilisé à cet endroit.
+- `GET /api/histoires/{ref}` — le graphe complet d'une histoire, lu en **une seule requête** : le
+  front navigue ensuite de scène en scène sans nouvel appel. Alimente le lecteur d'histoire.
 
 `Article` n'est donc jamais renvoyé par `/api/themes`, `Resume` jamais par `/api/sous-themes/{ref}`.
+
+#### Contrat de `GET /api/histoires/{ref}`
+
+```json
+{ "data": {
+    "ref": "demo_soiree_qui_derape",
+    "titre": "Une soirée qui dérape (démo)",
+    "scene_initiale_id": 18,
+    "scenes": [
+      { "id": 18,
+        "dialogue_text": "…",
+        "media": { "libelle": "…", "description": null, "url": "…", "type": "image" },
+        "choix": [
+          { "id": 10, "text_choix": "…", "next_scene_id": 19, "issue": null },
+          { "id": 13, "text_choix": "…", "next_scene_id": null, "issue": "defavorable",
+            "contacts": [ { "ref": "…", "nom": "…", "telephones": [ … ] } ] }
+        ] }
+    ] } }
+```
+
+- **Publication.** Seules les histoires `Etat = publie` sont servies, les autres répondent `404`.
+- **Fin de parcours.** `next_scene_id = null` sort du parcours, qualifié par `issue`
+  (`favorable` ou `defavorable`).
+- **Contacts.** La clé `contacts` n'existe que sur un choix `defavorable`. Elle porte les contacts
+  déjà résolus par la règle de [Résolution des contacts](#choix) (contacts `Actif` et téléphones
+  `Actif`) : le front n'a rien à calculer et ne refait aucun appel. Le bloc est répété d'un choix
+  défavorable à l'autre, volontairement : les histoires sont petites.
+- **Ordre.** Les scènes sont servies triées par `Ordre` de la liaison, puis par `id`. Les choix le
+  sont par `id`. `Ordre` lui-même ne sort pas.
+- **Ce qui ne sort pas.** `Scene.Titre` (back-office), `Etat`, l'auteur, les dates.
+- **Média.** `media` vaut `null` sans image, ou si le média est inactif ou n'est pas une image.
+- **Intégrité.** La liaison fait autorité : un choix dont `FK_Next_Scene` désigne une scène non
+  rattachée à l'histoire est écarté de la réponse plutôt que de renvoyer un `next_scene_id`
+  introuvable. `scene_initiale_id` vaut `null` si l'histoire n'a pas de scène initiale.
 
 ### Contact
 
