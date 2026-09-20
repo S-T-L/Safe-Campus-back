@@ -5,14 +5,11 @@ namespace Tests\Feature\Database;
 use App\Models\SousTheme;
 use App\Models\Theme;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class TaxonomieTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_un_theme_contient_plusieurs_sous_themes(): void
     {
         $theme = Theme::factory()->create(['ref' => 'addictions_test']);

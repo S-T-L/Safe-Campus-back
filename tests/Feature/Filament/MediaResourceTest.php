@@ -9,7 +9,6 @@ use App\Filament\Resources\MediaResource\Pages\EditMedia;
 use App\Filament\Resources\MediaResource\Pages\ListMedia;
 use App\Models\Media;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -17,8 +16,6 @@ use Tests\TestCase;
 
 class MediaResourceTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_un_compte_sans_role_est_refuse_sur_la_liste(): void
     {
         $this->actingAs(User::factory()->create(['role' => null]));

@@ -12,15 +12,12 @@ use App\Filament\Resources\ContactResource\RelationManagers\TelephonesRelationMa
 use App\Models\Contact;
 use App\Models\SousTheme;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class ContactResourceTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_un_redacteur_est_refuse_sur_la_liste(): void
     {
         $this->actingAs(User::factory()->create(['role' => UserRole::Redacteur]));
@@ -44,7 +41,10 @@ class ContactResourceTest extends TestCase
             'type' => TelephoneType::Fixe,
         ]);
 
-        Livewire::test(ListContacts::class)->assertSee('25 07 60');
+        // Recherche ciblee : la liste pagine aussi les contacts deja en base.
+        Livewire::test(ListContacts::class)
+            ->searchTable($contact->nom)
+            ->assertSee('25 07 60');
     }
 
     public function test_un_webmaster_cree_un_contact_sans_sous_theme(): void
@@ -55,42 +55,42 @@ class ContactResourceTest extends TestCase
 
         Livewire::test(CreateContact::class)
             ->fillForm([
-                'nom' => 'SAMU',
+                'nom' => 'Structure de test',
                 'actif' => true,
             ])
             ->call('create')
             ->assertHasNoFormErrors();
 
-        $this->assertDatabaseHas('contacts', ['ref' => 'samu', 'nom' => 'SAMU']);
+        $this->assertDatabaseHas('contacts', ['ref' => 'structure_de_test', 'nom' => 'Structure de test']);
     }
 
     public function test_le_ref_genere_se_deduplique_en_cas_de_collision(): void
     {
         $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
-        Contact::factory()->create(['ref' => 'samu', 'nom' => 'SAMU']);
+        Contact::factory()->create(['ref' => 'structure_doublon', 'nom' => 'Structure doublon']);
 
         Livewire::test(CreateContact::class)
             ->fillForm([
-                'nom' => 'SAMU',
+                'nom' => 'Structure doublon',
                 'actif' => true,
             ])
             ->call('create')
             ->assertHasNoFormErrors();
 
-        $this->assertDatabaseHas('contacts', ['ref' => 'samu_2', 'nom' => 'SAMU']);
+        $this->assertDatabaseHas('contacts', ['ref' => 'structure_doublon_2', 'nom' => 'Structure doublon']);
     }
 
     public function test_le_ref_reste_inchange_a_l_edition(): void
     {
         $this->actingAs(User::factory()->create(['role' => UserRole::Webmaster]));
-        $contact = Contact::factory()->create(['ref' => 'sos_ecoute', 'nom' => 'SOS Ecoute']);
+        $contact = Contact::factory()->create(['ref' => 'ref_edition_test', 'nom' => 'Structure edition']);
 
         Livewire::test(EditContact::class, ['record' => $contact->getKey()])
-            ->fillForm(['nom' => 'SOS Ecoute (modifie)'])
+            ->fillForm(['nom' => 'Structure edition (modifiee)'])
             ->call('save')
             ->assertHasNoFormErrors();
 
-        $this->assertDatabaseHas('contacts', ['id' => $contact->id, 'ref' => 'sos_ecoute', 'nom' => 'SOS Ecoute (modifie)']);
+        $this->assertDatabaseHas('contacts', ['id' => $contact->id, 'ref' => 'ref_edition_test', 'nom' => 'Structure edition (modifiee)']);
     }
 
     public function test_le_relation_manager_telephones_cree_un_numero(): void

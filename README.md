@@ -146,7 +146,9 @@ Le `.env` est lu par Docker avant le build : `WWWUSER`/`WWWGROUP` créent l'util
 
 `SC_Back` exécute `composer install` à chaque démarrage, puis `artisan serve`. `key:generate`, `migrate` et `db:seed` sont à la main : l'état de la base est piloté par le dev.
 
-> `migrate` seed automatiquement la taxonomie (themes/sous-themes) et le compte webmaster de démo — donnée structurelle requise par l'app. `db:seed` reste nécessaire à part pour l'annuaire de contacts et les médias (`ContactSeeder`, `MediaSeeder`) : volontairement pas dans une migration, pour ne pas polluer la base de test (`RefreshDatabase`) utilisée par la suite de tests, qui crée des contacts avec des `ref` réels (`samu`, `sos_ecoute`, ...). Les deux seeders sont idempotents (rejouables sans dupliquer).
+> `migrate` seed automatiquement la taxonomie (themes/sous-themes) et le compte webmaster de démo — donnée structurelle requise par l'app. `db:seed` reste nécessaire à part pour l'annuaire de contacts, les médias et l'histoire de démonstration (`ContactSeeder`, `MediaSeeder`, `HistoireSeeder` — ce dernier jamais en production). Ces seeders sont idempotents (rejouables sans dupliquer) : `migrate:fresh --seed` remet la base dans son état de référence.
+>
+> Les tests (`php artisan test`) tournent sur cette même base, sans jamais la vider : chaque test est enveloppé dans une transaction annulée à la fin (`DatabaseTransactions`, voir `tests/TestCase.php`). La base doit donc être migrée et seedée avant de les lancer, et un test crée ses données par factory sans supposer une base vide.
 
 > `storage:link` crée `public/storage` → `storage/app/public` (symlink, gitignoré). Sans ça, les fichiers uploadés via Filament (médias : images, PDF, ...) sont bien enregistrés mais renvoient 404 côté front.
 

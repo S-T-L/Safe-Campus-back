@@ -6,14 +6,11 @@ use App\Enums\MediaType;
 use App\Models\Media;
 use App\Models\SousTheme;
 use App\Models\Theme;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class MediaTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_la_table_est_medias_et_non_media(): void
     {
         // L'inflecteur Laravel rend « media » : sans $table explicite, le modele
@@ -60,8 +57,8 @@ class MediaTest extends TestCase
 
         $sousTheme->delete();
 
-        $this->assertDatabaseCount('media_sous_theme', 0);
-        $this->assertDatabaseCount('medias', 1);
+        $this->assertDatabaseMissing('media_sous_theme', ['media_id' => $media->id]);
+        $this->assertModelExists($media);
     }
 
     public function test_un_theme_peut_porter_plusieurs_medias_non_exclusifs(): void
@@ -85,7 +82,7 @@ class MediaTest extends TestCase
 
         $theme->delete();
 
-        $this->assertDatabaseCount('media_theme', 0);
-        $this->assertDatabaseCount('medias', 1);
+        $this->assertDatabaseMissing('media_theme', ['media_id' => $media->id]);
+        $this->assertModelExists($media);
     }
 }

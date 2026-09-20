@@ -7,20 +7,17 @@ use App\Models\Contact;
 use App\Models\SousTheme;
 use App\Models\Telephone;
 use Illuminate\Database\QueryException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ContactTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_un_contact_peut_exister_sans_sous_theme(): void
     {
         // Etat normal entre la creation et l'assignation. Invisible du front.
         $contact = Contact::factory()->create();
 
         $this->assertCount(0, $contact->sousThemes);
-        $this->assertDatabaseCount('contacts', 1);
+        $this->assertDatabaseHas('contacts', ['id' => $contact->id]);
     }
 
     public function test_un_contact_sert_plusieurs_sous_themes_et_inversement(): void
@@ -104,11 +101,8 @@ class ContactTest extends TestCase
     public function test_supprimer_un_contact_efface_ses_donnees_liees_rgpd(): void
     {
         // Droit a l'effacement : nom, prenom et mail d'un referent nomme.
-        // Baseline plutot que 0/1 en dur : la taxonomie de reference
-        // (migration 2026_07_31_120000_seed_taxonomie_themes_sous_themes)
-        // peuple deja sous_themes independamment de ce test.
-        $baselineSousThemes = SousTheme::count();
-
+        // Assertions ciblees sur les enregistrements du test : la base de dev
+        // contient deja des contacts et une taxonomie de reference.
         $contact = Contact::factory()->referentNomme()->create();
         $sousTheme = SousTheme::factory()->create();
         $contact->sousThemes()->attach($sousTheme->id, ['ordre' => 0]);
@@ -116,20 +110,22 @@ class ContactTest extends TestCase
 
         $contact->delete();
 
-        $this->assertDatabaseCount('contacts', 0);
-        $this->assertDatabaseCount('telephones', 0);
-        $this->assertDatabaseCount('contact_sous_theme', 0);
+        $this->assertModelMissing($contact);
+        $this->assertDatabaseMissing('telephones', ['contact_id' => $contact->id]);
+        $this->assertDatabaseMissing('contact_sous_theme', ['contact_id' => $contact->id]);
         // Le sous-theme, lui, survit.
-        $this->assertSame($baselineSousThemes + 1, SousTheme::count());
+        $this->assertModelExists($sousTheme);
     }
 
     public function test_le_scope_actif_ecarte_les_structures_fermees(): void
     {
-        Contact::factory()->count(2)->create();
-        Contact::factory()->inactif()->create();
+        $ids = [
+            ...Contact::factory()->count(2)->create()->modelKeys(),
+            Contact::factory()->inactif()->create()->id,
+        ];
 
-        $this->assertSame(3, Contact::count());
-        $this->assertSame(2, Contact::actif()->count());
+        $this->assertSame(3, Contact::whereKey($ids)->count());
+        $this->assertSame(2, Contact::whereKey($ids)->actif()->count());
     }
 
     public function test_les_criteres_filtrables_distinguent_inconnu_de_faux(): void
