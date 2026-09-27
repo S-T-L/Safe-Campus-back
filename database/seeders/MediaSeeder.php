@@ -25,17 +25,17 @@ class MediaSeeder extends Seeder
      */
     private const DOCUMENTS = [
         'alcool' => [
-            ['titre' => 'Fiche réflexive — Faire le point sur ma consommation', 'description' => "Un questionnaire simple pour t'aider à évaluer ta relation à l'alcool et identifier les situations à risque."],
+            ['titre' => 'Fiche réflexive — Faire le point sur ma consommation', 'description' => "Un questionnaire simple pour t'aider à évaluer ta relation à l'alcool et identifier les situations à risque.", 'fichier_source' => 'fiche-alcool.pdf'],
             ['titre' => 'Fiche pratique — Réduire sans se priver', 'description' => 'Des stratégies concrètes pour espacer ou diminuer sa consommation au quotidien, étape par étape.'],
             ['titre' => 'Dépliant — Consultations Jeunes Consommateurs (DECLIC)', 'description' => 'Entretiens confidentiels et gratuits, pour les moins de 25 ans et leur famille, sur la consommation de tabac, cannabis, alcool ou autres conduites addictives.', 'fichier_source' => 'declic-consultations-jeunes-consommateurs.pdf'],
         ],
         'tabac' => [
-            ['titre' => 'Fiche réflexive — Identifier mes déclencheurs', 'description' => 'Repère les moments et émotions qui te poussent à fumer pour mieux les anticiper.'],
+            ['titre' => 'Fiche réflexive — Identifier mes déclencheurs', 'description' => 'Repère les moments et émotions qui te poussent à fumer pour mieux les anticiper.', 'fichier_source' => 'fiche-cigarette.pdf'],
             ['titre' => 'Guide — Les premières semaines sans tabac', 'description' => "Ce à quoi s'attendre physiquement et mentalement, et comment tenir bon."],
             ['titre' => 'Dépliant — Consultations Jeunes Consommateurs (DECLIC)', 'description' => 'Entretiens confidentiels et gratuits, pour les moins de 25 ans et leur famille, sur la consommation de tabac, cannabis, alcool ou autres conduites addictives.', 'fichier_source' => 'declic-consultations-jeunes-consommateurs.pdf'],
         ],
         'drogue' => [
-            ['titre' => 'Fiche réflexive — Mon rapport aux substances', 'description' => "Un outil d'auto-évaluation pour mieux cerner ta consommation et ses effets sur ton quotidien."],
+            ['titre' => 'Fiche réflexive — Mon rapport aux substances', 'description' => "Un outil d'auto-évaluation pour mieux cerner ta consommation et ses effets sur ton quotidien.", 'fichier_source' => 'fiche-drogue.pdf'],
             ['titre' => 'Fiche info — Réduction des risques', 'description' => 'Des conseils concrets pour limiter les dangers en cas de consommation.'],
             ['titre' => 'Dépliant — Consultations Jeunes Consommateurs (DECLIC)', 'description' => 'Entretiens confidentiels et gratuits, pour les moins de 25 ans et leur famille, sur la consommation de tabac, cannabis, alcool ou autres conduites addictives.', 'fichier_source' => 'declic-consultations-jeunes-consommateurs.pdf'],
         ],
