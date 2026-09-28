@@ -209,6 +209,21 @@ class InscriptionTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_un_compte_visiteur_est_refuse_sans_message_d_attente(): void
+    {
+        // Le role Visiteur sert l'API du front, jamais /admin : echec
+        // generique, pas le message reserve aux inscriptions en attente.
+        $user = User::factory()->create(['role' => UserRole::Visiteur, 'password' => self::MOT_DE_PASSE]);
+
+        Livewire::test(Login::class)
+            ->fillForm(['email' => $user->email, 'password' => self::MOT_DE_PASSE])
+            ->call('authenticate')
+            ->assertHasFormErrors(['email'])
+            ->assertDontSee('en attente de validation');
+
+        $this->assertGuest();
+    }
+
     public function test_un_compte_avec_role_se_connecte(): void
     {
         $user = User::factory()->create(['role' => UserRole::Redacteur, 'password' => self::MOT_DE_PASSE]);
