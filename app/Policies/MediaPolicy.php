@@ -13,28 +13,34 @@ use App\Models\User;
  */
 class MediaPolicy
 {
+    private function autorise(User $user): bool
+    {
+        // Allowlist : ni l'admin (gestion des comptes uniquement) ni le visiteur.
+        return in_array($user->role, [UserRole::Webmaster, UserRole::Redacteur], true);
+    }
+
     public function viewAny(User $user): bool
     {
-        return $user->role !== null;
+        return $this->autorise($user);
     }
 
     public function view(User $user, Media $media): bool
     {
-        return $user->role !== null;
+        return $this->autorise($user);
     }
 
     public function create(User $user): bool
     {
-        return $user->role !== null;
+        return $this->autorise($user);
     }
 
     public function update(User $user, Media $media): bool
     {
-        return $user->role !== null;
+        return $this->autorise($user);
     }
 
     public function delete(User $user, Media $media): bool
     {
-        return $user->role !== null;
+        return $this->autorise($user);
     }
 }

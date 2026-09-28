@@ -59,14 +59,15 @@ class User extends Authenticatable implements FilamentUser, HasName
     /**
      * Sanctum authentifie l'API, il ne gouverne pas l'acces au panel.
      * Allowlist explicite : le role Visiteur (auth front) ne doit jamais
-     * donner acces a /admin. Un compte sans role (inscription en attente de
+     * donner acces a /admin. L'admin entre dans le panel mais ne voit que
+     * la gestion des utilisateurs (UserPolicy). Un compte sans role (inscription en attente de
      * validation) est refuse des la page de connexion — voir
      * App\Filament\Pages\Auth\Login.
      */
     public function canAccessPanel(Panel $panel): bool
     {
         // @phpstan-ignore function.impossibleType
-        return in_array($this->role, [UserRole::Webmaster, UserRole::Redacteur], true);
+        return in_array($this->role, [UserRole::Webmaster, UserRole::Redacteur, UserRole::Admin], true);
     }
 
     /**

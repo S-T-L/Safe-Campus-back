@@ -27,6 +27,7 @@
 | `DB_PASSWORD` | `password` | Mot de passe fort (min. 20 caractères, aléatoire) |
 | `LOG_LEVEL` | `debug` | `error` (fixé dans docker-compose.prod.yml) |
 | `CORS_ALLOWED_ORIGINS` / `SANCTUM_STATEFUL_DOMAINS` | `localhost:3000` | domaine public du front |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | `admin@safe-campus.nc` / `password` | Premier compte admin, créé au premier `migrate`. Mot de passe fort obligatoire (14 caractères, majuscule, minuscule, caractère spécial), sinon la migration échoue. Peut être retiré de Dokploy une fois le compte créé |
 
 ## Hook de déploiement Dockploy
 

@@ -564,21 +564,38 @@ supprimer un compte à chaque retrait d'un contact de l'annuaire.
 
 ### Rôles
 
-Deux rôles métier, mutuellement exclusifs, portés par la colonne `Role` sur `users`.
+Quatre rôles, mutuellement exclusifs, portés par la colonne `Role` sur `users`. `visiteur` est le
+compte technique de l'API front (`POST /api/login`), sans accès au panel.
 
-| Ressource Filament | `webmaster` | `redacteur` |
-|---|---|---|
-| Thèmes / Sous-thèmes (fiches) | ✓ | ✗ |
-| Contacts / Téléphones | ✓ | ✗ |
-| Médias | ✓ | ✓ |
-| Signalements | ✓ | ✗ |
-| Histoires / Scènes / Choix | ✗ | ✓ |
+| Ressource Filament | `webmaster` | `redacteur` | `admin` |
+|---|---|---|---|
+| Thèmes / Sous-thèmes (fiches) | ✓ | ✗ | ✗ |
+| Contacts / Téléphones | ✓ | ✗ | ✗ |
+| Médias | ✓ | ✓ | ✗ |
+| Signalements | ✓ | ✗ | ✗ |
+| Histoires / Scènes / Choix | ✗ | ✓ | ✗ |
+| Utilisateurs | ✗ | ✗ | ✓ |
 
 L'accès au panel se décide par `canAccessPanel()` sur le modèle `User`. Le filtrage par ressource se
 fait par des Policies Laravel standard, une par ressource, lues automatiquement par Filament. Un
 rédacteur qui tente `/admin/contacts` reçoit un 403 et ne voit pas l'entrée dans le menu.
 
 Un utilisateur sans rôle (inscription en attente) est refusé dès la connexion.
+
+### Administration des comptes
+
+L'admin valide les inscriptions : il ne crée pas de compte. Depuis « Utilisateurs », il attribue
+`webmaster`, `redacteur` ou `admin`, ou retire le rôle (le compte ne peut plus se connecter mais est
+conservé, avec les histoires qui lui sont rattachées). Le bouton « Refuser » supprime une demande en
+attente ; un compte actif ne se supprime pas.
+
+Garde-fous (`UserPolicy`) : un admin ne modifie jamais son propre compte, donc le dernier admin ne
+peut pas perdre son rôle. Le compte `visiteur` est absent de la liste et ne peut pas être attribué.
+
+Le premier admin est créé au `migrate`, dans tous les environnements, à partir de `ADMIN_EMAIL` /
+`ADMIN_PASSWORD`. En production, le mot de passe doit respecter la politique de l'inscription, sinon
+la migration échoue. Il ne sert qu'à la création : une fois le compte créé, la variable peut être
+retirée.
 
 L'alternative — Spatie Permission + Filament Shield — est écartée pour l'instant. Comparatif au
 [point 6](#sur-le-point-6).
@@ -686,7 +703,7 @@ Déclarés dans `app/Enums` (répertoire à créer), castés via `$casts` sur le
 | `Media.Type` | `image`, `video`, `audio`, `document` |
 | `Histoire.Etat` | `brouillon`, `relecture`, `valide`, `publie` |
 | `Choix.Issue` | `favorable`, `defavorable` — `NULL` si le choix poursuit |
-| `User.Role` | `webmaster`, `redacteur` |
+| `User.Role` | `webmaster`, `redacteur`, `visiteur`, `admin` |
 
 Valeurs sans accent ni majuscule. Elles servent de valeur stockée, de valeur de backed enum PHP et
 de paramètre d'URL dans les filtres Filament. L'accentuation reste au libellé affiché.
