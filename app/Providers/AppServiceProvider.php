@@ -9,6 +9,7 @@ use App\Filament\Resources\HistoireResource\RelationManagers\ScenesRelationManag
 use App\Filament\Resources\MediaResource\Pages\ListMedia;
 use App\Filament\Resources\ThemeResource\Pages\ListThemes;
 use App\Filament\Resources\ThemeResource\RelationManagers\SousThemesRelationManager;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Livewire\ThemeSousThemesTable;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
@@ -67,6 +68,7 @@ class AppServiceProvider extends ServiceProvider
             'téléphone' => [TelephonesRelationManager::class],
             'histoire' => [ListHistoires::class],
             'scène' => [ScenesRelationManager::class],
+            'utilisateur' => [ListUsers::class],
         ];
 
         $feminins = ['histoire'];

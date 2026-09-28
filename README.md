@@ -286,6 +286,10 @@ production), identifiants bidon définis dans `.env.example` (`WEBMASTER_DEMO_EM
 Pour changer ces valeurs, surcharger `WEBMASTER_DEMO_EMAIL`/`WEBMASTER_DEMO_PASSWORD` dans `.env`
 avant `migrate` — le compte n'est (re)créé que s'il n'existe pas déjà.
 
+Un compte `admin` est provisionné de la même façon au `migrate` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`,
+valeurs de dev dans `.env.example` : `admin@safe-campus.nc` / `password`). Il gère uniquement les
+comptes : validation des inscriptions et attribution des rôles.
+
 Un nouveau compte peut être demandé depuis la page de connexion (« Pas de compte ? Inscrivez-vous »).
 Il est créé sans rôle et reste inactif jusqu'à attribution d'un rôle — voir
 [docs/schema_bd.md § Inscription](docs/schema_bd.md#inscription).
