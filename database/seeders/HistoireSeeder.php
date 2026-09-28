@@ -4,13 +4,17 @@ namespace Database\Seeders;
 
 use App\Enums\ChoixIssue;
 use App\Enums\EtatHistoire;
+use App\Enums\MediaType;
 use App\Enums\UserRole;
 use App\Models\Choix;
 use App\Models\Histoire;
+use App\Models\Media;
 use App\Models\Scene;
 use App\Models\SousTheme;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 
 /**
  * Histoire de demonstration « Une soiree qui derape » : 3 scenes, 9 choix,
@@ -34,12 +38,13 @@ class HistoireSeeder extends Seeder
      * Cle = identifiant interne au seeder, sert a relier les choix aux scenes
      * suivantes. L'ordre du tableau est l'ordre des scenes dans l'histoire.
      *
-     * @var array<string, array{titre: string, dialogue_text: string, est_initiale?: bool, choix: list<array{text_choix: string, suivante: ?string, issue: ?ChoixIssue}>}>
+     * @var array<string, array{titre: string, dialogue_text: string, image: string, est_initiale?: bool, choix: list<array{text_choix: string, suivante: ?string, issue: ?ChoixIssue}>}>
      */
     private const SCENES = [
         'debut' => [
             'titre' => '[DEMO] Début de soirée',
             'dialogue_text' => "Tu arrives à une soirée entre amis. La musique est forte, tout le monde a l'air de bien s'amuser. Un inconnu te tend un verre en souriant.",
+            'image' => 'debut.jpg',
             'est_initiale' => true,
             'choix' => [
                 ['text_choix' => 'Accepter le verre avec un sourire', 'suivante' => 'verre', 'issue' => null],
@@ -50,6 +55,7 @@ class HistoireSeeder extends Seeder
         'verre' => [
             'titre' => '[DEMO] Le verre suspect',
             'dialogue_text' => "Tu regardes le verre qu'on vient de te tendre. Tu n'as pas vu comment il a été préparé, ni ce qu'il contient vraiment.",
+            'image' => 'verre.jpg',
             'choix' => [
                 ['text_choix' => 'Boire le verre sans poser de questions', 'suivante' => null, 'issue' => ChoixIssue::Defavorable],
                 ['text_choix' => 'Refuser et demander à un ami de rester avec toi', 'suivante' => 'fin', 'issue' => null],
@@ -59,6 +65,7 @@ class HistoireSeeder extends Seeder
         'fin' => [
             'titre' => '[DEMO] Fin de soirée',
             'dialogue_text' => 'Il est tard. La soirée touche à sa fin, et il faut maintenant penser à rentrer.',
+            'image' => 'fin.jpg',
             'choix' => [
                 ['text_choix' => 'Rentrer ensemble avec tes amis', 'suivante' => null, 'issue' => ChoixIssue::Favorable],
                 ['text_choix' => "Laisser un ami rentrer seul alors qu'il a trop bu", 'suivante' => null, 'issue' => ChoixIssue::Defavorable],
@@ -103,7 +110,9 @@ class HistoireSeeder extends Seeder
             $scene = $histoire->scenes()->where('titre', $donnees['titre'])->first()
                 ?? Scene::create(['titre' => $donnees['titre'], 'dialogue_text' => $donnees['dialogue_text']]);
 
-            $scene->update(['dialogue_text' => $donnees['dialogue_text']]);
+            $media = $this->trouverOuCreerImage($cle, $donnees['titre'], $donnees['image']);
+
+            $scene->update(['dialogue_text' => $donnees['dialogue_text'], 'media_id' => $media->id]);
 
             $histoire->scenes()->syncWithoutDetaching([
                 $scene->id => [
@@ -126,5 +135,45 @@ class HistoireSeeder extends Seeder
                 );
             }
         }
+    }
+
+    /**
+     * Idempotent via le libelle, sur le meme principe que MediaSeeder.
+     */
+    private function trouverOuCreerImage(string $cle, string $titreScene, string $nomFichier): Media
+    {
+        $titreCourt = str_replace('[DEMO] ', '', $titreScene);
+
+        return Media::updateOrCreate(
+            ['libelle' => $titreCourt],
+            [
+                'description' => null,
+                'chemin' => $this->copierFichierSource($cle, $nomFichier),
+                'type' => MediaType::Image,
+            ],
+        );
+    }
+
+    /**
+     * Copie idempotente vers le disque `public` : storage/app/public n'est pas
+     * commite, le fichier source vient de database/seeders/data/images/.
+     */
+    private function copierFichierSource(string $cle, string $nomFichier): string
+    {
+        $cheminDisque = 'medias/image/demo-soiree-qui-derape/'.$nomFichier;
+
+        if (Storage::disk('public')->exists($cheminDisque)) {
+            return $cheminDisque;
+        }
+
+        $source = database_path("seeders/data/images/demo-soiree-qui-derape/{$nomFichier}");
+
+        if (! is_file($source)) {
+            throw new RuntimeException("Fichier source introuvable : {$source} (HistoireSeeder, scene {$cle})");
+        }
+
+        Storage::disk('public')->put($cheminDisque, file_get_contents($source));
+
+        return $cheminDisque;
     }
 }

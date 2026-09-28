@@ -16,6 +16,7 @@ class ThemeController extends Controller
         $themes = Theme::actif()
             ->with([
                 'sousThemes' => fn ($query) => $query->actif(),
+                'sousThemes.histoires' => fn ($query) => $query->publiee(),
                 'medias' => fn ($query) => $query->actif(),
             ])
             ->ordonne()
