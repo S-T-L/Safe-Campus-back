@@ -6,13 +6,14 @@ namespace App\Models;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasName
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
@@ -23,8 +24,10 @@ class User extends Authenticatable implements FilamentUser
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'nom',
+        'prenom',
         'email',
+        'telephone',
         'password',
         'role',
     ];
@@ -56,11 +59,21 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Sanctum authentifie l'API, il ne gouverne pas l'acces au panel.
      * Allowlist explicite : le role Visiteur (auth front) ne doit jamais
-     * donner acces a /admin.
+     * donner acces a /admin. Un compte sans role (inscription en attente de
+     * validation) est refuse des la page de connexion — voir
+     * App\Filament\Pages\Auth\Login.
      */
     public function canAccessPanel(Panel $panel): bool
     {
         // @phpstan-ignore function.impossibleType
         return in_array($this->role, [UserRole::Webmaster, UserRole::Redacteur], true);
+    }
+
+    /**
+     * Nom affiche par Filament (menu utilisateur) : il n'y a plus de `name`.
+     */
+    public function getFilamentName(): string
+    {
+        return trim("{$this->prenom} {$this->nom}");
     }
 }

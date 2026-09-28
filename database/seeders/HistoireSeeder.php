@@ -83,7 +83,8 @@ class HistoireSeeder extends Seeder
         $redacteur = User::firstOrCreate(
             ['email' => self::REDACTEUR_EMAIL],
             [
-                'name' => 'Rédacteur test',
+                'nom' => 'Test',
+                'prenom' => 'Rédacteur',
                 'password' => 'password',
                 'role' => UserRole::Redacteur,
             ],
