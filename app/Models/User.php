@@ -10,11 +10,12 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -54,10 +55,12 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Sanctum authentifie l'API, il ne gouverne pas l'acces au panel.
-     * Un compte sans role est authentifie mais recoit un 403 sur /admin.
+     * Allowlist explicite : le role Visiteur (auth front) ne doit jamais
+     * donner acces a /admin.
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->role !== null;
+        // @phpstan-ignore function.impossibleType
+        return in_array($this->role, [UserRole::Webmaster, UserRole::Redacteur], true);
     }
 }
