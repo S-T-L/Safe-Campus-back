@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\Register;
 use Filament\Http\Middleware\Authenticate;
@@ -34,6 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->registration(Register::class)
+            ->profile(EditProfile::class, isSimple: false)
             ->colors([
 
                 'primary' => Color::hex('#4260e6'),
