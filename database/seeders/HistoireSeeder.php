@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Enums\ChoixIssue;
 use App\Enums\EtatHistoire;
 use App\Enums\MediaType;
-use App\Enums\UserRole;
 use App\Models\Choix;
 use App\Models\Histoire;
 use App\Models\Media;
@@ -23,16 +22,15 @@ use RuntimeException;
  *
  * Idempotent : l'histoire est cherchee par `ref`, une scene par (histoire,
  * titre), un choix par (scene, texte). Rejouer le seeder met a jour sans
- * dupliquer. Jamais en production : c'est du contenu de demo, et il cree un
- * compte redacteur aux identifiants bidon.
+ * dupliquer. Jamais en production : c'est du contenu de demo. Le compte
+ * redacteur proprietaire est cree par RedacteurDemoSeeder, qui doit
+ * s'executer avant.
  */
 class HistoireSeeder extends Seeder
 {
     private const REF = 'demo_soiree_qui_derape';
 
     private const SOUS_THEME_REF = 'alcool';
-
-    private const REDACTEUR_EMAIL = 'redacteur@test.local';
 
     /**
      * Cle = identifiant interne au seeder, sert a relier les choix aux scenes
@@ -80,15 +78,7 @@ class HistoireSeeder extends Seeder
             return;
         }
 
-        $redacteur = User::firstOrCreate(
-            ['email' => self::REDACTEUR_EMAIL],
-            [
-                'nom' => 'Test',
-                'prenom' => 'Rédacteur',
-                'password' => 'password',
-                'role' => UserRole::Redacteur,
-            ],
-        );
+        $redacteur = User::where('email', config('redacteur_demo.email'))->firstOrFail();
 
         $histoire = Histoire::updateOrCreate(
             ['ref' => self::REF],
