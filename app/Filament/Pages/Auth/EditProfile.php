@@ -3,52 +3,25 @@
 namespace App\Filament\Pages\Auth;
 
 use App\Services\TelephoneService;
-use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
-use Filament\Events\Auth\Registered;
+use Closure;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\RegistrationResponse;
-use Filament\Notifications\Notification;
-use Filament\Pages\Auth\Register as BaseRegister;
+use Filament\Pages\Auth\EditProfile as BaseEditProfile;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Demande de compte au back-office. Le compte est cree sans role : il reste
- * inactif (connexion refusee) jusqu'a ce qu'un admin lui en attribue un.
- * Contrairement a la page Filament d'origine, l'inscrit n'est pas connecte.
+ * "Mon espace" : chaque compte connecte y modifie ses propres informations
+ * (identite, telephone, mot de passe) et consulte son role, en lecture seule
+ * (attribue uniquement par un admin, voir UserResource).
  */
-class Register extends BaseRegister
+class EditProfile extends BaseEditProfile
 {
-    public function register(): ?RegistrationResponse
+    public static function getLabel(): string
     {
-        try {
-            $this->rateLimit(2);
-        } catch (TooManyRequestsException $exception) {
-            $this->getRateLimitedNotification($exception)?->send();
-
-            return null;
-        }
-
-        $user = $this->wrapInDatabaseTransaction(function () {
-            $data = $this->form->getState();
-
-            return $this->handleRegistration($data);
-        });
-
-        event(new Registered($user));
-
-        Notification::make()
-            ->title('Demande de compte enregistrée')
-            ->body('Votre compte ne sera actif qu\'après validation par un administrateur. Vous pourrez alors vous connecter.')
-            ->success()
-            ->persistent()
-            ->send();
-
-        $this->redirect(filament()->getLoginUrl());
-
-        return null;
+        return 'Mon espace';
     }
 
     /**
@@ -66,10 +39,14 @@ class Register extends BaseRegister
                         ]),
                         $this->getEmailFormComponent(),
                         $this->getTelephoneFormComponent(),
+                        $this->getRoleFormComponent(),
                         $this->getPasswordFormComponent(),
                         $this->getPasswordConfirmationFormComponent(),
                     ])
-                    ->statePath('data'),
+                    ->operation('edit')
+                    ->model($this->getUser())
+                    ->statePath('data')
+                    ->inlineLabel(! static::isSimple()),
             ),
         ];
     }
@@ -92,32 +69,37 @@ class Register extends BaseRegister
     }
 
     /**
-     * Email stocke en minuscules, unicite verifiee sans tenir compte de la
-     * casse : PostgreSQL compare les chaines a l'identique, `->unique()`
-     * laisserait passer JEAN@test.nc a cote de jean@test.nc.
+     * Meme verification que l'inscription (Register), en ignorant le compte
+     * courant : comparaison insensible a la casse, Postgres ne le fait pas
+     * nativement via ->unique().
      */
     protected function getEmailFormComponent(): Component
     {
         return TextInput::make('email')
-            ->label(__('filament-panels::pages/auth/register.form.email.label'))
+            ->label(__('filament-panels::pages/auth/edit-profile.form.email.label'))
             ->email()
             ->required()
             ->maxLength(255)
             ->dehydrateStateUsing(fn (string $state): string => mb_strtolower(trim($state)))
-            ->rule(fn () => function (string $attribute, mixed $value, \Closure $fail) {
-                if (! is_string($value)) {
-                    $fail('L\'adresse email est invalide.');
+            ->rule(function (): Closure {
+                $idCourant = $this->getUser()->getKey();
 
-                    return;
-                }
+                return function (string $attribute, mixed $value, Closure $fail) use ($idCourant) {
+                    if (! is_string($value)) {
+                        $fail('L\'adresse email est invalide.');
 
-                $existe = DB::table('users')
-                    ->whereRaw('lower(email) = ?', [mb_strtolower(trim($value))])
-                    ->exists();
+                        return;
+                    }
 
-                if ($existe) {
-                    $fail('Cette adresse email est déjà utilisée.');
-                }
+                    $existe = DB::table('users')
+                        ->whereRaw('lower(email) = ?', [mb_strtolower(trim($value))])
+                        ->where('id', '!=', $idCourant)
+                        ->exists();
+
+                    if ($existe) {
+                        $fail('Cette adresse email est déjà utilisée.');
+                    }
+                };
             });
     }
 
@@ -135,17 +117,29 @@ class Register extends BaseRegister
             ->placeholder('ex. 77 12 34')
             ->helperText('Numéro calédonien à 6 chiffres, +687 facultatif.')
             ->dehydrateStateUsing(fn (string $state): string => $telephones->normaliser($state))
-            ->rule(fn () => function (string $attribute, mixed $value, \Closure $fail) use ($telephones) {
-                // is_string : une requete Livewire forgee peut envoyer un tableau.
+            ->rule(fn () => function (string $attribute, mixed $value, Closure $fail) use ($telephones) {
                 if (! is_string($value) || ! $telephones->estValide($value)) {
                     $fail('Le numéro doit être un numéro calédonien à 6 chiffres.');
                 }
             });
     }
 
+    /**
+     * Lecture seule : le role est attribue par un admin (UserResource), pas
+     * modifiable depuis l'espace personnel.
+     */
+    protected function getRoleFormComponent(): Component
+    {
+        return Placeholder::make('role')
+            ->label('Rôle')
+            ->content(fn (): string => $this->getUser()->role?->libelle() ?? 'Aucun — accès refusé');
+    }
+
     protected function getPasswordFormComponent(): Component
     {
-        return parent::getPasswordFormComponent()
-            ->helperText('14 caractères minimum, dont une majuscule, une minuscule et un caractère spécial.');
+        $component = parent::getPasswordFormComponent();
+
+        // @phpstan-ignore method.notFound
+        return $component->helperText('14 caractères minimum, dont une majuscule, une minuscule et un caractère spécial. Laisser vide pour ne pas changer.');
     }
 }
