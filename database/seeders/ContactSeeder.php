@@ -130,6 +130,8 @@ class ContactSeeder extends Seeder
                 ['numero' => '27 76 08', 'type' => TelephoneType::Fixe],
             ],
             'sous_themes' => ['violences_sexuelles', 'harcelement'],
+            'latitude' => -22.2740442,
+            'longitude' => 166.4451268,
         ],
         [
             'ref' => 'mcpf_noumea',
@@ -182,6 +184,8 @@ class ContactSeeder extends Seeder
                 ['numero' => '96 35 95', 'type' => TelephoneType::Fixe],
             ],
             'sous_themes' => ['violences_sexuelles', 'harcelement', 'anxiete', 'depression', 'burn_out'],
+            'latitude' => -22.2504825,
+            'longitude' => 166.4519872,
         ],
         [
             'ref' => 'cmp_gallieni',
@@ -194,6 +198,8 @@ class ContactSeeder extends Seeder
                 ['numero' => '27 52 56', 'type' => TelephoneType::Fixe],
             ],
             'sous_themes' => ['anxiete', 'depression', 'burn_out'],
+            'latitude' => -22.2684389,
+            'longitude' => 166.4387889,
         ],
         [
             'ref' => 'aup_gaston_bourret',
@@ -206,6 +212,8 @@ class ContactSeeder extends Seeder
                 ['numero' => '20 80 00', 'type' => TelephoneType::Fixe],
             ],
             'sous_themes' => ['depression', 'anxiete', 'burn_out'],
+            'latitude' => -22.2100017,
+            'longitude' => 166.4533908,
         ],
         [
             'ref' => 'csapa',
@@ -230,6 +238,8 @@ class ContactSeeder extends Seeder
                 ['numero' => '27 92 98', 'type' => TelephoneType::Fixe],
             ],
             'sous_themes' => ['alcool', 'drogue'],
+            'latitude' => -22.285741,
+            'longitude' => 166.4522631,
         ],
         [
             'ref' => 'dav',
@@ -284,6 +294,8 @@ class ContactSeeder extends Seeder
             ],
             'sous_themes' => ['violences_sexistes', 'violences_sexuelles', 'harcelement'],
             'horaires' => 'Lun-jeu 7h30-16h en continu (avec ou sans rendez-vous), ven sur rendez-vous',
+            'latitude' => -22.2681309,
+            'longitude' => 166.44007,
         ],
         [
             'ref' => 'cidfe',
@@ -380,6 +392,8 @@ class ContactSeeder extends Seeder
                 ['numero' => '42 11 75', 'type' => TelephoneType::Fixe],
             ],
             'sous_themes' => ['alcool', 'drogue'],
+            'latitude' => -21.098274,
+            'longitude' => 164.887448,
         ],
         [
             'ref' => 'adavi_kone',
@@ -596,8 +610,8 @@ class ContactSeeder extends Seeder
             'sous_themes' => ['anxiete', 'depression', 'burn_out'],
             'horaires' => 'Sur rendez-vous, lundi-vendredi',
             'remarques' => 'Ecoute, orientation et suivi psychologique pour les etudiants',
-            'latitude' => -22.2735,
-            'longitude' => 166.4590,
+            'latitude' => -22.2616715,
+            'longitude' => 166.4008725,
         ],
         [
             'ref' => 'medecin_universitaire',
