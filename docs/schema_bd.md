@@ -51,8 +51,10 @@ erDiagram
 
     User {
         int    id       PK
-        string name
+        string nom
+        string prenom
         string email
+        string telephone
         string password
         enum   Role
     }
@@ -367,8 +369,10 @@ erDiagram
 
     User {
         int    id       PK
-        string name
+        string nom
+        string prenom
         string email
+        string telephone
         string password
         enum   Role
     }
@@ -503,12 +507,32 @@ présentation, traitée en front.
 Le panel `/admin` est le seul point d'entrée authentifié. Les comptes sont créés par Filament, dans
 la table `users`, indépendamment de tout contenu de l'annuaire.
 
+`Prenom` et `Telephone` sont nullables en base : obligatoires à l'inscription, mais absents des
+comptes créés avant elle. `Telephone` est stocké au format E.164 (`+687XXXXXX`).
+
+### Inscription
+
+La page de connexion propose « Pas de compte ? Inscrivez-vous » (`/admin/register`). Le formulaire
+demande prénom, nom, email, téléphone calédonien (6 chiffres, `+687` facultatif) et mot de passe.
+
+Le compte est créé **sans rôle** et l'inscrit n'est pas connecté : il reste inactif jusqu'à ce qu'un
+administrateur lui attribue un rôle. Une tentative de connexion avant validation affiche « Votre
+compte est en attente de validation par un administrateur ». Ce message n'apparaît qu'après un mot
+de passe correct, il ne révèle donc pas l'existence d'un email.
+
+Politique de mot de passe (`Password::defaults()` dans `AppServiceProvider`) : 14 à 72 caractères,
+une majuscule, une minuscule, un caractère spécial, et absent des fuites connues (Have I Been Pwned,
+k-anonymat : seuls 5 caractères du SHA-1 sortent). Le serveur doit pouvoir joindre
+`api.pwnedpasswords.com`.
+
 ```mermaid
 erDiagram
     User {
         int    id       PK
-        string name
+        string nom
+        string prenom
         string email
+        string telephone
         string password
         enum   Role
     }
@@ -554,7 +578,7 @@ L'accès au panel se décide par `canAccessPanel()` sur le modèle `User`. Le fi
 fait par des Policies Laravel standard, une par ressource, lues automatiquement par Filament. Un
 rédacteur qui tente `/admin/contacts` reçoit un 403 et ne voit pas l'entrée dans le menu.
 
-Un utilisateur sans rôle est authentifié mais reçoit un 403 sur `/admin`.
+Un utilisateur sans rôle (inscription en attente) est refusé dès la connexion.
 
 L'alternative — Spatie Permission + Filament Shield — est écartée pour l'instant. Comparatif au
 [point 6](#sur-le-point-6).

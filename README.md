@@ -286,6 +286,10 @@ production), identifiants bidon définis dans `.env.example` (`WEBMASTER_DEMO_EM
 Pour changer ces valeurs, surcharger `WEBMASTER_DEMO_EMAIL`/`WEBMASTER_DEMO_PASSWORD` dans `.env`
 avant `migrate` — le compte n'est (re)créé que s'il n'existe pas déjà.
 
+Un nouveau compte peut être demandé depuis la page de connexion (« Pas de compte ? Inscrivez-vous »).
+Il est créé sans rôle et reste inactif jusqu'à attribution d'un rôle — voir
+[docs/schema_bd.md § Inscription](docs/schema_bd.md#inscription).
+
 ---
 
 ## 5. Structure du projet

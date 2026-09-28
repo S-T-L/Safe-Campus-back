@@ -1,8 +1,9 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Compte webmaster de demonstration pour le dev local, provisionne au
@@ -10,6 +11,9 @@ use Illuminate\Database\Migrations\Migration;
  * / WEBMASTER_DEMO_PASSWORD dans .env.example (identifiants bidon, commites
  * volontairement), lus via config/webmaster_demo.php. Ne s'execute jamais en
  * production.
+ *
+ * Insertion via DB::table, pas via le modele/factory : a ce stade du migrate,
+ * la table a encore la colonne `name` (renommee en `nom` plus tard).
  */
 return new class extends Migration
 {
@@ -21,20 +25,23 @@ return new class extends Migration
 
         $email = config('webmaster_demo.email');
 
-        if (User::where('email', $email)->exists()) {
+        if (DB::table('users')->where('email', $email)->exists()) {
             return;
         }
 
-        User::factory()->create([
+        DB::table('users')->insert([
             'name' => 'Webmaster (demo)',
             'email' => $email,
-            'password' => config('webmaster_demo.password'),
-            'role' => UserRole::Webmaster,
+            'email_verified_at' => now(),
+            'password' => Hash::make(config('webmaster_demo.password')),
+            'role' => UserRole::Webmaster->value,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 
     public function down(): void
     {
-        User::where('email', config('webmaster_demo.email'))->delete();
+        DB::table('users')->where('email', config('webmaster_demo.email'))->delete();
     }
 };

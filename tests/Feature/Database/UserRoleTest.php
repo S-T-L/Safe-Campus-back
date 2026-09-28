@@ -29,7 +29,7 @@ class UserRoleTest extends TestCase
 
     public function test_un_compte_sans_role_est_refuse_sur_le_panel(): void
     {
-        // Authentifie par Sanctum, mais 403 sur /admin.
+        // Inscription en attente de validation : refuse a la connexion.
         $user = User::factory()->create(['role' => null]);
 
         $this->assertFalse($user->canAccessPanel(Panel::make()));
@@ -40,7 +40,7 @@ class UserRoleTest extends TestCase
         $this->expectException(QueryException::class);
 
         \DB::table('users')->insert([
-            'name' => 'x',
+            'nom' => 'x',
             'email' => 'x@test.nc',
             'password' => 'x',
             'role' => 'administrateur',

@@ -15,6 +15,7 @@ use Filament\Tables\View\TablesRenderHook;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,8 +32,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->registerPasswordDefaults();
         $this->registerClickToEditHints();
         $this->registerAdminBorderStyles();
+    }
+
+    /**
+     * Regle unique pour tout mot de passe saisi (inscription, futur reset) —
+     * Filament lit Password::default(). Au-dessus de la recommandation CNIL.
+     * max(72) : bcrypt ignore au-dela de 72 octets, on refuse plutot que
+     * tronquer en silence. uncompromised() interroge api.pwnedpasswords.com
+     * (k-anonymat : seuls 5 caracteres du SHA-1 sortent).
+     */
+    private function registerPasswordDefaults(): void
+    {
+        Password::defaults(fn () => Password::min(14)
+            ->max(72)
+            ->mixedCase()
+            ->symbols()
+            ->uncompromised());
     }
 
     /**
