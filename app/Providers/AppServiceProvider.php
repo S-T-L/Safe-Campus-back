@@ -11,6 +11,17 @@ use App\Filament\Resources\ThemeResource\Pages\ListThemes;
 use App\Filament\Resources\ThemeResource\RelationManagers\SousThemesRelationManager;
 use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Livewire\ThemeSousThemesTable;
+use App\Models\Choix;
+use App\Models\Contact;
+use App\Models\Histoire;
+use App\Models\Media;
+use App\Models\Scene;
+use App\Models\Signalement;
+use App\Models\SousTheme;
+use App\Models\Telephone;
+use App\Models\Theme;
+use App\Models\User;
+use App\Observers\AuditObserver;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Filament\View\PanelsRenderHook;
@@ -34,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPasswordDefaults();
+        $this->registerAudit();
         $this->registerClickToEditHints();
         $this->registerAdminBorderStyles();
     }
@@ -52,6 +64,21 @@ class AppServiceProvider extends ServiceProvider
             ->mixedCase()
             ->symbols()
             ->uncompromised());
+    }
+
+    /**
+     * Logs d'audit (canal `audit`) : toute creation, modification ou
+     * suppression de ces modeles. Les connexions sont tracees par
+     * App\Listeners\AuditAuthentification.
+     */
+    private function registerAudit(): void
+    {
+        foreach ([
+            Choix::class, Contact::class, Histoire::class, Media::class, Scene::class,
+            Signalement::class, SousTheme::class, Telephone::class, Theme::class, User::class,
+        ] as $model) {
+            $model::observe(AuditObserver::class);
+        }
     }
 
     /**

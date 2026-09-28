@@ -45,3 +45,32 @@ php artisan storage:link
 > `php artisan migrate --force` bypass la confirmation interactive — ne jamais l'exécuter sur une base de production sans sauvegarde préalable. Ne jamais inclure `db:seed` (webmaster de démo) dans ce hook — réservé au dev.
 >
 > `key:generate` ne fait **pas** partie de ce hook : à exécuter une seule fois à la main avant le tout premier déploiement, la valeur générée devient `APP_KEY` dans les variables d'environnement Dockploy (voir tableau ci-dessus).
+
+## Logs d'audit
+
+Qui a fait quoi, quand, depuis quelle IP : canal `audit` (`config/logging.php`), distinct de
+`laravel.log`.
+
+- **Fichiers** : `storage/logs/audit-AAAA-MM-JJ.log`, un par jour, **365 jours** de conservation
+  (purge automatique par Laravel).
+- **Format** : une entrée JSON par ligne (`message`, `context`, `datetime` en UTC).
+- **Contenu** : création, modification (avant/après) et suppression de tout modèle métier ;
+  connexion, échec de connexion (email tenté), déconnexion, inscription ; transfert d'histoires à la
+  suppression d'un rédacteur. Jamais de mot de passe ni de jeton ; textes longs tronqués à 200
+  caractères.
+- **Niveau** : `info`, fixe, indépendant de `LOG_LEVEL` (qui vaut `error` en production).
+- **Écrit après commit** : une action annulée (transaction en échec) n'est pas tracée.
+- **Non tracé** : les rattachements N-N (histoire ↔ sous-thèmes, médias ↔ sous-thèmes), qui ne
+  passent pas par les événements de modèle.
+- **Consultation** : accès serveur uniquement, aucun écran dans le back-office.
+
+```bash
+docker exec SC_Back_Prod ls storage/logs
+docker exec SC_Back_Prod tail -f storage/logs/audit-2026-09-28.log
+```
+
+> ⚠️ **À régler avant la mise en production** : `storage/logs` est à l'intérieur du conteneur, sans
+> volume. Chaque redéploiement recrée le conteneur et efface les logs (même problème pour
+> `storage/app`, qui contient les médias uploadés). Prévoir des volumes dans
+> `docker-compose.prod.yml`, et créer `storage/logs` dans `Dockerfile.prod` (le dossier est exclu par
+> `.dockerignore` : monté tel quel, il appartiendrait à root et `scback` ne pourrait plus y écrire).

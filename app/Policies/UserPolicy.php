@@ -40,12 +40,16 @@ class UserPolicy
     }
 
     /**
-     * Refus d'une demande d'inscription uniquement. Un compte actif ne se
-     * supprime pas (histoires rattachees) : on lui retire son role.
+     * Refus d'une demande ou suppression d'un compte actif — ses histoires
+     * sont alors transferees (SuppressionCompteService). Jamais son propre
+     * compte (le dernier admin ne peut donc pas disparaitre), jamais le
+     * compte visiteur.
      */
     public function delete(User $user, User $model): bool
     {
-        return $user->role === UserRole::Admin && $model->role === null;
+        return $user->role === UserRole::Admin
+            && ! $user->is($model)
+            && $model->role !== UserRole::Visiteur;
     }
 
     public function deleteAny(User $user): bool

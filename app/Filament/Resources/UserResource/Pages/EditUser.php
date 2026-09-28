@@ -13,11 +13,7 @@ class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
-                ->label('Refuser la demande')
-                ->modalHeading('Refuser la demande')
-                ->modalDescription('Le compte en attente sera supprimé. La personne pourra refaire une demande.')
-                ->successNotificationTitle('Demande refusée'),
+            UserResource::configurerSuppression(Actions\Action::make('supprimer'), retourALaListe: true),
         ];
     }
 
