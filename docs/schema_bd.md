@@ -586,11 +586,20 @@ Un utilisateur sans rôle (inscription en attente) est refusé dès la connexion
 
 L'admin valide les inscriptions : il ne crée pas de compte. Depuis « Utilisateurs », il attribue
 `webmaster`, `redacteur` ou `admin`, ou retire le rôle (le compte ne peut plus se connecter mais est
-conservé, avec les histoires qui lui sont rattachées). Le bouton « Refuser » supprime une demande en
-attente ; un compte actif ne se supprime pas.
+conservé). Il peut aussi supprimer un compte : « Refuser » pour une demande en attente, « Supprimer »
+pour un compte actif.
 
-Garde-fous (`UserPolicy`) : un admin ne modifie jamais son propre compte, donc le dernier admin ne
-peut pas perdre son rôle. Le compte `visiteur` est absent de la liste et ne peut pas être attribué.
+`Histoire.FK_User` est en suppression en cascade : supprimer un rédacteur effacerait ses histoires,
+leurs scènes et leurs choix. `SuppressionCompteService` impose donc de choisir un autre rédacteur qui
+reprend les histoires avant la suppression ; sans repreneur, rien n'est supprimé.
+
+Les rôles eux-mêmes sont fixes : définis dans l'enum `UserRole` et verrouillés par la contrainte
+`users_role_check`. Aucun écran ne permet d'en créer, renommer ou supprimer un — cela passe par le
+code et une migration.
+
+Garde-fous (`UserPolicy`) : un admin ne modifie ni ne supprime jamais son propre compte, donc le
+dernier admin ne peut pas disparaître. Le compte `visiteur` est absent de la liste, ne peut pas être
+attribué ni supprimé.
 
 Le premier admin est créé au `migrate`, dans tous les environnements, à partir de `ADMIN_EMAIL` /
 `ADMIN_PASSWORD`. En production, le mot de passe doit respecter la politique de l'inscription, sinon

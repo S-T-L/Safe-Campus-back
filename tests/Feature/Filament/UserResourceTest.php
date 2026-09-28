@@ -7,12 +7,12 @@ use App\Filament\Resources\ContactResource\Pages\ListContacts;
 use App\Filament\Resources\HistoireResource\Pages\ListHistoires;
 use App\Filament\Resources\MediaResource\Pages\ListMedia;
 use App\Filament\Resources\ThemeResource\Pages\ListThemes;
+use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Models\Histoire;
 use App\Models\User;
-use Filament\Actions\DeleteAction;
 use Filament\Panel;
-use Filament\Tables\Actions\DeleteAction as TableDeleteAction;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -193,19 +193,76 @@ class UserResourceTest extends TestCase
         $this->actingAs($this->admin());
         $user = User::factory()->create(['role' => null]);
 
-        Livewire::test(ListUsers::class)->callTableAction(TableDeleteAction::class, $user);
+        Livewire::test(ListUsers::class)->callTableAction('supprimer', $user);
 
         $this->assertModelMissing($user);
     }
 
-    public function test_un_compte_actif_ne_peut_pas_etre_supprime(): void
+    public function test_l_admin_supprime_un_compte_actif_sans_histoire(): void
     {
         $this->actingAs($this->admin());
-        $user = User::factory()->create(['role' => UserRole::Redacteur]);
+        $user = User::factory()->create(['role' => UserRole::Webmaster]);
 
-        Livewire::test(ListUsers::class)->assertTableActionHidden(TableDeleteAction::class, $user);
-        Livewire::test(EditUser::class, ['record' => $user->getRouteKey()])->assertActionHidden(DeleteAction::class);
+        Livewire::test(EditUser::class, ['record' => $user->getRouteKey()])
+            ->callAction('supprimer')
+            ->assertRedirect(UserResource::getUrl('index'));
 
-        $this->assertModelExists($user);
+        $this->assertModelMissing($user);
+    }
+
+    public function test_les_histoires_d_un_redacteur_supprime_sont_transferees(): void
+    {
+        $this->actingAs($this->admin());
+        $partant = User::factory()->create(['role' => UserRole::Redacteur]);
+        $repreneur = User::factory()->create(['role' => UserRole::Redacteur]);
+        $histoires = Histoire::factory()->count(2)->create(['user_id' => $partant->id]);
+
+        Livewire::test(ListUsers::class)
+            ->callTableAction('supprimer', $partant, data: ['repreneur_id' => $repreneur->id])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertModelMissing($partant);
+        foreach ($histoires as $histoire) {
+            $this->assertSame($repreneur->id, $histoire->fresh()->user_id);
+        }
+    }
+
+    public function test_sans_repreneur_le_redacteur_et_ses_histoires_sont_conserves(): void
+    {
+        $this->actingAs($this->admin());
+        $partant = User::factory()->create(['role' => UserRole::Redacteur]);
+        $histoire = Histoire::factory()->create(['user_id' => $partant->id]);
+
+        Livewire::test(ListUsers::class)
+            ->callTableAction('supprimer', $partant, data: ['repreneur_id' => null])
+            ->assertHasTableActionErrors(['repreneur_id' => 'required']);
+
+        $this->assertModelExists($partant);
+        $this->assertModelExists($histoire);
+    }
+
+    public function test_le_repreneur_doit_etre_un_redacteur(): void
+    {
+        $this->actingAs($this->admin());
+        $partant = User::factory()->create(['role' => UserRole::Redacteur]);
+        $webmaster = User::factory()->create(['role' => UserRole::Webmaster]);
+        $histoire = Histoire::factory()->create(['user_id' => $partant->id]);
+
+        // Requete forgee : un webmaster n'est pas dans la liste proposee.
+        Livewire::test(ListUsers::class)
+            ->callTableAction('supprimer', $partant, data: ['repreneur_id' => $webmaster->id]);
+
+        $this->assertModelExists($partant);
+        $this->assertSame($partant->id, $histoire->fresh()->user_id);
+    }
+
+    public function test_un_admin_ne_peut_pas_se_supprimer(): void
+    {
+        $admin = $this->admin();
+        $this->actingAs($admin);
+
+        Livewire::test(ListUsers::class)->assertTableActionHidden('supprimer', $admin);
+
+        $this->assertModelExists($admin);
     }
 }

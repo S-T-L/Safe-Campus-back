@@ -5,12 +5,16 @@ namespace App\Filament\Resources;
 use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+use App\Services\SuppressionCompteService;
+use Filament\Actions;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use InvalidArgumentException;
 
 class UserResource extends Resource
 {
@@ -133,12 +137,69 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                    ->label('Refuser')
-                    ->modalHeading('Refuser la demande')
-                    ->modalDescription('Le compte en attente sera supprimé. La personne pourra refaire une demande.')
-                    ->successNotificationTitle('Demande refusée'),
+                self::configurerSuppression(Tables\Actions\Action::make('supprimer')),
             ]);
+    }
+
+    /**
+     * Refus d'une demande (compte sans role) ou suppression d'un compte actif,
+     * partage entre la liste et la fiche. Si le compte a des histoires, un
+     * autre redacteur doit les reprendre : sinon la cascade les effacerait.
+     */
+    public static function configurerSuppression(
+        Tables\Actions\Action|Actions\Action $action,
+        bool $retourALaListe = false,
+    ): Tables\Actions\Action|Actions\Action {
+        return $action
+            ->label(fn (User $record) => $record->role === null ? 'Refuser' : 'Supprimer')
+            ->icon('heroicon-o-trash')
+            ->color('danger')
+            ->authorize('delete')
+            ->requiresConfirmation()
+            ->modalHeading(fn (User $record) => $record->role === null ? 'Refuser la demande' : 'Supprimer le compte')
+            ->modalDescription(fn (User $record) => $record->role === null
+                ? 'Le compte en attente sera supprimé. La personne pourra refaire une demande.'
+                : 'Le compte sera définitivement supprimé. Pour seulement couper l\'accès, retirez plutôt son rôle.')
+            ->form(function (User $record): array {
+                $service = app(SuppressionCompteService::class);
+                $nombre = $service->nombreHistoires($record);
+
+                if ($nombre === 0) {
+                    return [];
+                }
+
+                $repreneurs = $service->repreneursPossibles($record);
+
+                return [
+                    Forms\Components\Select::make('repreneur_id')
+                        ->label('Rédacteur qui reprend les histoires')
+                        ->options($repreneurs)
+                        ->required()
+                        ->native(false)
+                        ->helperText($repreneurs === []
+                            ? 'Aucun autre rédacteur : attribuez d\'abord le rôle rédacteur à un compte.'
+                            : "Ce compte est l'auteur de {$nombre} histoire(s), qui seraient supprimées sans repreneur."),
+                ];
+            })
+            ->action(function (User $record, array $data, $action, $livewire) use ($retourALaListe): void {
+                $etaitEnAttente = $record->role === null;
+
+                try {
+                    app(SuppressionCompteService::class)->supprimer($record, isset($data['repreneur_id']) ? (int) $data['repreneur_id'] : null);
+                } catch (InvalidArgumentException $exception) {
+                    Notification::make()->title($exception->getMessage())->danger()->send();
+                    $action->halt();
+                }
+
+                Notification::make()
+                    ->title($etaitEnAttente ? 'Demande refusée' : 'Compte supprimé')
+                    ->success()
+                    ->send();
+
+                if ($retourALaListe) {
+                    $livewire->redirect(self::getUrl('index'));
+                }
+            });
     }
 
     public static function getPages(): array
