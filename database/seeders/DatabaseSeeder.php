@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ContactSeeder::class,
             MediaSeeder::class,
+            RedacteurDemoSeeder::class,
             HistoireSeeder::class,
         ]);
     }
